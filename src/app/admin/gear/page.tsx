@@ -10,34 +10,52 @@ const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;pad
 const LABEL = "font:600 11px Montserrat;letter-spacing:.04em;color:#A3A3A3;margin-bottom:6px;display:block;";
 const BTN = "background:#E10613;color:#fff;font:700 13px Montserrat;padding:11px 18px;border:none;border-radius:9px;cursor:pointer;";
 const CATS = ["Helmet", "Jacket", "Gloves", "Exhaust", "Battery", "Tire", "Intercom"];
+const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
+// Түгээмэл өнгөнүүд — нэрийг (монголоор) хадгалж, дугуйг hex-ээр харуулна.
+const COLORS: { name: string; hex: string }[] = [
+  { name: "Хар", hex: "#111114" },
+  { name: "Цагаан", hex: "#f5f5f5" },
+  { name: "Саарал", hex: "#6b7280" },
+  { name: "Мөнгөлөг", hex: "#c0c0c0" },
+  { name: "Улаан", hex: "#E10613" },
+  { name: "Цэнхэр", hex: "#2563eb" },
+  { name: "Хөх", hex: "#1e3a8a" },
+  { name: "Ногоон", hex: "#16a34a" },
+  { name: "Шар", hex: "#eab308" },
+  { name: "Улбар шар", hex: "#f97316" },
+  { name: "Ягаан", hex: "#ec4899" },
+  { name: "Нил ягаан", hex: "#7c3aed" },
+  { name: "Хүрэн", hex: "#92400e" },
+  { name: "Алтан", hex: "#d4af37" },
+];
+const toggle = (arr: string[], v: string) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
 type Form = {
   name: string; brand: string; category: string; meta: string; price: string; oldPrice: string;
   rating: string; reviews: string; sku: string; bestSeller: boolean; desc: string;
-  features: string; sizes: string; colors: string; images: string[];
+  features: string; sizes: string[]; colors: string[]; images: string[];
 };
 const empty: Form = {
   name: "", brand: "", category: "Helmet", meta: "", price: "", oldPrice: "",
-  rating: "5", reviews: "0", sku: "", bestSeller: false, desc: "", features: "", sizes: "", colors: "", images: [],
+  rating: "5", reviews: "0", sku: "", bestSeller: false, desc: "", features: "", sizes: [], colors: [], images: [],
 };
 function toForm(g: GearItem): Form {
   return {
     name: g.name, brand: g.brand, category: g.category, meta: g.meta ?? "",
     price: String(g.price), oldPrice: String(g.oldPrice), rating: String(g.rating),
     reviews: String(g.reviews), sku: g.sku, bestSeller: !!g.bestSeller, desc: g.desc,
-    features: (g.features ?? []).join("\n"), sizes: (g.sizes ?? []).join(", "), colors: (g.colors ?? []).join(", "),
+    features: (g.features ?? []).join("\n"), sizes: g.sizes ?? [], colors: g.colors ?? [],
     images: g.images ?? [],
   };
 }
 function fromForm(f: Form): Partial<GearItem> {
   const lines = (s: string) => s.split("\n").map((x) => x.trim()).filter(Boolean);
-  const csv = (s: string) => s.split(",").map((x) => x.trim()).filter(Boolean);
   const price = Number(f.price) || 0;
   return {
     name: f.name.trim(), brand: f.brand.trim() || "—", category: f.category, meta: f.meta || "—",
     price, oldPrice: Number(f.oldPrice) || price, rating: Number(f.rating) || 5,
     reviews: Number(f.reviews) || 0, sku: f.sku || "—", bestSeller: f.bestSeller,
-    desc: f.desc, features: lines(f.features), sizes: csv(f.sizes), colors: csv(f.colors),
+    desc: f.desc, features: lines(f.features), sizes: f.sizes, colors: f.colors,
     images: f.images,
   };
 }
@@ -48,6 +66,13 @@ export default function AdminGear() {
   const [f, setF] = useState<Form>(empty);
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [colorInput, setColorInput] = useState("");
+  function addColor() {
+    const v = colorInput.trim();
+    if (!v) return;
+    setF((c) => ({ ...c, colors: c.colors.includes(v) ? c.colors : [...c.colors, v] }));
+    setColorInput("");
+  }
 
   async function refresh() { setList(await getGearAll()); }
   useEffect(() => { refresh(); }, []);
@@ -105,9 +130,63 @@ export default function AdminGear() {
           </div>
           <div><label style={sx(LABEL)}>Тайлбар</label><textarea value={f.desc} onChange={(e) => setF({ ...f, desc: e.target.value })} rows={2} style={sx(INPUT + "resize:vertical;")} /></div>
           <div><label style={sx(LABEL)}>Онцлог (мөр тус бүр)</label><textarea value={f.features} onChange={(e) => setF({ ...f, features: e.target.value })} rows={3} style={sx(INPUT + "resize:vertical;")} /></div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-            <div><label style={sx(LABEL)}>Хэмжээ (таслалаар)</label><input value={f.sizes} onChange={(e) => setF({ ...f, sizes: e.target.value })} placeholder="S, M, L, XL" style={sx(INPUT)} /></div>
-            <div><label style={sx(LABEL)}>Өнгө (таслалаар)</label><input value={f.colors} onChange={(e) => setF({ ...f, colors: e.target.value })} placeholder="Хар, Цагаан" style={sx(INPUT)} /></div>
+          {/* ===== Хэмжээ — checkbox ===== */}
+          <div>
+            <label style={sx(LABEL)}>Хэмжээ <span style={sx("color:#6b7280;")}>(сонгох)</span></label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              {SIZES.map((s) => {
+                const on = f.sizes.includes(s);
+                return (
+                  <button key={s} type="button" onClick={() => setF((c) => ({ ...c, sizes: toggle(c.sizes, s) }))}
+                    style={sx(`min-width:46px;cursor:pointer;font:700 13px Montserrat;padding:9px 14px;border-radius:9px;${on ? "background:#E10613;border:1px solid #E10613;color:#fff;" : "background:#050505;border:1px solid #333;color:#C8C8C8;"}`)}>
+                    {s}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ===== Өнгө — өнгөт дугуй ===== */}
+          <div>
+            <label style={sx(LABEL)}>Өнгө <span style={sx("color:#6b7280;")}>(сонгох)</span></label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+              {COLORS.map((c) => {
+                const on = f.colors.includes(c.name);
+                return (
+                  <button key={c.name} type="button" title={c.name} onClick={() => setF((cur) => ({ ...cur, colors: toggle(cur.colors, c.name) }))}
+                    style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                    <span style={{
+                      width: 30, height: 30, borderRadius: "50%", background: c.hex,
+                      border: on ? "2px solid #E10613" : "1px solid #444",
+                      boxShadow: on ? "0 0 0 2px #050505, 0 0 0 4px #E10613" : "none",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      {on && <span style={{ color: c.hex === "#f5f5f5" || c.hex === "#c0c0c0" || c.hex === "#eab308" || c.hex === "#d4af37" ? "#111" : "#fff", fontSize: 14, fontWeight: 800, lineHeight: 1 }}>✓</span>}
+                    </span>
+                    <span style={sx(`font:600 10px Roboto;${on ? "color:#fff;" : "color:#8A8F98;"}`)}>{c.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* preset-д байхгүй сонгосон өнгө (жишээ: "Хар/Улаан") + гараар нэмэх */}
+            {f.colors.filter((c) => !COLORS.some((p) => p.name === c)).length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
+                {f.colors.filter((c) => !COLORS.some((p) => p.name === c)).map((c) => (
+                  <span key={c} style={sx("display:inline-flex;align-items:center;gap:6px;background:#050505;border:1px solid #333;border-radius:999px;padding:6px 8px 6px 12px;font:600 12px Roboto;color:#C8C8C8;")}>
+                    {c}
+                    <button type="button" onClick={() => setF((cur) => ({ ...cur, colors: cur.colors.filter((x) => x !== c) }))}
+                      style={sx("width:18px;height:18px;border-radius:50%;background:#E10613;color:#fff;border:none;cursor:pointer;font:700 11px Montserrat;line-height:1;")}>×</button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <div style={{ display: "flex", gap: 8, marginTop: 12, maxWidth: 320 }}>
+              <input value={colorInput} onChange={(e) => setColorInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addColor(); } }}
+                placeholder="Бусад өнгө (жнь: Хар/Улаан)" style={sx(INPUT + "padding:8px 11px;font:400 13px Roboto;")} />
+              <button type="button" onClick={addColor} style={sx("background:#1a1a1d;border:1px solid #333;color:#fff;font:600 12px Montserrat;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;")}>Нэмэх</button>
+            </div>
           </div>
           {/* ===== Зураг upload ===== */}
           <div>
