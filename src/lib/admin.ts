@@ -74,8 +74,14 @@ export async function updateOrderStatus(id: string, status: string) {
 }
 
 // ===== Profiles (бүртгэлтэй хэрэглэгчид) =====
-export interface Profile { phone: string; name: string; role: string; email?: string; created_at?: string }
-export async function upsertProfile(p: { phone: string; name: string; role: string; email?: string }) {
+export interface Profile {
+  phone: string; name: string; first_name?: string; last_name?: string;
+  role: string; email?: string; created_at?: string;
+}
+export async function upsertProfile(p: {
+  phone: string; name: string; role: string;
+  first_name?: string; last_name?: string; email?: string;
+}) {
   await supabase.from("profiles").upsert(p, { onConflict: "phone" });
 }
 export async function getProfiles(): Promise<Profile[]> {

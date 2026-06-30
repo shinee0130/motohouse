@@ -15,7 +15,9 @@ export default function RegisterPage() {
   const router = useRouter();
   const { login } = useAuth();
   const [step, setStep] = useState<Step>("form");
-  const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [name, setName] = useState(""); // нэр (first name)
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -25,7 +27,9 @@ export default function RegisterPage() {
   function submitForm(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    if (!lastName.trim()) return setError("Овгоо оруулна уу.");
     if (!name.trim()) return setError("Нэрээ оруулна уу.");
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) return setError("И-мэйл хаягаа зөв оруулна уу.");
     if (phone.replace(/\D/g, "").length !== 8) return setError("Утасны дугаар 8 оронтой байх ёстой.");
     if (password.length < 4) return setError("Нууц үг дор хаяж 4 тэмдэгт.");
     if (password !== confirm) return setError("Нууц үг таарахгүй байна.");
@@ -37,8 +41,10 @@ export default function RegisterPage() {
     setError("");
     if (otp.replace(/\D/g, "").length < 4) return setError("4 оронтой кодоо оруулна уу.");
     const cleanPhone = phone.replace(/\D/g, "");
-    login({ name: name.trim(), phone: cleanPhone, role: "customer" });
-    upsertProfile({ name: name.trim(), phone: cleanPhone, role: "customer" }).catch(() => {});
+    const fn = name.trim(), ln = lastName.trim(), em = email.trim();
+    const fullName = `${ln} ${fn}`.trim();
+    login({ name: fullName, firstName: fn, lastName: ln, email: em, phone: cleanPhone, role: "customer" });
+    upsertProfile({ name: fullName, first_name: fn, last_name: ln, email: em, phone: cleanPhone, role: "customer" }).catch(() => {});
     setStep("done");
   }
 
@@ -69,9 +75,19 @@ export default function RegisterPage() {
     >
       {step === "form" && (
         <form onSubmit={submitForm} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <div>
+              <label style={sx(AUTH_LABEL)}>Овог</label>
+              <input className="mh-input" placeholder="Овог" value={lastName} onChange={(e) => setLastName(e.target.value)} style={sx(AUTH_INPUT)} />
+            </div>
+            <div>
+              <label style={sx(AUTH_LABEL)}>Нэр</label>
+              <input className="mh-input" placeholder="Нэр" value={name} onChange={(e) => setName(e.target.value)} style={sx(AUTH_INPUT)} />
+            </div>
+          </div>
           <div>
-            <label style={sx(AUTH_LABEL)}>Нэр</label>
-            <input className="mh-input" placeholder="Таны нэр" value={name} onChange={(e) => setName(e.target.value)} style={sx(AUTH_INPUT)} />
+            <label style={sx(AUTH_LABEL)}>И-мэйл</label>
+            <input className="mh-input" type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} style={sx(AUTH_INPUT)} />
           </div>
           <div>
             <label style={sx(AUTH_LABEL)}>Утасны дугаар</label>
@@ -135,7 +151,7 @@ export default function RegisterPage() {
         <div style={sx("text-align:center;padding:14px 0;")}>
           <div style={sx("font:700 18px Montserrat;color:#22c55e;")}>✓ Бүртгэл амжилттай!</div>
           <div style={sx("font:400 14px Roboto;color:#A3A3A3;margin-top:8px;")}>
-            Тавтай морил, {name}. (Demo — backend хараахан холбоогүй.)
+            Тавтай морил, {lastName} {name}.
           </div>
           <button onClick={() => router.push("/account")} style={sx(AUTH_BTN + "display:block;margin-top:20px;")}>
             Миний бүртгэл

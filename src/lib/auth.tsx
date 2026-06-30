@@ -5,7 +5,9 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 export type Role = "customer" | "admin";
 
 export interface User {
-  name: string;
+  name: string; // дэлгэцэнд харуулах нэр = "Овог Нэр"
+  firstName?: string;
+  lastName?: string;
   phone: string;
   email?: string;
   role: Role;
