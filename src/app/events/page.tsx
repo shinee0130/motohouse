@@ -3,6 +3,8 @@ import { Slot } from "@/components/Slot";
 import { badge } from "@/lib/data";
 import { getEvents } from "@/lib/queries";
 
+export const dynamic = "force-dynamic";
+
 export default async function EventsPage() {
   const EVENTS = await getEvents();
   return (

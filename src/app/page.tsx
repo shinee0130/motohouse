@@ -43,6 +43,8 @@ const CATS = [
   { title: "Засвар", desc: "Оношилгоо · тюнинг", href: "/service", img: "/assets/categories/service.webp", setKey: "cat_service" },
 ];
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [motos, gear, allEvents, settings] = await Promise.all([getMotos(), getGearAll(), getEvents(), getSettings()]);
   const heroImg = settings.hero || "/assets/hero-ducati.webp";

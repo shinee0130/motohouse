@@ -7,10 +7,8 @@ import { MotoActions } from "@/components/MotoActions";
 import { fmt, statusLabel } from "@/lib/data";
 import { getMotos, similarOf } from "@/lib/queries";
 
-export async function generateStaticParams() {
-  const motos = await getMotos();
-  return motos.map((m) => ({ id: String(m.id) }));
-}
+// Admin засвар шууд харагдахаар — DB-ээс амьд уншина
+export const dynamic = "force-dynamic";
 
 const STAT = "background:#111113;border:1px solid #262626;border-radius:12px;padding:18px 16px;";
 const STAT_LBL = "font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;";

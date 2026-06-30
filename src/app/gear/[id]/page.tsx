@@ -2,10 +2,7 @@ import { notFound } from "next/navigation";
 import { GearDetail } from "@/components/GearDetail";
 import { getGearAll, relatedOf } from "@/lib/queries";
 
-export async function generateStaticParams() {
-  const gear = await getGearAll();
-  return gear.map((g) => ({ id: String(g.id) }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function GearDetailPage({ params }: PageProps<"/gear/[id]">) {
   const { id } = await params;
