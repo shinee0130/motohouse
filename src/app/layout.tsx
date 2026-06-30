@@ -5,7 +5,7 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "MOTO HOUSE — Ride. Power. Live.",
+  title: "motohouse",
   description:
     "Мотоцикл худалдаа, premium gear, performance parts, засвар үйлчилгээ болон rider community-ийн нэгдсэн платформ.",
 };
