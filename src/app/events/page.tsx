@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { Slot } from "@/components/Slot";
 import { badge } from "@/lib/data";
@@ -21,12 +22,19 @@ export default async function EventsPage() {
           )}
         >
           {EVENTS.map((e) => (
-            <div
+            <Link
               key={e.id}
-              style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;")}
+              href={`/events/${e.id}`}
+              className="mh-card"
+              style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:block;cursor:pointer;")}
             >
               <div style={{ position: "relative", height: 200 }}>
-                <Slot label="Event poster" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                {e.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={e.image} alt={e.title} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+                ) : (
+                  <Slot label="Event poster" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                )}
                 <span style={{ position: "absolute", top: 12, left: 12, zIndex: 2, ...sx(badge(e.status)) }}>
                   {e.status}
                 </span>
@@ -44,7 +52,7 @@ export default async function EventsPage() {
                   <span style={sx("font:700 14px Montserrat;color:#fff;")}>{e.prize}</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

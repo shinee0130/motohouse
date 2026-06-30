@@ -53,7 +53,20 @@ export async function deleteGear(id: number) {
 
 // ===== Events =====
 function eventRow(e: Partial<EventItem>): any {
-  return { type: e.type, title: e.title, status: e.status, event_date: e.date, prize: e.prize };
+  return {
+    type: e.type, title: e.title, status: e.status, event_date: e.date, prize: e.prize,
+    image: e.image ?? null, description: e.description ?? "", winner: e.winner ?? null,
+  };
+}
+export function uploadEvent(file: File): Promise<string> {
+  return uploadTo("events", file);
+}
+// Оролцох / гарах
+export async function joinEvent(eventId: number, phone: string, name: string) {
+  await supabase.from("event_participants").upsert({ event_id: eventId, user_phone: phone, name }, { onConflict: "event_id,user_phone" });
+}
+export async function leaveEvent(eventId: number, phone: string) {
+  await supabase.from("event_participants").delete().eq("event_id", eventId).eq("user_phone", phone);
 }
 export async function createEvent(e: Partial<EventItem>) {
   const { error } = await supabase.from("events").insert(eventRow(e));

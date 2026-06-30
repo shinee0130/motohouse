@@ -26,7 +26,10 @@ function mapGear(r: any): GearItem {
   };
 }
 function mapEvent(r: any): EventItem {
-  return { id: r.id, type: r.type, title: r.title, status: r.status, date: r.event_date, prize: r.prize };
+  return {
+    id: r.id, type: r.type, title: r.title, status: r.status, date: r.event_date, prize: r.prize,
+    image: r.image ?? undefined, description: r.description ?? "", winner: r.winner ?? undefined,
+  };
 }
 function mapOrder(r: any): Order {
   return { id: r.id, date: r.order_date, item: r.item, qty: r.qty, total: r.total, status: r.status };
@@ -62,6 +65,21 @@ export async function getEvents(): Promise<EventItem[]> {
   const { data, error } = await supabase.from("events").select("*").order("id");
   if (error) throw error;
   return (data ?? []).map(mapEvent);
+}
+export async function getEvent(id: number): Promise<EventItem | null> {
+  const { data } = await supabase.from("events").select("*").eq("id", id).maybeSingle();
+  return data ? mapEvent(data) : null;
+}
+
+// ---- Event participants (оролцогчид) ----
+export interface Participant { name: string; user_phone: string; created_at?: string }
+export async function getParticipants(eventId: number): Promise<Participant[]> {
+  const { data } = await supabase.from("event_participants").select("name,user_phone,created_at").eq("event_id", eventId).order("created_at");
+  return (data ?? []) as Participant[];
+}
+export async function isJoined(eventId: number, phone: string): Promise<boolean> {
+  const { data } = await supabase.from("event_participants").select("id").eq("event_id", eventId).eq("user_phone", phone).maybeSingle();
+  return !!data;
 }
 
 // ---- Settings (home backgrounds) ----

@@ -144,6 +144,9 @@ export interface EventItem {
   status: string;
   date: string;
   prize: string;
+  image?: string;
+  description?: string;
+  winner?: string;
 }
 
 export const EVENTS: EventItem[] = [

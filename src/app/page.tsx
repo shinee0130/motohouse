@@ -292,9 +292,14 @@ export default async function HomePage() {
         </div>
         <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:24px;")}>
           {events.map((e) => (
-            <div key={e.id} style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;")}>
+            <Link key={e.id} href={`/events/${e.id}`} className="mh-card" style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:block;cursor:pointer;")}>
               <div style={{ position: "relative", height: 160 }}>
-                <Slot label="Event poster" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                {e.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={e.image} alt={e.title} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+                ) : (
+                  <Slot label="Event poster" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                )}
                 <span style={{ position: "absolute", top: 12, left: 12, zIndex: 2, ...sx(badge(e.status)) }}>{e.status}</span>
                 <div style={sx("position:absolute;left:0;right:0;bottom:0;height:60%;background:linear-gradient(transparent,rgba(5,5,5,.9));z-index:1;")} />
               </div>
@@ -306,7 +311,7 @@ export default async function HomePage() {
                   <span style={sx("font:700 13px Montserrat;color:#fff;")}>{e.prize}</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
