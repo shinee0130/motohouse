@@ -42,7 +42,7 @@ export default function WishlistPage() {
           <SavedCard key={`m${m.id}`} href={`/motorcycles/${m.id}`} img={m.images?.[0]} brand={m.brand} name={m.model} price={m.price} tag={statusLabel(m.status)} onRemove={() => remove("moto", m.id)} cover />
         ))}
         {gear.map((g) => (
-          <SavedCard key={`g${g.id}`} href={`/gear/${g.id}`} brand={g.brand} name={g.name} price={g.price} onRemove={() => remove("gear", g.id)} />
+          <SavedCard key={`g${g.id}`} href={`/gear/${g.id}`} img={g.images?.[0]} brand={g.brand} name={g.name} price={g.price} onRemove={() => remove("gear", g.id)} />
         ))}
       </div>
 

@@ -72,6 +72,7 @@ export interface GearItem {
   features: string[];
   sizes?: string[]; // зөвхөн хувцас/каск (apparel)
   colors?: string[];
+  images?: string[];
   bestSeller?: boolean;
 }
 

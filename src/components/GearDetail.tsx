@@ -40,6 +40,8 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
   const router = useRouter();
   const [color, setColor] = useState(item.colors?.[0] ?? "");
   const [size, setSize] = useState("");
+  const [activeImg, setActiveImg] = useState(0);
+  const imgs = item.images ?? [];
   const [orderId, setOrderId] = useState<string | null>(null);
   const [saved, setSavedState] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -79,19 +81,28 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
         {/* ===== GALLERY ===== */}
         <div style={{ display: "flex", gap: 12 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, flexShrink: 0 }}>
-            {[0, 1, 2].map((i) => (
-              <div
+            {(imgs.length ? imgs : [0, 1, 2]).map((src, i) => (
+              <button
                 key={i}
-                style={sx(`width:64px;height:64px;border-radius:10px;overflow:hidden;border:1px solid ${i === 0 ? "#E10613" : "#262626"};background:#fff;`)}
+                onClick={() => imgs.length && setActiveImg(i)}
+                style={sx(`width:64px;height:64px;border-radius:10px;overflow:hidden;padding:0;cursor:${imgs.length ? "pointer" : "default"};border:2px solid ${i === activeImg && imgs.length ? "#E10613" : "#262626"};background:#fff;`)}
               >
-                <Slot label="" light style={{ width: "100%", height: "100%" }} />
-              </div>
+                {imgs.length ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={src as string} alt="" style={sx("width:100%;height:100%;object-fit:cover;display:block;")} />
+                ) : (
+                  <Slot label="" light style={{ width: "100%", height: "100%" }} />
+                )}
+              </button>
             ))}
           </div>
           <div style={sx("position:relative;flex:1;border-radius:16px;overflow:hidden;border:1px solid #262626;background:#fff;aspect-ratio:1/1;")}>
-            <Slot label="Бүтээгдэхүүн зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
-            <button style={sx("position:absolute;top:50%;left:14px;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:1px solid #ddd;background:#fff;color:#111;cursor:pointer;font:400 16px Roboto;")}>←</button>
-            <button style={sx("position:absolute;top:50%;right:14px;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:1px solid #ddd;background:#fff;color:#111;cursor:pointer;font:400 16px Roboto;")}>→</button>
+            {imgs.length ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={imgs[Math.min(activeImg, imgs.length - 1)]} alt={item.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+            ) : (
+              <Slot label="Бүтээгдэхүүн зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+            )}
             {sale > 0 && (
               <span style={sx("position:absolute;top:14px;left:14px;font:800 12px Montserrat;letter-spacing:.04em;color:#fff;background:#E10613;padding:6px 11px;border-radius:5px;")}>
                 SALE -{sale}%
@@ -256,7 +267,12 @@ function GearMini({ g }: { g: GearItem }) {
       style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;cursor:pointer;")}
     >
       <div style={{ position: "relative", height: 170, background: "#fff" }}>
-        <Slot label="Зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+        {g.images && g.images[0] ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+        ) : (
+          <Slot label="Зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+        )}
       </div>
       <div style={{ padding: "13px 15px" }}>
         <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>{g.brand.toUpperCase()}</div>

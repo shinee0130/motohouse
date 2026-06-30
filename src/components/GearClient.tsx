@@ -47,7 +47,12 @@ export function GearClient({ gear }: { gear: GearItem[] }) {
                 style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;cursor:pointer;")}
               >
                 <div style={{ position: "relative", height: 200, background: "#fff" }}>
-                  <Slot label="Бүтээгдэхүүн зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                  {g.images && g.images[0] ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+                  ) : (
+                    <Slot label="Бүтээгдэхүүн зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                  )}
                   <span style={sx("position:absolute;top:10px;left:10px;z-index:2;font:800 11px Montserrat;letter-spacing:.04em;color:#fff;background:#E10613;padding:5px 9px;border-radius:4px;")}>
                     SALE -{sale}%
                   </span>

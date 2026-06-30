@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { sx } from "@/lib/sx";
 import { fmt, type GearItem } from "@/lib/data";
 import { getGearAll } from "@/lib/queries";
-import { createGear, updateGear, deleteGear } from "@/lib/admin";
+import { createGear, updateGear, deleteGear, uploadGear } from "@/lib/admin";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:11px 13px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
 const LABEL = "font:600 11px Montserrat;letter-spacing:.04em;color:#A3A3A3;margin-bottom:6px;display:block;";
@@ -14,11 +14,11 @@ const CATS = ["Helmet", "Jacket", "Gloves", "Exhaust", "Battery", "Tire", "Inter
 type Form = {
   name: string; brand: string; category: string; meta: string; price: string; oldPrice: string;
   rating: string; reviews: string; sku: string; bestSeller: boolean; desc: string;
-  features: string; sizes: string; colors: string;
+  features: string; sizes: string; colors: string; images: string[];
 };
 const empty: Form = {
   name: "", brand: "", category: "Helmet", meta: "", price: "", oldPrice: "",
-  rating: "5", reviews: "0", sku: "", bestSeller: false, desc: "", features: "", sizes: "", colors: "",
+  rating: "5", reviews: "0", sku: "", bestSeller: false, desc: "", features: "", sizes: "", colors: "", images: [],
 };
 function toForm(g: GearItem): Form {
   return {
@@ -26,6 +26,7 @@ function toForm(g: GearItem): Form {
     price: String(g.price), oldPrice: String(g.oldPrice), rating: String(g.rating),
     reviews: String(g.reviews), sku: g.sku, bestSeller: !!g.bestSeller, desc: g.desc,
     features: (g.features ?? []).join("\n"), sizes: (g.sizes ?? []).join(", "), colors: (g.colors ?? []).join(", "),
+    images: g.images ?? [],
   };
 }
 function fromForm(f: Form): Partial<GearItem> {
@@ -37,6 +38,7 @@ function fromForm(f: Form): Partial<GearItem> {
     price, oldPrice: Number(f.oldPrice) || price, rating: Number(f.rating) || 5,
     reviews: Number(f.reviews) || 0, sku: f.sku || "—", bestSeller: f.bestSeller,
     desc: f.desc, features: lines(f.features), sizes: csv(f.sizes), colors: csv(f.colors),
+    images: f.images,
   };
 }
 
@@ -45,9 +47,20 @@ export default function AdminGear() {
   const [editing, setEditing] = useState<number | null | "new">(null);
   const [f, setF] = useState<Form>(empty);
   const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   async function refresh() { setList(await getGearAll()); }
   useEffect(() => { refresh(); }, []);
+
+  async function onImages(files: FileList | null) {
+    if (!files || !files.length) return;
+    setUploading(true);
+    try {
+      const urls: string[] = [];
+      for (const file of Array.from(files)) urls.push(await uploadGear(file));
+      setF((cur) => ({ ...cur, images: [...cur.images, ...urls] }));
+    } finally { setUploading(false); }
+  }
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -96,12 +109,30 @@ export default function AdminGear() {
             <div><label style={sx(LABEL)}>Хэмжээ (таслалаар)</label><input value={f.sizes} onChange={(e) => setF({ ...f, sizes: e.target.value })} placeholder="S, M, L, XL" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Өнгө (таслалаар)</label><input value={f.colors} onChange={(e) => setF({ ...f, colors: e.target.value })} placeholder="Хар, Цагаан" style={sx(INPUT)} /></div>
           </div>
+          {/* ===== Зураг upload ===== */}
+          <div>
+            <label style={sx(LABEL)}>Зураг ({f.images.length})</label>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 10 }}>
+              {f.images.map((src, i) => (
+                <div key={src + i} style={{ position: "relative", width: 84, height: 84 }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={src} alt="" style={sx("width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;")} />
+                  <button type="button" onClick={() => setF((c) => ({ ...c, images: c.images.filter((_, x) => x !== i) }))}
+                    style={sx("position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;background:#E10613;color:#fff;border:none;cursor:pointer;font:700 12px Montserrat;line-height:1;")}>×</button>
+                </div>
+              ))}
+            </div>
+            <label style={sx("display:inline-block;cursor:pointer;background:#1a1a1d;border:1px solid #333;color:#fff;font:600 12px Montserrat;padding:9px 16px;border-radius:8px;" + (uploading ? "opacity:.6;" : ""))}>
+              {uploading ? "Хуулж байна…" : "＋ Зураг сонгох (олон)"}
+              <input type="file" accept="image/*" multiple disabled={uploading} onChange={(e) => onImages(e.target.files)} style={{ display: "none" }} />
+            </label>
+          </div>
           <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
             <input type="checkbox" checked={f.bestSeller} onChange={(e) => setF({ ...f, bestSeller: e.target.checked })} />
             <span style={sx("font:500 13px Roboto;color:#C8C8C8;")}>Best Seller</span>
           </label>
           <div style={{ display: "flex", gap: 10 }}>
-            <button type="submit" disabled={busy} style={sx(BTN + (busy ? "opacity:.6;" : ""))}>{busy ? "Хадгалж байна…" : "Хадгалах"}</button>
+            <button type="submit" disabled={busy || uploading} style={sx(BTN + (busy || uploading ? "opacity:.6;" : ""))}>{busy ? "Хадгалж байна…" : "Хадгалах"}</button>
             <button type="button" onClick={() => setEditing(null)} style={sx("background:none;border:1px solid #333;color:#A3A3A3;font:600 13px Montserrat;padding:11px 18px;border-radius:9px;cursor:pointer;")}>Болих</button>
           </div>
         </form>
@@ -110,9 +141,15 @@ export default function AdminGear() {
       <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;")}>
         {list.map((g) => (
           <div key={g.id} style={sx("display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #1c1c1f;")}>
-            <div style={{ minWidth: 160 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 160 }}>
+              {g.images && g.images[0] && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={g.images[0]} alt="" style={sx("width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;flex-shrink:0;")} />
+              )}
+              <div>
               <div style={sx("font:700 15px Montserrat;color:#fff;")}>{g.name} {g.bestSeller && <span style={sx("font:700 9px Montserrat;color:#E10613;")}>★</span>}</div>
               <div style={sx("font:400 12px 'JetBrains Mono';color:#8A8F98;margin-top:3px;")}>{g.brand.toUpperCase()} · {g.category}</div>
+              </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
               <span style={sx("font:700 14px Montserrat;color:#fff;")}>{fmt(g.price)}</span>

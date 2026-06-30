@@ -34,7 +34,8 @@ function gearRow(g: Partial<GearItem>): any {
     name: g.name, category: g.category, brand: g.brand, meta: g.meta,
     price: g.price, old_price: g.oldPrice, rating: g.rating, reviews: g.reviews,
     sku: g.sku, description: g.desc, features: g.features ?? [],
-    sizes: g.sizes ?? [], colors: g.colors ?? [], best_seller: g.bestSeller ?? false,
+    sizes: g.sizes ?? [], colors: g.colors ?? [], images: g.images ?? [],
+    best_seller: g.bestSeller ?? false,
   };
 }
 export async function createGear(g: Partial<GearItem>) {
@@ -128,13 +129,19 @@ export async function uploadSiteImage(file: File, path: string): Promise<string>
   return `${data.publicUrl}?v=${Date.now()}`;
 }
 
-// Мотоциклын зураг/видео — өвөрмөц зам руу upload хийж public URL буцаана.
-export async function uploadMoto(file: File, kind: "img" | "video"): Promise<string> {
-  const ext = file.name.split(".").pop() || (kind === "video" ? "mp4" : "jpg");
-  const path = `motos/${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+// Зураг/видео storage-д upload хийж public URL буцаана.
+async function uploadTo(folder: string, file: File, ext?: string): Promise<string> {
+  const e = ext || file.name.split(".").pop() || "bin";
+  const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${e}`;
   const { error } = await supabase.storage.from("site").upload(path, file, { upsert: true, cacheControl: "3600", contentType: file.type || undefined });
   if (error) throw error;
   const { data } = supabase.storage.from("site").getPublicUrl(path);
   return data.publicUrl;
+}
+export function uploadMoto(file: File, kind: "img" | "video"): Promise<string> {
+  return uploadTo("motos", file, kind === "video" ? (file.name.split(".").pop() || "mp4") : undefined);
+}
+export function uploadGear(file: File): Promise<string> {
+  return uploadTo("gear", file);
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */

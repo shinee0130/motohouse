@@ -21,6 +21,7 @@ function mapGear(r: any): GearItem {
     sku: r.sku, desc: r.description ?? "", features: r.features ?? [],
     sizes: r.sizes?.length ? r.sizes : undefined,
     colors: r.colors?.length ? r.colors : undefined,
+    images: r.images ?? [],
     bestSeller: r.best_seller,
   };
 }
