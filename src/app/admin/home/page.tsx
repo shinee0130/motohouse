@@ -28,7 +28,7 @@ export default function AdminHome() {
       const url = await uploadSiteImage(file, `home/${key}.${ext}`);
       await updateSetting(key, url);
       await refresh();
-      setMsg(`✓ ${key} зураг шинэчлэгдлээ.`);
+      setMsg(`✓ ${key} шинэчлэгдлээ.`);
     } catch (e) {
       setMsg("⚠️ Алдаа: " + (e instanceof Error ? e.message : String(e)));
     } finally { setBusy(null); }
@@ -43,6 +43,25 @@ export default function AdminHome() {
         </div>
       </div>
       {msg && <div style={sx("font:500 13px Roboto;color:#22c55e;")}>{msg}</div>}
+
+      {/* Hero видео */}
+      <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;")}>
+        <div style={{ position: "relative", height: 200, background: "#0d0d0f" }}>
+          {map.hero_video ? (
+            <video src={map.hero_video} autoPlay muted loop playsInline style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+          ) : (
+            <video src="/assets/hero-bg.mp4" autoPlay muted loop playsInline style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+          )}
+        </div>
+        <div style={{ padding: "14px 16px" }}>
+          <div style={sx("font:700 14px Montserrat;color:#fff;")}>Hero видео (нүүрний background)</div>
+          <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:4px;")}>Нүүр хуудасны том background видео. Анхдагч: hero-bg.mp4. Шинэ видео сонгоход шууд солигдоно.</div>
+          <label style={sx(`display:inline-block;margin-top:12px;cursor:pointer;background:#E10613;color:#fff;font:700 12px Montserrat;padding:9px 16px;border-radius:8px;${busy === "hero_video" ? "opacity:.6;" : ""}`)}>
+            {busy === "hero_video" ? "Хуулж байна…" : "Видео солих"}
+            <input type="file" accept="video/*" disabled={busy === "hero_video"} onChange={(e) => onFile("hero_video", e.target.files?.[0] ?? null)} style={{ display: "none" }} />
+          </label>
+        </div>
+      </div>
 
       <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;")}>
         {SLOTS.map((s) => (
