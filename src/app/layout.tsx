@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AuthProvider } from "@/lib/auth";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 
@@ -27,9 +28,11 @@ export default function RootLayout({
             flexDirection: "column",
           }}
         >
-          <Nav />
-          <div style={{ flex: 1 }}>{children}</div>
-          <Footer />
+          <AuthProvider>
+            <Nav />
+            <div style={{ flex: 1 }}>{children}</div>
+            <Footer />
+          </AuthProvider>
         </div>
       </body>
     </html>

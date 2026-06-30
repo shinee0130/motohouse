@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { Slot } from "./Slot";
-import { fmt, badge, type Moto } from "@/lib/data";
+import { fmt, badge, statusLabel, type Moto } from "@/lib/data";
 
 // Жагсаалт / онцлох хэсэгт ашиглах мотоциклын карт.
 export function MotoCard({ m, showCc = false }: { m: Moto; showCc?: boolean }) {
@@ -14,12 +14,18 @@ export function MotoCard({ m, showCc = false }: { m: Moto; showCc?: boolean }) {
       )}
     >
       <div style={{ position: "relative", height: 180 }}>
-        <Slot
-          label="Мотоцикл зураг"
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
-        />
+        {m.images && m.images.length > 0 ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={m.images[0]}
+            alt={`${m.brand} ${m.model}`}
+            style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")}
+          />
+        ) : (
+          <Slot label="Мотоцикл зураг" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+        )}
         <span style={{ position: "absolute", top: 12, left: 12, zIndex: 2, ...sx(badge(m.status)) }}>
-          {m.status}
+          {statusLabel(m.status)}
         </span>
       </div>
       <div style={{ padding: "18px 20px" }}>

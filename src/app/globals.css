@@ -93,3 +93,10 @@ a {
     display: none;
   }
 }
+
+/* account sidebar — гар утсан дээр босоо болгох */
+@media (max-width: 760px) {
+  .mh-account-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

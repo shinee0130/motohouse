@@ -1,0 +1,112 @@
+"use client";
+
+import { supabase } from "./supabase";
+import type { Moto, GearItem, EventItem } from "./data";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+// ===== Motorcycles =====
+function motoRow(m: Partial<Moto>): any {
+  return {
+    brand: m.brand, model: m.model, year: m.year, cc: m.cc, odo: m.odo, price: m.price,
+    status: m.status, country: m.country, customs: m.customs, hp: m.hp, nm: m.nm,
+    top_speed: m.top, weight: m.weight, cyl: m.cyl, description: m.desc,
+    extras: m.extras ?? [], images: m.images ?? [], video: m.video ?? null,
+    featured: m.featured ?? false,
+  };
+}
+export async function createMoto(m: Partial<Moto>) {
+  const { error } = await supabase.from("motorcycles").insert(motoRow(m));
+  if (error) throw error;
+}
+export async function updateMoto(id: number, m: Partial<Moto>) {
+  const { error } = await supabase.from("motorcycles").update(motoRow(m)).eq("id", id);
+  if (error) throw error;
+}
+export async function deleteMoto(id: number) {
+  const { error } = await supabase.from("motorcycles").delete().eq("id", id);
+  if (error) throw error;
+}
+
+// ===== Gear =====
+function gearRow(g: Partial<GearItem>): any {
+  return {
+    name: g.name, category: g.category, brand: g.brand, meta: g.meta,
+    price: g.price, old_price: g.oldPrice, rating: g.rating, reviews: g.reviews,
+    sku: g.sku, description: g.desc, features: g.features ?? [],
+    sizes: g.sizes ?? [], colors: g.colors ?? [], best_seller: g.bestSeller ?? false,
+  };
+}
+export async function createGear(g: Partial<GearItem>) {
+  const { error } = await supabase.from("gear").insert(gearRow(g));
+  if (error) throw error;
+}
+export async function updateGear(id: number, g: Partial<GearItem>) {
+  const { error } = await supabase.from("gear").update(gearRow(g)).eq("id", id);
+  if (error) throw error;
+}
+export async function deleteGear(id: number) {
+  const { error } = await supabase.from("gear").delete().eq("id", id);
+  if (error) throw error;
+}
+
+// ===== Events =====
+function eventRow(e: Partial<EventItem>): any {
+  return { type: e.type, title: e.title, status: e.status, event_date: e.date, prize: e.prize };
+}
+export async function createEvent(e: Partial<EventItem>) {
+  const { error } = await supabase.from("events").insert(eventRow(e));
+  if (error) throw error;
+}
+export async function updateEvent(id: number, e: Partial<EventItem>) {
+  const { error } = await supabase.from("events").update(eventRow(e)).eq("id", id);
+  if (error) throw error;
+}
+export async function deleteEvent(id: number) {
+  const { error } = await supabase.from("events").delete().eq("id", id);
+  if (error) throw error;
+}
+
+// ===== Orders =====
+export async function updateOrderStatus(id: string, status: string) {
+  const { error } = await supabase.from("orders").update({ status }).eq("id", id);
+  if (error) throw error;
+}
+
+// ===== Profiles (бүртгэлтэй хэрэглэгчид) =====
+export interface Profile { phone: string; name: string; role: string; email?: string; created_at?: string }
+export async function upsertProfile(p: { phone: string; name: string; role: string; email?: string }) {
+  await supabase.from("profiles").upsert(p, { onConflict: "phone" });
+}
+export async function getProfiles(): Promise<Profile[]> {
+  const { data } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+  return (data ?? []) as Profile[];
+}
+
+// ===== Settings (home backgrounds) =====
+export async function getSettingsMap(): Promise<Record<string, string>> {
+  const { data } = await supabase.from("settings").select("*");
+  const o: Record<string, string> = {};
+  (data ?? []).forEach((r: any) => (o[r.key] = r.value));
+  return o;
+}
+export async function updateSetting(key: string, value: string) {
+  await supabase.from("settings").upsert({ key, value }, { onConflict: "key" });
+}
+export async function uploadSiteImage(file: File, path: string): Promise<string> {
+  const { error } = await supabase.storage.from("site").upload(path, file, { upsert: true, cacheControl: "3600" });
+  if (error) throw error;
+  const { data } = supabase.storage.from("site").getPublicUrl(path);
+  return `${data.publicUrl}?v=${Date.now()}`;
+}
+
+// Мотоциклын зураг/видео — өвөрмөц зам руу upload хийж public URL буцаана.
+export async function uploadMoto(file: File, kind: "img" | "video"): Promise<string> {
+  const ext = file.name.split(".").pop() || (kind === "video" ? "mp4" : "jpg");
+  const path = `motos/${kind}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+  const { error } = await supabase.storage.from("site").upload(path, file, { upsert: true, cacheControl: "3600", contentType: file.type || undefined });
+  if (error) throw error;
+  const { data } = supabase.storage.from("site").getPublicUrl(path);
+  return data.publicUrl;
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */

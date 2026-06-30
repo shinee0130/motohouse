@@ -2,10 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { Slot } from "@/components/Slot";
-import { MOTOS, fmt, badge, similarMotos } from "@/lib/data";
+import { MotoGallery } from "@/components/MotoGallery";
+import { fmt, statusLabel } from "@/lib/data";
+import { getMotos, similarOf } from "@/lib/queries";
 
-export function generateStaticParams() {
-  return MOTOS.map((m) => ({ id: String(m.id) }));
+export async function generateStaticParams() {
+  const motos = await getMotos();
+  return motos.map((m) => ({ id: String(m.id) }));
 }
 
 const STAT = "background:#111113;border:1px solid #262626;border-radius:12px;padding:18px 16px;";
@@ -17,10 +20,11 @@ const SPEC_VAL = "font:600 16px Roboto;color:#fff;margin-top:3px;";
 
 export default async function DetailPage({ params }: PageProps<"/motorcycles/[id]">) {
   const { id } = await params;
-  const m = MOTOS.find((x) => x.id === Number(id));
+  const motos = await getMotos();
+  const m = motos.find((x) => x.id === Number(id));
   if (!m) notFound();
 
-  const similar = similarMotos(m);
+  const similar = similarOf(m, motos);
 
   return (
     <div
@@ -37,64 +41,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
           )}
         >
           {/* gallery */}
-          <div>
-            <div
-              style={sx(
-                "position:relative;border-radius:18px;overflow:hidden;border:1px solid #262626;aspect-ratio:4/3;",
-              )}
-            >
-              <Slot label="Мотоцикл том зураг" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
-              <span style={{ position: "absolute", top: 16, left: 16, zIndex: 2, ...sx(badge(m.status)) }}>
-                {m.status}
-              </span>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12, marginTop: 12 }}>
-              {["Зураг 2", "Зураг 3", "Зураг 4", "Зураг 5"].map((t) => (
-                <Slot key={t} label={t} style={{ height: 84, borderRadius: 10 }} />
-              ))}
-            </div>
-            <div
-              style={sx(
-                "position:relative;border-radius:14px;overflow:hidden;border:1px solid #262626;aspect-ratio:16/9;margin-top:12px;",
-              )}
-            >
-              <Slot label="Видео poster" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
-              <div
-                style={sx(
-                  "position:absolute;inset:0;background:linear-gradient(transparent,rgba(5,5,5,.5));pointer-events:none;",
-                )}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  pointerEvents: "none",
-                }}
-              >
-                <div
-                  style={sx(
-                    "width:62px;height:62px;border-radius:50%;background:rgba(225,6,19,.92);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(225,6,19,.45);",
-                  )}
-                >
-                  <div
-                    style={sx(
-                      "width:0;height:0;border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px;",
-                    )}
-                  />
-                </div>
-              </div>
-              <span
-                style={sx(
-                  "position:absolute;top:12px;left:14px;z-index:2;font:600 11px 'JetBrains Mono';letter-spacing:.16em;color:#fff;background:rgba(0,0,0,.5);padding:5px 11px;border-radius:6px;",
-                )}
-              >
-                ВИДЕО
-              </span>
-            </div>
-          </div>
+          <MotoGallery images={m.images} status={m.status} video={m.video} />
 
           {/* info */}
           <div>
@@ -113,7 +60,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
                 ["ODO", `${m.odo.toLocaleString("en-US")} km`],
                 ["CUSTOMS", m.customs],
                 ["COUNTRY", m.country],
-                ["STATUS", m.status],
+                ["STATUS", statusLabel(m.status)],
               ].map(([lbl, val]) => (
                 <div key={lbl}>
                   <div style={sx(SPEC_LBL)}>{lbl}</div>

@@ -1,186 +1,157 @@
 import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { MotoCard } from "@/components/MotoCard";
-import { MOTOS, PARTNERS } from "@/lib/data";
+import { Slot } from "@/components/Slot";
+import { fmt, badge } from "@/lib/data";
+import { getMotos, getGearAll, getEvents, getSettings } from "@/lib/queries";
+import {
+  IconTruck,
+  IconCard,
+  IconWrench,
+  IconShield,
+} from "@/components/icons";
 
-const CATS = [
-  { n: "01", title: "Мотоцикл", desc: "Бэлэн ба захиалгаар орох мотоцикл, specs, үнэ.", href: "/motorcycles" },
-  { n: "02", title: "Дагалдах хэрэгсэл", desc: "Каск, хувцас, хамгаалалт, intercom төхөөрөмж.", href: "/gear" },
-  { n: "03", title: "Сэлбэг хэрэгсэл", desc: "Яндан, батерей, дугуй, тохирох сэлбэг.", href: "/gear" },
-  { n: "04", title: "Засвар үйлчилгээ", desc: "Засвар, оношилгоо, тюнинг, угсралт.", href: "/service" },
+// Бодит лого байгаа брэндүүд — marquee-д зургаар, бусад нь текстээр.
+const BRAND_LOGOS: Record<string, string> = {
+  Kawasaki: "/assets/brands/kawasaki.png",
+  Yamaha: "/assets/brands/yamaha.png",
+  Honda: "/assets/brands/honda.png",
+  BMW: "/assets/brands/bmw.png",
+  Ducati: "/assets/brands/ducati.png",
+  Dainese: "/assets/brands/dainese.png",
+  Shoei: "/assets/brands/shoei.png",
+  Alpinestars: "/assets/brands/alpinestars.png",
+  Akrapovic: "/assets/brands/akrapovic.png",
+};
+
+const WRAP = "max-width:1280px;margin:0 auto;padding:0 clamp(20px,4vw,40px);";
+const SECTION_LABEL = "font:500 12px 'JetBrains Mono';letter-spacing:.24em;color:#E10613;";
+const SECTION_TITLE = "font:800 clamp(24px,4vw,36px) Montserrat;color:#fff;margin-top:6px;text-transform:uppercase;";
+const SEE_ALL = "font:600 14px Montserrat;color:#A3A3A3;cursor:pointer;white-space:nowrap;";
+
+const TRUST = [
+  { Icon: IconTruck, t: "Хурдан хүргэлт", d: "УБ хот доторх хүргэлт" },
+  { Icon: IconCard, t: "Зээлээр авах", d: "StorePay · Pocket · LeasePay" },
+  { Icon: IconWrench, t: "Expert засвар", d: "Мэргэжлийн механик баг" },
+  { Icon: IconShield, t: "Баталгаа", d: "Гаалийн бичиг бүртэй" },
 ];
 
-export default function HomePage() {
-  const featured = [MOTOS[0], MOTOS[4], MOTOS[7], MOTOS[3]];
-  const partners = [...PARTNERS, ...PARTNERS];
+const CATS = [
+  { title: "Мотоцикл", desc: "Sport · Naked · Track", href: "/motorcycles", img: "/assets/categories/moto.webp", setKey: "cat_moto" },
+  { title: "Хэрэгсэл", desc: "Каск · хувцас · хамгаалалт", href: "/gear", img: "/assets/categories/gear.webp", setKey: "cat_gear" },
+  { title: "Сэлбэг", desc: "Яндан · дугуй · батерей", href: "/gear", img: "/assets/categories/parts.webp", setKey: "cat_parts" },
+  { title: "Засвар", desc: "Оношилгоо · тюнинг", href: "/service", img: "/assets/categories/service.webp", setKey: "cat_service" },
+];
+
+export default async function HomePage() {
+  const [motos, gear, allEvents, settings] = await Promise.all([getMotos(), getGearAll(), getEvents(), getSettings()]);
+  const heroImg = settings.hero || "/assets/hero-ducati.webp";
+
+  const featuredAll = motos.filter((m) => m.featured);
+  const featured = (featuredAll.length ? featuredAll : motos).slice(0, 4);
+  const bestGear = gear.slice(0, 4);
+  const events = allEvents.slice(0, 3);
+
+  // Каталогт зарагддаг брэндүүд → зөвхөн бодит логотой нь marquee-д.
+  const BRANDS = Array.from(new Set([...motos.map((m) => m.brand), ...gear.map((g) => g.brand)]));
+  const logoBrands = BRANDS.filter((b) => BRAND_LOGOS[b]);
+  const brands = [...logoBrands, ...logoBrands];
 
   return (
     <div style={{ animation: "mhfade .5s both" }}>
-      {/* HERO */}
+      {/* ===== HERO ===== */}
       <div style={sx("position:relative;overflow:hidden;border-bottom:1px solid #1c1c1f;")}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/assets/hero-ducati.webp"
-          alt="Ducati Panigale"
+          src={heroImg}
+          alt="Ducati"
           style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;")}
         />
         <div
           style={sx(
-            "position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#050505 26%,rgba(5,5,5,.5) 58%,rgba(5,5,5,.1)),radial-gradient(80% 120% at 90% 10%,rgba(225,6,19,.22),transparent 55%);",
+            "position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#050505 24%,rgba(5,5,5,.55) 56%,rgba(5,5,5,.05)),radial-gradient(70% 120% at 88% 12%,rgba(225,6,19,.25),transparent 55%);",
           )}
         />
-        <div
-          style={sx(
-            "position:relative;max-width:1280px;margin:0 auto;padding:clamp(60px,9vw,120px) clamp(20px,4vw,40px);pointer-events:none;",
-          )}
-        >
+        <div style={sx(`position:relative;${WRAP}padding-top:clamp(64px,10vw,128px);padding-bottom:clamp(64px,10vw,128px);pointer-events:none;`)}>
           <span style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.32em;color:#8A8F98;")}>
             MARKETPLACE · SERVICE · COMMUNITY
           </span>
-          <h1
-            style={sx(
-              "font:900 clamp(46px,8vw,96px)/0.92 Montserrat;letter-spacing:-.01em;color:#fff;margin-top:18px;text-transform:uppercase;",
-            )}
-          >
+          <h1 style={sx("font:900 clamp(46px,8vw,96px)/0.92 Montserrat;letter-spacing:-.01em;color:#fff;margin-top:18px;text-transform:uppercase;")}>
             Ride.
             <br />
             Power.
             <br />
             <span style={{ color: "#E10613" }}>Live.</span>
           </h1>
-          <p
-            style={sx(
-              "font:400 clamp(15px,2vw,19px)/1.6 Roboto;color:#C8C8C8;max-width:520px;margin-top:24px;",
-            )}
-          >
+          <p style={sx("font:400 clamp(15px,2vw,19px)/1.6 Roboto;color:#C8C8C8;max-width:520px;margin-top:24px;")}>
             Мотоцикл худалдаа, premium gear, performance parts, засвар үйлчилгээ болон rider
             community-ийн нэгдсэн платформ.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginTop: 36 }}>
-            <Link
-              href="/motorcycles"
-              style={sx(
-                "background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px 28px;border-radius:10px;text-transform:uppercase;cursor:pointer;pointer-events:auto;",
-              )}
-            >
+            <Link href="/motorcycles" style={sx("background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px 28px;border-radius:10px;text-transform:uppercase;cursor:pointer;pointer-events:auto;")}>
               Мотоцикл үзэх
             </Link>
-            <Link
-              href="/service"
-              style={sx(
-                "border:1px solid #444;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px 28px;border-radius:10px;text-transform:uppercase;cursor:pointer;pointer-events:auto;",
-              )}
-            >
+            <Link href="/service" style={sx("border:1px solid #444;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px 28px;border-radius:10px;text-transform:uppercase;cursor:pointer;pointer-events:auto;")}>
               Засварт цаг захиалах
             </Link>
           </div>
         </div>
       </div>
 
-      <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(40px,6vw,72px) clamp(20px,4vw,40px);")}>
-        {/* CATEGORY CARDS */}
-        <div
-          style={sx(
-            "display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;",
-          )}
-        >
-          {CATS.map((c) => (
-            <Link
-              key={c.n}
-              href={c.href}
-              className="mh-card"
-              style={sx(
-                "cursor:pointer;background:#111113;border:1px solid #262626;border-radius:16px;padding:26px;display:block;",
-              )}
-            >
-              <div style={sx("font:800 13px 'JetBrains Mono';color:#E10613;")}>{c.n}</div>
-              <div style={sx("font:700 20px Montserrat;color:#fff;margin-top:12px;")}>{c.title}</div>
-              <div style={sx("font:400 14px Roboto;color:#8A8F98;margin-top:6px;")}>{c.desc}</div>
-            </Link>
-          ))}
-        </div>
-
-        {/* FEATURED */}
-        <div
-          style={sx(
-            "display:flex;align-items:flex-end;justify-content:space-between;margin-top:clamp(40px,6vw,64px);gap:16px;",
-          )}
-        >
-          <div>
-            <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.24em;color:#E10613;")}>ОНЦЛОХ</div>
-            <h2 style={sx("font:800 clamp(26px,4vw,38px) Montserrat;color:#fff;margin-top:6px;text-transform:uppercase;")}>
-              Онцлох мотоцикл
-            </h2>
-          </div>
-          <Link href="/motorcycles" style={sx("font:600 14px Montserrat;color:#A3A3A3;cursor:pointer;white-space:nowrap;")}>
-            Бүгдийг →
-          </Link>
-        </div>
-        <div
-          style={sx(
-            "display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:24px;",
-          )}
-        >
-          {featured.map((m) => (
-            <MotoCard key={m.id} m={m} />
-          ))}
-        </div>
-
-        {/* SERVICE / COMMUNITY CTA */}
-        <div
-          style={sx(
-            "display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:clamp(40px,6vw,64px);",
-          )}
-        >
-          <div
-            style={sx(
-              "background:linear-gradient(135deg,#1a0405,#111113);border:1px solid #E10613;border-radius:18px;padding:32px;display:flex;flex-direction:column;justify-content:space-between;min-height:200px;",
-            )}
-          >
-            <div>
-              <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.2em;color:#E10613;")}>ЗАСВАР ҮЙЛЧИЛГЭЭ</div>
-              <div style={sx("font:800 26px Montserrat;color:#fff;margin-top:10px;")}>Засвар · тюнинг · угсралт</div>
-              <div style={sx("font:400 14px Roboto;color:#A3A3A3;margin-top:8px;")}>
-                Тос солих, оношилгоо, яндан суурилуулах, тормозны засвар, custom тюнинг.
+      {/* ===== TRUST BAR ===== */}
+      <div style={sx("border-bottom:1px solid #1c1c1f;background:#0B0B0D;")}>
+        <div style={sx(`${WRAP}display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;`)}>
+          {TRUST.map(({ Icon, t, d }) => (
+            <div key={t} style={{ display: "flex", alignItems: "center", gap: 14, padding: "22px 8px" }}>
+              <span style={{ color: "#E10613", flexShrink: 0, display: "flex" }}>
+                <Icon />
+              </span>
+              <div>
+                <div style={sx("font:700 14px Montserrat;color:#fff;")}>{t}</div>
+                <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:2px;")}>{d}</div>
               </div>
             </div>
-            <Link
-              href="/service"
-              style={sx(
-                "align-self:flex-start;margin-top:18px;background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.06em;padding:12px 22px;border-radius:9px;text-transform:uppercase;cursor:pointer;",
-              )}
-            >
-              Засварын хүсэлт
-            </Link>
-          </div>
-          <div
-            style={sx(
-              "background:#111113;border:1px solid #262626;border-radius:18px;padding:32px;display:flex;flex-direction:column;justify-content:space-between;min-height:200px;",
-            )}
-          >
-            <div>
-              <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.2em;color:#8A8F98;")}>КОМЬЮНИТИ</div>
-              <div style={sx("font:800 26px Montserrat;color:#fff;margin-top:10px;")}>Эвент · Giveaway · Уралдаан</div>
-              <div style={sx("font:400 14px Roboto;color:#A3A3A3;margin-top:8px;")}>
-                Giveaway, ride, уралдаан, meetup-ийн мэдээлэл, ялагчдын архив.
-              </div>
-            </div>
-            <Link
-              href="/events"
-              style={sx(
-                "align-self:flex-start;margin-top:18px;border:1px solid #444;color:#fff;font:700 13px Montserrat;letter-spacing:.06em;padding:12px 22px;border-radius:9px;text-transform:uppercase;cursor:pointer;",
-              )}
-            >
-              Event үзэх
-            </Link>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* PARTNER MARQUEE */}
-      <div style={sx("border-top:1px solid #1c1c1f;margin-top:clamp(24px,4vw,44px);padding:clamp(34px,5vw,52px) 0;overflow:hidden;")}>
+      {/* ===== SHOP BY CATEGORY ===== */}
+      <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
+        <div style={sx(SECTION_LABEL)}>ДЭЛГҮҮР</div>
+        <h2 style={sx(SECTION_TITLE)}>Ангилалаар үзэх</h2>
+        <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-top:24px;")}>
+          {CATS.map(({ title, desc, href, img, setKey }) => (
+            <Link
+              key={title}
+              href={href}
+              className="mh-card"
+              style={sx("position:relative;overflow:hidden;cursor:pointer;background:#0d0d0f;border:1px solid #262626;border-radius:18px;padding:26px;min-height:280px;display:flex;flex-direction:column;justify-content:flex-end;")}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={settings[setKey] || img}
+                alt={title}
+                style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;")}
+              />
+              <div
+                style={sx("position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to top,rgba(5,5,5,.92) 12%,rgba(5,5,5,.5) 48%,rgba(5,5,5,.2) 100%);")}
+              />
+              <div style={{ position: "relative", zIndex: 2 }}>
+                <div style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;")}>{title}</div>
+                <div style={sx("font:400 13px Roboto;color:#C8C8C8;margin-top:6px;")}>{desc}</div>
+                <div style={sx("font:700 13px Montserrat;color:#E10613;margin-top:14px;letter-spacing:.04em;")}>
+                  ҮЗЭХ →
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* ===== BRAND MARQUEE ===== */}
+      <div style={sx("border-top:1px solid #1c1c1f;margin-top:clamp(44px,6vw,72px);padding:clamp(34px,5vw,52px) 0;overflow:hidden;")}>
         <div style={sx("text-align:center;font:500 12px 'JetBrains Mono';letter-spacing:.26em;color:#8A8F98;")}>
-          ТӨЛБӨР · ЗЭЭЛИЙН ХАМТРАГЧ
+          БИДНИЙ САНАЛ БОЛГОХ БРЭНДҮҮД
         </div>
         <div
           style={{
@@ -190,25 +161,169 @@ export default function HomePage() {
             maskImage: "linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              width: "max-content",
-              alignItems: "center",
-              animation: "mhmarquee 26s linear infinite",
-            }}
-          >
-            {partners.map((p, i) => (
+          <div style={{ display: "flex", width: "max-content", alignItems: "center", animation: "mhmarquee 26s linear infinite" }}>
+            {brands.map((name, i) => (
               <span
                 key={i}
-                aria-hidden={i >= PARTNERS.length}
-                style={sx(
-                  "display:inline-flex;align-items:center;justify-content:center;height:68px;width:150px;background:#fff;border-radius:14px;padding:12px 20px;margin:0 14px;flex-shrink:0;color:#0B0B0D;font:800 18px Montserrat;letter-spacing:.01em;",
-                )}
+                aria-hidden={i >= logoBrands.length}
+                style={sx("display:inline-flex;align-items:center;justify-content:center;height:68px;width:150px;background:#fff;border-radius:14px;padding:14px 20px;margin:0 14px;flex-shrink:0;color:#0B0B0D;font:800 18px Montserrat;letter-spacing:.01em;")}
               >
-                {p.name}
+                {BRAND_LOGOS[name] ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={BRAND_LOGOS[name]}
+                    alt={name}
+                    style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", display: "block" }}
+                  />
+                ) : (
+                  name
+                )}
               </span>
             ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ===== FEATURED MOTORCYCLES ===== */}
+      <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
+        <div style={sx("display:flex;align-items:flex-end;justify-content:space-between;gap:16px;")}>
+          <div>
+            <div style={sx(SECTION_LABEL)}>ОНЦЛОХ</div>
+            <h2 style={sx(SECTION_TITLE)}>Онцлох мотоцикл</h2>
+          </div>
+          <Link href="/motorcycles" style={sx(SEE_ALL)}>Бүгдийг →</Link>
+        </div>
+        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:24px;")}>
+          {featured.map((m) => (
+            <MotoCard key={m.id} m={m} />
+          ))}
+        </div>
+      </div>
+
+      {/* ===== PROMO BANNERS ===== */}
+      <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
+        <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;")}>
+          <Link
+            href="/service"
+            className="mh-card"
+            style={sx("position:relative;overflow:hidden;background:linear-gradient(120deg,#2a0608,#111113 70%);border:1px solid #E10613;border-radius:20px;padding:clamp(28px,4vw,40px);min-height:230px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;")}
+          >
+            <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.2em;color:#E10613;")}>PERFORMANCE</div>
+            <div style={sx("font:800 clamp(24px,3vw,32px) Montserrat;color:#fff;margin-top:10px;text-transform:uppercase;line-height:1.05;")}>
+              Засвар · тюнинг<br />· угсралт
+            </div>
+            <div style={sx("font:400 14px Roboto;color:#C8C8C8;margin-top:10px;max-width:360px;")}>
+              Тос солих, оношилгоо, яндан суурилуулах, custom тюнинг — мэргэжлийн баг.
+            </div>
+            <span style={sx("align-self:flex-start;margin-top:18px;background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.06em;padding:12px 22px;border-radius:9px;text-transform:uppercase;")}>
+              Засварын хүсэлт
+            </span>
+          </Link>
+          <Link
+            href="/gear"
+            className="mh-card"
+            style={sx("position:relative;overflow:hidden;background:linear-gradient(120deg,#101216,#111113 70%);border:1px solid #262626;border-radius:20px;padding:clamp(28px,4vw,40px);min-height:230px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;")}
+          >
+            <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.2em;color:#8A8F98;")}>GEAR · PARTS</div>
+            <div style={sx("font:800 clamp(24px,3vw,32px) Montserrat;color:#fff;margin-top:10px;text-transform:uppercase;line-height:1.05;")}>
+              Premium gear<br />& parts
+            </div>
+            <div style={sx("font:400 14px Roboto;color:#C8C8C8;margin-top:10px;max-width:360px;")}>
+              Каск, хувцас, intercom, performance сэлбэг — албан ёсны брэндүүд.
+            </div>
+            <span style={sx("align-self:flex-start;margin-top:18px;border:1px solid #444;color:#fff;font:700 13px Montserrat;letter-spacing:.06em;padding:12px 22px;border-radius:9px;text-transform:uppercase;")}>
+              Дэлгүүр үзэх
+            </span>
+          </Link>
+        </div>
+      </div>
+
+      {/* ===== GEAR BESTSELLERS ===== */}
+      <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
+        <div style={sx("display:flex;align-items:flex-end;justify-content:space-between;gap:16px;")}>
+          <div>
+            <div style={sx(SECTION_LABEL)}>GEAR · PARTS</div>
+            <h2 style={sx(SECTION_TITLE)}>Эрэлттэй бараа</h2>
+          </div>
+          <Link href="/gear" style={sx(SEE_ALL)}>Бүгдийг →</Link>
+        </div>
+        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;margin-top:24px;")}>
+          {bestGear.map((g) => {
+            const sale = Math.round((1 - g.price / g.oldPrice) * 100);
+            return (
+              <Link key={g.id} href={`/gear/${g.id}`} className="mh-card" style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;cursor:pointer;")}>
+                <div style={{ position: "relative", height: 190, background: "#fff" }}>
+                  <Slot label="Бүтээгдэхүүн зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                  <span style={sx("position:absolute;top:10px;left:10px;z-index:2;font:800 11px Montserrat;letter-spacing:.04em;color:#fff;background:#E10613;padding:5px 9px;border-radius:4px;")}>
+                    SALE -{sale}%
+                  </span>
+                </div>
+                <div style={{ padding: "14px 16px" }}>
+                  <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>
+                    {g.brand.toUpperCase()} · {g.category}
+                  </div>
+                  <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:4px;")}>{g.name}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 10 }}>
+                    <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}>{fmt(g.oldPrice)}</span>
+                    <span style={sx("font:800 16px Montserrat;color:#fff;")}>{fmt(g.price)}</span>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ===== EVENTS TEASER ===== */}
+      <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
+        <div style={sx("display:flex;align-items:flex-end;justify-content:space-between;gap:16px;")}>
+          <div>
+            <div style={sx(SECTION_LABEL)}>COMMUNITY</div>
+            <h2 style={sx(SECTION_TITLE)}>Events & Giveaway</h2>
+          </div>
+          <Link href="/events" style={sx(SEE_ALL)}>Бүгдийг →</Link>
+        </div>
+        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:24px;")}>
+          {events.map((e) => (
+            <div key={e.id} style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;")}>
+              <div style={{ position: "relative", height: 160 }}>
+                <Slot label="Event poster" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                <span style={{ position: "absolute", top: 12, left: 12, zIndex: 2, ...sx(badge(e.status)) }}>{e.status}</span>
+                <div style={sx("position:absolute;left:0;right:0;bottom:0;height:60%;background:linear-gradient(transparent,rgba(5,5,5,.9));z-index:1;")} />
+              </div>
+              <div style={{ padding: "16px 18px" }}>
+                <div style={sx("font:500 11px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;")}>{e.type}</div>
+                <div style={sx("font:700 17px Montserrat;color:#fff;margin-top:6px;")}>{e.title}</div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 10 }}>
+                  <span style={sx("font:400 12px Roboto;color:#8A8F98;")}>{e.date}</span>
+                  <span style={sx("font:700 13px Montserrat;color:#fff;")}>{e.prize}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ===== NEWSLETTER ===== */}
+      <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);padding-bottom:clamp(44px,6vw,72px);`)}>
+        <div style={sx("background:linear-gradient(120deg,#1a0405,#111113 70%);border:1px solid #262626;border-radius:20px;padding:clamp(28px,5vw,48px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;")}>
+          <div>
+            <div style={sx("font:800 clamp(22px,3vw,30px) Montserrat;color:#fff;text-transform:uppercase;")}>
+              MOTO HOUSE-тэй холбогдоорой
+            </div>
+            <div style={sx("font:400 14px Roboto;color:#A3A3A3;margin-top:8px;max-width:480px;")}>
+              И-мэйлээ үлдээгээрэй — drop, giveaway, performance parts-ийн мэдээллийг хүргэнэ.
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <input
+              placeholder="И-мэйл хаяг"
+              className="mh-input"
+              style={sx("background:#050505;border:1px solid #262626;border-radius:10px;padding:14px 16px;color:#fff;font:400 14px Roboto;width:240px;outline:none;")}
+            />
+            <button style={sx("background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:14px 26px;border:none;border-radius:10px;text-transform:uppercase;cursor:pointer;")}>
+              Бүртгүүлэх
+            </button>
           </div>
         </div>
       </div>
