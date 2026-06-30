@@ -16,12 +16,12 @@ const BRANDS = ["Kawasaki", "Yamaha", "Honda", "Ducati", "BMW"];
 type Form = {
   brand: string; model: string; year: string; cc: string; odo: string; price: string;
   status: MotoStatus; country: string; customs: string; hp: string; nm: string;
-  top: string; weight: string; cyl: string; featured: boolean; desc: string;
+  top: string; weight: string; cyl: string; gearbox: string; featured: boolean; desc: string;
   extras: string; images: string[]; video: string;
 };
 const empty: Form = {
   brand: "Kawasaki", model: "", year: "", cc: "", odo: "", price: "", status: "Available",
-  country: "Япон", customs: "Гаальтай", hp: "", nm: "", top: "", weight: "", cyl: "",
+  country: "Япон", customs: "Гаальтай", hp: "", nm: "", top: "", weight: "", cyl: "", gearbox: "6 шат · Шингэн",
   featured: false, desc: "", extras: "", images: [], video: "",
 };
 function toForm(m: Moto): Form {
@@ -29,7 +29,7 @@ function toForm(m: Moto): Form {
     brand: m.brand, model: m.model, year: m.year, cc: String(m.cc), odo: String(m.odo),
     price: String(m.price), status: m.status, country: m.country, customs: m.customs,
     hp: String(m.hp), nm: String(m.nm), top: String(m.top), weight: String(m.weight),
-    cyl: m.cyl, featured: !!m.featured, desc: m.desc,
+    cyl: m.cyl, gearbox: m.gearbox ?? "", featured: !!m.featured, desc: m.desc,
     extras: (m.extras ?? []).join("\n"), images: m.images ?? [], video: m.video ?? "",
   };
 }
@@ -40,7 +40,7 @@ function fromForm(f: Form): Partial<Moto> {
     odo: Number(f.odo) || 0, price: Number(f.price) || 0, status: f.status,
     country: f.country || "—", customs: f.customs || "—", hp: Number(f.hp) || 0,
     nm: Number(f.nm) || 0, top: Number(f.top) || 0, weight: Number(f.weight) || 0,
-    cyl: f.cyl || "—", featured: f.featured, desc: f.desc, extras: lines(f.extras),
+    cyl: f.cyl || "—", gearbox: f.gearbox || "—", featured: f.featured, desc: f.desc, extras: lines(f.extras),
     images: f.images, video: f.video || undefined,
   };
 }
@@ -119,6 +119,7 @@ export default function AdminMotorcycles() {
             <div><label style={sx(LABEL)}>Дээд хурд</label><input value={f.top} onChange={(e) => setF({ ...f, top: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Жин (кг)</label><input value={f.weight} onChange={(e) => setF({ ...f, weight: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Хөдөлгүүр</label><input value={f.cyl} onChange={(e) => setF({ ...f, cyl: e.target.value })} placeholder="Inline-4" style={sx(INPUT)} /></div>
+            <div><label style={sx(LABEL)}>Хурдны хайрцаг</label><input value={f.gearbox} onChange={(e) => setF({ ...f, gearbox: e.target.value })} placeholder="6 шат · Шингэн" style={sx(INPUT)} /></div>
           </div>
           <div><label style={sx(LABEL)}>Тайлбар</label><textarea value={f.desc} onChange={(e) => setF({ ...f, desc: e.target.value })} rows={2} style={sx(INPUT + "resize:vertical;")} /></div>
           <div><label style={sx(LABEL)}>Нэмэлт тоног (мөр тус бүр)</label><textarea value={f.extras} onChange={(e) => setF({ ...f, extras: e.target.value })} rows={3} style={sx(INPUT + "resize:vertical;")} /></div>

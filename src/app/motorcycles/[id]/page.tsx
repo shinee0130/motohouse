@@ -108,7 +108,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
               </div>
               <div style={sx(STAT)}>
                 <div style={sx(STAT_LBL)}>ХУРДНЫ ХАЙРЦАГ</div>
-                <div style={sx("font:700 16px Montserrat;color:#fff;margin-top:10px;")}>6 шат · Шингэн</div>
+                <div style={sx("font:700 16px Montserrat;color:#fff;margin-top:10px;")}>{m.gearbox || "—"}</div>
               </div>
             </div>
           </div>

@@ -28,6 +28,7 @@ export interface Moto {
   top: number;
   weight: number;
   cyl: string;
+  gearbox?: string;
   desc: string;
   extras: string[];
   images?: string[]; // бодит зураг (байвал placeholder-ийн оронд)

@@ -10,7 +10,7 @@ function motoRow(m: Partial<Moto>): any {
   return {
     brand: m.brand, model: m.model, year: m.year, cc: m.cc, odo: m.odo, price: m.price,
     status: m.status, country: m.country, customs: m.customs, hp: m.hp, nm: m.nm,
-    top_speed: m.top, weight: m.weight, cyl: m.cyl, description: m.desc,
+    top_speed: m.top, weight: m.weight, cyl: m.cyl, gearbox: m.gearbox ?? null, description: m.desc,
     extras: m.extras ?? [], images: m.images ?? [], video: m.video ?? null,
     featured: m.featured ?? false,
   };

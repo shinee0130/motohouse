@@ -9,7 +9,7 @@ function mapMoto(r: any): Moto {
   return {
     id: r.id, brand: r.brand, model: r.model, year: r.year, cc: r.cc, odo: r.odo,
     price: r.price, status: r.status, country: r.country, customs: r.customs,
-    hp: r.hp, nm: r.nm, top: r.top_speed, weight: r.weight, cyl: r.cyl,
+    hp: r.hp, nm: r.nm, top: r.top_speed, weight: r.weight, cyl: r.cyl, gearbox: r.gearbox ?? "—",
     desc: r.description ?? "", extras: r.extras ?? [], images: r.images ?? [],
     video: r.video ?? undefined, featured: r.featured,
   };
