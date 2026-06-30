@@ -10,7 +10,7 @@ export default function WishlistPage() {
 
   return (
     <div style={sx("background:#111113;border:1px solid #262626;border-radius:16px;padding:clamp(18px,3vw,26px);")}>
-      <div style={sx("font:700 18px Montserrat;color:#fff;margin-bottom:18px;")}>Хүслийн жагсаалт</div>
+      <div style={sx("font:700 18px Montserrat;color:#fff;margin-bottom:18px;")}>Хадгалсан</div>
       <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;")}>
         {saved.map((g) => (
           <Link

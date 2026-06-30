@@ -9,7 +9,7 @@ import { useAuth } from "@/lib/auth";
 const MENU = [
   { label: "Хяналтын самбар", href: "/account" },
   { label: "Миний захиалга", href: "/account/orders" },
-  { label: "Хүслийн жагсаалт", href: "/account/wishlist" },
+  { label: "Хадгалсан", href: "/account/wishlist" },
   { label: "Профайл", href: "/account/profile" },
 ];
 

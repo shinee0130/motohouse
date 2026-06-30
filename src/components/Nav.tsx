@@ -18,7 +18,7 @@ const NAV = [
 const ACCOUNT_MENU = [
   { label: "Миний бүртгэл", href: "/account" },
   { label: "Миний захиалга", href: "/account/orders" },
-  { label: "Хүслийн жагсаалт", href: "/account/wishlist" },
+  { label: "Хадгалсан", href: "/account/wishlist" },
   { label: "Профайл", href: "/account/profile" },
 ];
 

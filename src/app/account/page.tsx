@@ -12,7 +12,7 @@ export default function AccountOverview() {
   const { user } = useAuth();
   const stats = [
     { label: "Захиалга", value: String(ORDERS.length), href: "/account/orders" },
-    { label: "Хүслийн жагсаалт", value: "4", href: "/account/wishlist" },
+    { label: "Хадгалсан", value: "4", href: "/account/wishlist" },
     { label: "Bonus оноо", value: "1,250", href: "/account" },
   ];
   const recent = ORDERS.slice(0, 3);
