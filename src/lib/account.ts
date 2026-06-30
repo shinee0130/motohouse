@@ -7,6 +7,8 @@ export interface Order {
   qty: number;
   total: number;
   status: "Хүлээгдэж буй" | "Баталгаажсан" | "Хүргэгдсэн" | "Цуцлагдсан";
+  userPhone?: string; // захиалагчийн утас (admin талд)
+  userName?: string;  // захиалагчийн нэр (profiles-аас)
 }
 
 export const ORDERS: Order[] = [

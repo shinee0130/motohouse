@@ -94,7 +94,17 @@ export async function getSettings(): Promise<Record<string, string>> {
 export async function getOrders(): Promise<Order[]> {
   const { data, error } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
   if (error) throw error;
-  return (data ?? []).map(mapOrder);
+  const orders = data ?? [];
+  // захиалагчийн нэрийг profiles-аас холбох
+  const phones = [...new Set(orders.map((o) => o.user_phone).filter(Boolean))];
+  const names: Record<string, string> = {};
+  if (phones.length) {
+    const { data: profs } = await supabase.from("profiles").select("phone,name,first_name,last_name").in("phone", phones);
+    (profs ?? []).forEach((p: { phone: string; name?: string; first_name?: string; last_name?: string }) => {
+      names[p.phone] = [p.last_name, p.first_name].filter(Boolean).join(" ") || p.name || "";
+    });
+  }
+  return orders.map((r) => ({ ...mapOrder(r), userPhone: r.user_phone ?? undefined, userName: names[r.user_phone] || undefined }));
 }
 export async function getUserOrders(phone: string): Promise<Order[]> {
   const { data } = await supabase.from("orders").select("*").eq("user_phone", phone).order("created_at", { ascending: false });
