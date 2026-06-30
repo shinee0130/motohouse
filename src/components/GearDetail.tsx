@@ -1,10 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { Slot } from "./Slot";
 import { fmt, type GearItem } from "@/lib/data";
+import { useAuth } from "@/lib/auth";
+import { getSavedIds } from "@/lib/queries";
+import { createOrder, setSaved } from "@/lib/admin";
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -32,10 +36,33 @@ function Accordion({ title, children, open: openDefault = false }: { title: stri
 }
 
 export function GearDetail({ item, related, more }: { item: GearItem; related: GearItem[]; more: GearItem[] }) {
+  const { user } = useAuth();
+  const router = useRouter();
   const [color, setColor] = useState(item.colors?.[0] ?? "");
   const [size, setSize] = useState("");
-  const [requested, setRequested] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [saved, setSavedState] = useState(false);
+  const [busy, setBusy] = useState(false);
   const sale = Math.round((1 - item.price / item.oldPrice) * 100);
+
+  useEffect(() => {
+    if (user) getSavedIds(user.phone, "gear").then((ids) => setSavedState(ids.includes(item.id)));
+  }, [user, item.id]);
+
+  async function toggleSave() {
+    if (!user) { router.push("/login"); return; }
+    const next = !saved;
+    setSavedState(next);
+    await setSaved(user.phone, "gear", item.id, next);
+  }
+  async function order() {
+    if (!user) { router.push("/login"); return; }
+    setBusy(true);
+    try {
+      const id = await createOrder({ userPhone: user.phone, item: `${item.name}${size ? ` (${size})` : ""}`, total: item.price });
+      setOrderId(id);
+    } finally { setBusy(false); }
+  }
 
   return (
     <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(20px,4vw,40px) clamp(20px,4vw,40px);animation:mhfade .5s both;")}>
@@ -95,6 +122,14 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
             {item.oldPrice > item.price && (
               <span style={sx("font:400 16px Roboto;color:#8A8F98;text-decoration:line-through;")}>{fmt(item.oldPrice)}</span>
             )}
+            <button
+              onClick={toggleSave}
+              aria-label="Хадгалах"
+              title={saved ? "Хадгалснаас хасах" : "Хадгалах"}
+              style={sx(`margin-left:auto;width:44px;height:44px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;background:${saved ? "rgba(225,6,19,.12)" : "#111113"};border:1px solid ${saved ? "#E10613" : "#262626"};color:${saved ? "#E10613" : "#8A8F98"};`)}
+            >
+              {saved ? "♥" : "♡"}
+            </button>
           </div>
 
           {/* colors */}
@@ -144,14 +179,15 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
 
           {/* CTA */}
           <button
-            onClick={() => setRequested(true)}
-            style={sx("width:100%;margin-top:26px;background:#E10613;color:#fff;font:700 15px Montserrat;letter-spacing:.04em;padding:17px;border:none;border-radius:12px;text-transform:uppercase;cursor:pointer;")}
+            onClick={order}
+            disabled={busy}
+            style={sx(`width:100%;margin-top:26px;background:#E10613;color:#fff;font:700 15px Montserrat;letter-spacing:.04em;padding:17px;border:none;border-radius:12px;text-transform:uppercase;cursor:pointer;${busy ? "opacity:.6;" : ""}`)}
           >
-            Захиалга өгөх
+            {busy ? "Илгээж байна…" : user ? "Захиалга өгөх" : "Нэвтэрч захиалах"}
           </button>
-          {requested && (
+          {orderId && (
             <div style={sx("font:500 13px Roboto;color:#22c55e;text-align:center;margin-top:12px;")}>
-              ✓ Хүсэлт хүлээн авлаа. Admin удахгүй холбогдоно{size ? ` (хэмжээ: ${size})` : ""}.
+              ✓ Захиалга #{orderId} үүслээ. <Link href="/account/orders" style={{ color: "#22c55e", textDecoration: "underline" }}>Миний захиалга</Link>
             </div>
           )}
           <div style={sx("font:400 12px Roboto;color:#8A8F98;text-align:center;margin-top:12px;")}>

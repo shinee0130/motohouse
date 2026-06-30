@@ -73,9 +73,30 @@ export async function getSettings(): Promise<Record<string, string>> {
 
 // ---- Orders ----
 export async function getOrders(): Promise<Order[]> {
-  const { data, error } = await supabase.from("orders").select("*").order("id");
+  const { data, error } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []).map(mapOrder);
+}
+export async function getUserOrders(phone: string): Promise<Order[]> {
+  const { data } = await supabase.from("orders").select("*").eq("user_phone", phone).order("created_at", { ascending: false });
+  return (data ?? []).map(mapOrder);
+}
+
+// ---- Saved (Хадгалсан) ----
+export async function getSavedItems(phone: string): Promise<{ gear: GearItem[]; motos: Moto[] }> {
+  const { data } = await supabase.from("saved").select("*").eq("user_phone", phone).order("created_at", { ascending: false });
+  const rows = data ?? [];
+  const gearIds = rows.filter((r) => r.kind === "gear").map((r) => r.item_id);
+  const motoIds = rows.filter((r) => r.kind === "moto").map((r) => r.item_id);
+  const [g, m] = await Promise.all([
+    gearIds.length ? supabase.from("gear").select("*").in("id", gearIds) : Promise.resolve({ data: [] }),
+    motoIds.length ? supabase.from("motorcycles").select("*").in("id", motoIds) : Promise.resolve({ data: [] }),
+  ]);
+  return { gear: (g.data ?? []).map(mapGear), motos: (m.data ?? []).map(mapMoto) };
+}
+export async function getSavedIds(phone: string, kind: "gear" | "moto"): Promise<number[]> {
+  const { data } = await supabase.from("saved").select("item_id").eq("user_phone", phone).eq("kind", kind);
+  return (data ?? []).map((r) => r.item_id as number);
 }
 
 // ---- helpers (DB дээр суурилсан) ----

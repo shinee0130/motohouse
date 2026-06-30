@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { Slot } from "@/components/Slot";
 import { MotoGallery } from "@/components/MotoGallery";
+import { MotoActions } from "@/components/MotoActions";
 import { fmt, statusLabel } from "@/lib/data";
 import { getMotos, similarOf } from "@/lib/queries";
 
@@ -71,24 +72,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
 
             <p style={sx("font:400 15px/1.6 Roboto;color:#A3A3A3;margin-top:18px;")}>{m.desc}</p>
 
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 22 }}>
-              <Link
-                href="/service"
-                style={sx(
-                  "background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.05em;padding:14px 26px;border-radius:10px;text-transform:uppercase;cursor:pointer;",
-                )}
-              >
-                Сонирхож байна
-              </Link>
-              <Link
-                href="/service"
-                style={sx(
-                  "border:1px solid #444;color:#fff;font:700 14px Montserrat;letter-spacing:.05em;padding:14px 26px;border-radius:10px;cursor:pointer;",
-                )}
-              >
-                Messenger
-              </Link>
-            </div>
+            <MotoActions id={m.id} name={`${m.brand} ${m.model}`} price={m.price} />
           </div>
         </div>
 

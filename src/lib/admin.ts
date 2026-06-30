@@ -73,6 +73,28 @@ export async function updateOrderStatus(id: string, status: string) {
   if (error) throw error;
 }
 
+// Хэрэглэгчийн захиалга үүсгэх (detail хуудаснаас)
+export async function createOrder(o: { userPhone: string; item: string; total: number }): Promise<string> {
+  const id = `MH-${Date.now().toString().slice(-6)}`;
+  const d = new Date();
+  const date = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+  const { error } = await supabase.from("orders").insert({
+    id, user_phone: o.userPhone, item: o.item, qty: 1, total: o.total,
+    status: "Хүлээгдэж буй", order_date: date,
+  });
+  if (error) throw error;
+  return id;
+}
+
+// ===== Saved (Хадгалсан) =====
+export async function setSaved(phone: string, kind: "gear" | "moto", itemId: number, on: boolean) {
+  if (on) {
+    await supabase.from("saved").upsert({ user_phone: phone, kind, item_id: itemId }, { onConflict: "user_phone,kind,item_id" });
+  } else {
+    await supabase.from("saved").delete().eq("user_phone", phone).eq("kind", kind).eq("item_id", itemId);
+  }
+}
+
 // ===== Profiles (бүртгэлтэй хэрэглэгчид) =====
 export interface Profile {
   phone: string; name: string; first_name?: string; last_name?: string;
