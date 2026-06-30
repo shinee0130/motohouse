@@ -12,6 +12,7 @@ const MENU = [
   { label: "Бараа / сэлбэг", href: "/admin/gear" },
   { label: "Events & Giveaway", href: "/admin/events" },
   { label: "Захиалга", href: "/admin/orders" },
+  { label: "Засварын цаг", href: "/admin/service" },
   { label: "Хэрэглэгчид", href: "/admin/users" },
   { label: "Home backgrounds", href: "/admin/home" },
 ];

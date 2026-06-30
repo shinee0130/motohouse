@@ -87,6 +87,27 @@ export async function createOrder(o: { userPhone: string; item: string; total: n
   return id;
 }
 
+// ===== Service bookings (Засварын цаг захиалга) =====
+export interface Booking {
+  id: number; service_type: string; booking_date: string; booking_time: string;
+  name: string; phone: string; moto_model?: string; note?: string;
+  status: string; user_phone?: string; created_at?: string;
+}
+export async function createBooking(b: {
+  service_type: string; booking_date: string; booking_time: string;
+  name: string; phone: string; moto_model?: string; note?: string; user_phone?: string;
+}) {
+  const { error } = await supabase.from("service_bookings").insert({ ...b, status: "Шинэ" });
+  if (error) throw error;
+}
+export async function getBookings(): Promise<Booking[]> {
+  const { data } = await supabase.from("service_bookings").select("*").order("created_at", { ascending: false });
+  return (data ?? []) as Booking[];
+}
+export async function updateBookingStatus(id: number, status: string) {
+  await supabase.from("service_bookings").update({ status }).eq("id", id);
+}
+
 // ===== Saved (Хадгалсан) =====
 export async function setSaved(phone: string, kind: "gear" | "moto", itemId: number, on: boolean) {
   if (on) {
