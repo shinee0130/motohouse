@@ -5,6 +5,14 @@ import { fmt, badge, statusLabel, type Moto } from "@/lib/data";
 
 // Жагсаалт / онцлох хэсэгт ашиглах мотоциклын карт.
 export function MotoCard({ m, showCc = false }: { m: Moto; showCc?: boolean }) {
+  const priceEl = m.salePrice ? (
+    <span style={{ display: "inline-flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
+      <span style={sx("font:500 13px Montserrat;color:#6b7280;text-decoration:line-through;")}>{fmt(m.price)}</span>
+      <span style={sx("font:700 17px Montserrat;color:#E10613;")}>{fmt(m.salePrice)}</span>
+    </span>
+  ) : (
+    <span style={sx("font:700 17px Montserrat;color:#E10613;")}>{fmt(m.price)}</span>
+  );
   return (
     <Link
       href={`/motorcycles/${m.id}`}
@@ -44,11 +52,11 @@ export function MotoCard({ m, showCc = false }: { m: Moto; showCc?: boolean }) {
               marginTop: 10,
             }}
           >
-            <span style={sx("font:700 17px Montserrat;color:#E10613;")}>{fmt(m.price)}</span>
+            {priceEl}
             <span style={sx("font:600 12px 'JetBrains Mono';color:#8A8F98;")}>{m.cc}cc</span>
           </div>
         ) : (
-          <div style={sx("font:700 17px Montserrat;color:#E10613;margin-top:10px;")}>{fmt(m.price)}</div>
+          <div style={{ marginTop: 10 }}>{priceEl}</div>
         )}
       </div>
     </Link>

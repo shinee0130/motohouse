@@ -20,6 +20,7 @@ export interface Moto {
   cc: number;
   odo: number;
   price: number;
+  salePrice?: number; // хямдарсан үнэ (байвал price дээр зураас, энэ нь идэвхтэй)
   status: MotoStatus;
   country: string;
   customs: string;

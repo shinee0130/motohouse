@@ -11,23 +11,31 @@ const LABEL = "font:600 11px Montserrat;letter-spacing:.04em;color:#A3A3A3;margi
 const BTN = "background:#E10613;color:#fff;font:700 13px Montserrat;padding:11px 18px;border:none;border-radius:9px;cursor:pointer;";
 const UP_BTN = "display:inline-block;cursor:pointer;background:#1a1a1d;border:1px solid #333;color:#fff;font:600 12px Montserrat;padding:9px 16px;border-radius:8px;";
 const STATUSES: MotoStatus[] = ["Available", "Reserved", "Incoming"];
-const BRANDS = ["Kawasaki", "Yamaha", "Honda", "Ducati", "BMW"];
+const BRANDS = ["Kawasaki", "Yamaha", "Honda", "Ducati", "BMW", "MV Agusta", "KTM", "Suzuki", "Triumph", "Aprilia", "Harley-Davidson", "Husqvarna", "Benelli", "CFMoto", "Royal Enfield"];
+const COUNTRIES = ["Япон", "Герман", "Итали", "Австри", "Англи", "АНУ", "Франц", "Энэтхэг", "БНХАУ", "Тайланд", "Солонгос"];
+const CUSTOMS = ["Гаальтай", "Гаальгүй"];
+const CUSTOM = "__custom__"; // select дотор "гараар бичих" сонголтын утга
+
+// Тоог мянгатын таслалтай харуулах (1000000 → "1,000,000"); зөвхөн цифр үлдээнэ.
+const sep = (s: string) => { const d = (s || "").replace(/\D/g, ""); return d ? Number(d).toLocaleString("en-US") : ""; };
+const unsep = (s: string) => Number((s || "").replace(/\D/g, "")) || 0;
 
 type Form = {
-  brand: string; model: string; year: string; cc: string; odo: string; price: string;
+  brand: string; model: string; year: string; cc: string; odo: string; price: string; salePrice: string;
   status: MotoStatus; country: string; customs: string; hp: string; nm: string;
   top: string; weight: string; cyl: string; gearbox: string; featured: boolean; desc: string;
   extras: string; images: string[]; video: string;
 };
 const empty: Form = {
-  brand: "Kawasaki", model: "", year: "", cc: "", odo: "", price: "", status: "Available",
+  brand: "Kawasaki", model: "", year: "", cc: "", odo: "", price: "", salePrice: "", status: "Available",
   country: "Япон", customs: "Гаальтай", hp: "", nm: "", top: "", weight: "", cyl: "", gearbox: "6 шат · Шингэн",
   featured: false, desc: "", extras: "", images: [], video: "",
 };
 function toForm(m: Moto): Form {
   return {
     brand: m.brand, model: m.model, year: m.year, cc: String(m.cc), odo: String(m.odo),
-    price: String(m.price), status: m.status, country: m.country, customs: m.customs,
+    price: sep(String(m.price)), salePrice: m.salePrice ? sep(String(m.salePrice)) : "",
+    status: m.status, country: m.country, customs: m.customs,
     hp: String(m.hp), nm: String(m.nm), top: String(m.top), weight: String(m.weight),
     cyl: m.cyl, gearbox: m.gearbox ?? "", featured: !!m.featured, desc: m.desc,
     extras: (m.extras ?? []).join("\n"), images: m.images ?? [], video: m.video ?? "",
@@ -35,10 +43,11 @@ function toForm(m: Moto): Form {
 }
 function fromForm(f: Form): Partial<Moto> {
   const lines = (s: string) => s.split("\n").map((x) => x.trim()).filter(Boolean);
+  const sale = unsep(f.salePrice);
   return {
-    brand: f.brand, model: f.model.trim(), year: f.year || "—", cc: Number(f.cc) || 0,
-    odo: Number(f.odo) || 0, price: Number(f.price) || 0, status: f.status,
-    country: f.country || "—", customs: f.customs || "—", hp: Number(f.hp) || 0,
+    brand: f.brand.trim() || "—", model: f.model.trim(), year: f.year || "—", cc: Number(f.cc) || 0,
+    odo: Number(f.odo) || 0, price: unsep(f.price), salePrice: sale > 0 ? sale : undefined, status: f.status,
+    country: f.country.trim() || "—", customs: f.customs || "—", hp: Number(f.hp) || 0,
     nm: Number(f.nm) || 0, top: Number(f.top) || 0, weight: Number(f.weight) || 0,
     cyl: f.cyl || "—", gearbox: f.gearbox || "—", featured: f.featured, desc: f.desc, extras: lines(f.extras),
     images: f.images, video: f.video || undefined,
@@ -51,9 +60,19 @@ export default function AdminMotorcycles() {
   const [f, setF] = useState<Form>(empty);
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState<"" | "img" | "video">("");
+  const [customBrand, setCustomBrand] = useState(false);
+  const [customCountry, setCustomCountry] = useState(false);
 
   async function refresh() { setList(await getMotos()); }
   useEffect(() => { refresh(); }, []);
+
+  function openNew() { setF(empty); setCustomBrand(false); setCustomCountry(false); setEditing("new"); }
+  function openEdit(m: Moto) {
+    setF(toForm(m));
+    setCustomBrand(!BRANDS.includes(m.brand));
+    setCustomCountry(!COUNTRIES.includes(m.country));
+    setEditing(m.id);
+  }
 
   async function onImages(files: FileList | null) {
     if (!files || !files.length) return;
@@ -94,7 +113,7 @@ export default function AdminMotorcycles() {
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <div style={sx("font:700 18px Montserrat;color:#fff;")}>Мотоцикл ({list.length})</div>
-        {editing === null && <button onClick={() => { setF(empty); setEditing("new"); }} style={sx(BTN)}>+ Шинэ мотоцикл</button>}
+        {editing === null && <button onClick={openNew} style={sx(BTN)}>+ Шинэ мотоцикл</button>}
       </div>
 
       {editing !== null && (
@@ -102,18 +121,41 @@ export default function AdminMotorcycles() {
           <div style={sx("font:700 15px Montserrat;color:#fff;")}>{editing === "new" ? "Шинэ мотоцикл" : "Засах"}</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 14 }}>
             <div><label style={sx(LABEL)}>Брэнд</label>
-              <select value={f.brand} onChange={(e) => setF({ ...f, brand: e.target.value })} style={sx(INPUT + "cursor:pointer;")}>{BRANDS.map((b) => <option key={b}>{b}</option>)}</select></div>
+              <select
+                value={customBrand ? CUSTOM : f.brand}
+                onChange={(e) => { if (e.target.value === CUSTOM) { setCustomBrand(true); setF({ ...f, brand: "" }); } else { setCustomBrand(false); setF({ ...f, brand: e.target.value }); } }}
+                style={sx(INPUT + "cursor:pointer;")}
+              >
+                {BRANDS.map((b) => <option key={b}>{b}</option>)}
+                <option value={CUSTOM}>＋ Шинэ брэнд…</option>
+              </select>
+              {customBrand && <input value={f.brand} onChange={(e) => setF({ ...f, brand: e.target.value })} placeholder="Брэндийн нэр" style={sx(INPUT + "margin-top:8px;")} autoFocus />}
+            </div>
             <div><label style={sx(LABEL)}>Модель *</label><input value={f.model} onChange={(e) => setF({ ...f, model: e.target.value })} style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Он</label><input value={f.year} onChange={(e) => setF({ ...f, year: e.target.value })} placeholder="2022 / 2024" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>CC</label><input value={f.cc} onChange={(e) => setF({ ...f, cc: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>ODO (км)</label><input value={f.odo} onChange={(e) => setF({ ...f, odo: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
-            <div><label style={sx(LABEL)}>Үнэ (₮)</label><input value={f.price} onChange={(e) => setF({ ...f, price: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
+            <div><label style={sx(LABEL)}>Үнэ (₮)</label><input value={f.price} onChange={(e) => setF({ ...f, price: sep(e.target.value) })} inputMode="numeric" placeholder="1,000,000" style={sx(INPUT)} /></div>
+            <div><label style={sx(LABEL)}>Хямдарсан үнэ (₮)</label><input value={f.salePrice} onChange={(e) => setF({ ...f, salePrice: sep(e.target.value) })} inputMode="numeric" placeholder="хоосон = хямдралгүй" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Төлөв</label>
               <select value={f.status} onChange={(e) => setF({ ...f, status: e.target.value as MotoStatus })} style={sx(INPUT + "cursor:pointer;")}>
                 {STATUSES.map((s) => <option key={s} value={s}>{MOTO_STATUS_LABEL[s]}</option>)}
               </select></div>
-            <div><label style={sx(LABEL)}>Улс</label><input value={f.country} onChange={(e) => setF({ ...f, country: e.target.value })} style={sx(INPUT)} /></div>
-            <div><label style={sx(LABEL)}>Гааль</label><input value={f.customs} onChange={(e) => setF({ ...f, customs: e.target.value })} style={sx(INPUT)} /></div>
+            <div><label style={sx(LABEL)}>Улс</label>
+              <select
+                value={customCountry ? CUSTOM : f.country}
+                onChange={(e) => { if (e.target.value === CUSTOM) { setCustomCountry(true); setF({ ...f, country: "" }); } else { setCustomCountry(false); setF({ ...f, country: e.target.value }); } }}
+                style={sx(INPUT + "cursor:pointer;")}
+              >
+                {COUNTRIES.map((c) => <option key={c}>{c}</option>)}
+                <option value={CUSTOM}>＋ Бусад улс…</option>
+              </select>
+              {customCountry && <input value={f.country} onChange={(e) => setF({ ...f, country: e.target.value })} placeholder="Улсын нэр" style={sx(INPUT + "margin-top:8px;")} autoFocus />}
+            </div>
+            <div><label style={sx(LABEL)}>Гааль</label>
+              <select value={f.customs} onChange={(e) => setF({ ...f, customs: e.target.value })} style={sx(INPUT + "cursor:pointer;")}>
+                {CUSTOMS.map((c) => <option key={c}>{c}</option>)}
+              </select></div>
             <div><label style={sx(LABEL)}>HP</label><input value={f.hp} onChange={(e) => setF({ ...f, hp: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Nm</label><input value={f.nm} onChange={(e) => setF({ ...f, nm: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Дээд хурд</label><input value={f.top} onChange={(e) => setF({ ...f, top: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
@@ -184,9 +226,16 @@ export default function AdminMotorcycles() {
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-              <span style={sx("font:700 14px Montserrat;color:#E10613;")}>{fmt(m.price)}</span>
+              {m.salePrice ? (
+                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span style={sx("font:500 12px Montserrat;color:#6b7280;text-decoration:line-through;")}>{fmt(m.price)}</span>
+                  <span style={sx("font:700 14px Montserrat;color:#E10613;")}>{fmt(m.salePrice)}</span>
+                </span>
+              ) : (
+                <span style={sx("font:700 14px Montserrat;color:#E10613;")}>{fmt(m.price)}</span>
+              )}
               <span style={sx(`font:700 11px Montserrat;padding:5px 10px;border-radius:6px;${m.status === "Available" ? "color:#fff;background:#E10613;" : "color:#A3A3A3;background:#1a1a1d;border:1px solid #333;"}`)}>{statusLabel(m.status)}</span>
-              <button onClick={() => { setF(toForm(m)); setEditing(m.id); }} style={sx("background:none;border:1px solid #333;color:#C8C8C8;font:600 12px Montserrat;padding:7px 12px;border-radius:8px;cursor:pointer;")}>Засах</button>
+              <button onClick={() => openEdit(m)} style={sx("background:none;border:1px solid #333;color:#C8C8C8;font:600 12px Montserrat;padding:7px 12px;border-radius:8px;cursor:pointer;")}>Засах</button>
               <button onClick={() => del(m.id)} style={sx("background:none;border:1px solid #333;color:#ef4444;font:600 12px Montserrat;padding:7px 12px;border-radius:8px;cursor:pointer;")}>Устгах</button>
             </div>
           </div>

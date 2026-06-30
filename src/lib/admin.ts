@@ -9,6 +9,7 @@ import type { Moto, GearItem, EventItem } from "./data";
 function motoRow(m: Partial<Moto>): any {
   return {
     brand: m.brand, model: m.model, year: m.year, cc: m.cc, odo: m.odo, price: m.price,
+    sale_price: m.salePrice ?? null,
     status: m.status, country: m.country, customs: m.customs, hp: m.hp, nm: m.nm,
     top_speed: m.top, weight: m.weight, cyl: m.cyl, gearbox: m.gearbox ?? null, description: m.desc,
     extras: m.extras ?? [], images: m.images ?? [], video: m.video ?? null,

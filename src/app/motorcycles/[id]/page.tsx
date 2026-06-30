@@ -46,7 +46,15 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
           <div>
             <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.2em;color:#E10613;")}>{m.brand}</div>
             <h1 style={sx("font:800 clamp(28px,4vw,40px) Montserrat;color:#fff;margin-top:6px;")}>{m.model}</h1>
-            <div style={sx("font:800 30px Montserrat;color:#E10613;margin-top:10px;")}>{fmt(m.price)}</div>
+            {m.salePrice ? (
+              <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap", marginTop: 10 }}>
+                <span style={sx("font:600 18px Montserrat;color:#6b7280;text-decoration:line-through;")}>{fmt(m.price)}</span>
+                <span style={sx("font:800 30px Montserrat;color:#E10613;")}>{fmt(m.salePrice)}</span>
+                <span style={sx("font:700 11px Montserrat;letter-spacing:.05em;color:#fff;background:#E10613;padding:5px 10px;border-radius:6px;")}>ХЯМДРАЛ</span>
+              </div>
+            ) : (
+              <div style={sx("font:800 30px Montserrat;color:#E10613;margin-top:10px;")}>{fmt(m.price)}</div>
+            )}
 
             <div
               style={sx(

@@ -29,8 +29,9 @@ export function MotorcyclesClient({ motos }: { motos: Moto[] }) {
     if (status !== "All") l = l.filter((m) => m.status === status);
     const query = q.trim().toLowerCase();
     if (query) l = l.filter((m) => `${m.brand} ${m.model}`.toLowerCase().includes(query));
-    if (sort === "priceAsc") l.sort((a, b) => a.price - b.price);
-    else if (sort === "priceDesc") l.sort((a, b) => b.price - a.price);
+    const eff = (m: typeof motos[number]) => m.salePrice ?? m.price;
+    if (sort === "priceAsc") l.sort((a, b) => eff(a) - eff(b));
+    else if (sort === "priceDesc") l.sort((a, b) => eff(b) - eff(a));
     return l;
   }, [motos, brand, status, sort, q]);
 
