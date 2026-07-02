@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { supabase } from "./supabase";
 
 export type Role = "customer" | "admin";
 
@@ -13,63 +14,84 @@ export interface User {
   role: Role;
 }
 
-// Demo бүртгэлүүд (backend холбогдох хүртэл). Нууц үг бүгд "1234".
-export const ADMIN_PHONE = "80808080";
-export const DEMO_ACCOUNTS: { phone: string; name: string; role: Role }[] = [
-  { phone: ADMIN_PHONE, name: "Админ", role: "admin" },
-  { phone: "99119911", name: "Райдер", role: "customer" },
-];
-
-// Утасны дугаараар demo role тодорхойлох.
-export function resolveDemo(phone: string): { name: string; role: Role } {
-  const found = DEMO_ACCOUNTS.find((a) => a.phone === phone);
-  return found ? { name: found.name, role: found.role } : { name: "Райдер", role: "customer" };
-}
-
 interface AuthState {
   user: User | null;
-  ready: boolean; // localStorage уншиж дууссан эсэх (hydration-safe)
-  login: (u: User) => void;
-  logout: () => void;
-  update: (patch: Partial<User>) => void;
+  ready: boolean; // session уншиж дууссан эсэх
+  logout: () => Promise<void>;
+  update: (patch: Partial<User>) => Promise<void>;
+  refresh: () => Promise<User | null>;
 }
 
-const STORAGE_KEY = "mh_user";
 const Ctx = createContext<AuthState | null>(null);
+
+// Идэвхтэй session → апп-ын User болгож ачаална (profiles + user_metadata).
+async function loadUser(): Promise<User | null> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const authUser = session?.user;
+  if (!authUser) return null;
+
+  const { data: prof } = await supabase.from("profiles").select("*").eq("id", authUser.id).maybeSingle();
+  const meta = (authUser.user_metadata ?? {}) as Record<string, string>;
+  const first = prof?.first_name ?? meta.first_name ?? "";
+  const last = prof?.last_name ?? meta.last_name ?? "";
+  const name = prof?.name ?? meta.name ?? [last, first].filter(Boolean).join(" ").trim();
+
+  return {
+    name: name || (authUser.email ?? ""),
+    firstName: first || undefined,
+    lastName: last || undefined,
+    phone: prof?.phone ?? meta.phone ?? "",
+    email: authUser.email ?? prof?.email ?? undefined,
+    role: (prof?.role as Role) ?? "customer",
+  };
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const u = JSON.parse(raw);
-        if (!u.role) u.role = "customer";
-        setUser(u);
-      }
-    } catch {}
-    setReady(true);
+  const refresh = useCallback(async () => {
+    const u = await loadUser();
+    setUser(u);
+    return u;
   }, []);
 
-  function persist(u: User | null) {
-    setUser(u);
-    try {
-      if (u) localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
-      else localStorage.removeItem(STORAGE_KEY);
-    } catch {}
-  }
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const u = await loadUser();
+      if (mounted) { setUser(u); setReady(true); }
+    })();
+    const { data: sub } = supabase.auth.onAuthStateChange(async () => {
+      const u = await loadUser();
+      if (mounted) setUser(u);
+    });
+    return () => { mounted = false; sub.subscription.unsubscribe(); };
+  }, []);
 
-  const value: AuthState = {
-    user,
-    ready,
-    login: (u) => persist(u),
-    logout: () => persist(null),
-    update: (patch) => persist({ ...(user as User), ...patch }),
-  };
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  }, []);
 
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+  const update = useCallback(async (patch: Partial<User>) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) return;
+    const row: Record<string, string> = {};
+    if (patch.name !== undefined) row.name = patch.name;
+    if (patch.firstName !== undefined) row.first_name = patch.firstName;
+    if (patch.lastName !== undefined) row.last_name = patch.lastName;
+    if (patch.phone !== undefined) row.phone = patch.phone;
+    if (patch.email !== undefined) row.email = patch.email;
+    await supabase.from("profiles").update(row).eq("id", session.user.id);
+    setUser((u) => (u ? { ...u, ...patch } : u));
+  }, []);
+
+  return (
+    <Ctx.Provider value={{ user, ready, logout, update, refresh }}>
+      {children}
+    </Ctx.Provider>
+  );
 }
 
 export function useAuth(): AuthState {

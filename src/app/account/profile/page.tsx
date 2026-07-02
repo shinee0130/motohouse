@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { sx } from "@/lib/sx";
 import { useAuth } from "@/lib/auth";
-import { upsertProfile } from "@/lib/admin";
 import { AUTH_INPUT, AUTH_LABEL } from "@/components/AuthShell";
 
 export default function ProfilePage() {
@@ -18,9 +17,6 @@ export default function ProfilePage() {
     const ln = lastName.trim(), fn = firstName.trim(), em = email.trim();
     const fullName = `${ln} ${fn}`.trim();
     update({ name: fullName, firstName: fn, lastName: ln, email: em });
-    if (user) {
-      upsertProfile({ phone: user.phone, name: fullName, first_name: fn, last_name: ln, email: em, role: user.role }).catch(() => {});
-    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   }

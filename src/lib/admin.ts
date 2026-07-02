@@ -137,10 +137,10 @@ export interface Profile {
   role: string; email?: string; created_at?: string;
 }
 export async function upsertProfile(p: {
-  phone: string; name: string; role: string;
+  id: string; phone: string; name: string; role: string;
   first_name?: string; last_name?: string; email?: string;
 }) {
-  await supabase.from("profiles").upsert(p, { onConflict: "phone" });
+  await supabase.from("profiles").upsert(p, { onConflict: "id" });
 }
 export async function getProfiles(): Promise<Profile[]> {
   const { data } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });

@@ -5,84 +5,108 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { AuthShell, AUTH_INPUT, AUTH_LABEL, AUTH_BTN } from "@/components/AuthShell";
-import { PasswordInput } from "@/components/PasswordInput";
-import { useAuth, resolveDemo } from "@/lib/auth";
-import { upsertProfile } from "@/lib/admin";
+import { useAuth } from "@/lib/auth";
+import { supabase } from "@/lib/supabase";
+
+type Step = "email" | "otp";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
+  const { refresh } = useAuth();
+  const [step, setStep] = useState<Step>("email");
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  function submit(e: React.FormEvent) {
+  async function sendCode(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    const clean = phone.replace(/\D/g, "");
-    if (clean.length !== 8) return setError("Утасны дугаар 8 оронтой байх ёстой.");
-    if (password.length < 4) return setError("Нууц үг дор хаяж 4 тэмдэгт.");
-    // Demo: backend байхгүй тул утсаар role тодорхойлно
-    const { name, role } = resolveDemo(clean);
-    login({ name, phone: clean, role });
-    upsertProfile({ name, phone: clean, role }).catch(() => {});
-    router.push(role === "admin" ? "/admin" : "/account");
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) return setError("И-мэйл хаягаа зөв оруулна уу.");
+    setBusy(true);
+    try {
+      // shouldCreateUser:false → зөвхөн бүртгэлтэй хэрэглэгч нэвтэрнэ
+      const { error: err } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: { shouldCreateUser: false },
+      });
+      if (err) {
+        setError(err.status === 422 || err.message.toLowerCase().includes("signups not allowed")
+          ? "Энэ и-мэйлээр бүртгэл олдсонгүй. Эхлээд бүртгүүлнэ үү."
+          : err.message);
+        return;
+      }
+      setStep("otp");
+    } finally { setBusy(false); }
+  }
+
+  async function verify(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    if (otp.replace(/\D/g, "").length < 6) return setError("6 оронтой кодоо оруулна уу.");
+    setBusy(true);
+    try {
+      const { error: err } = await supabase.auth.verifyOtp({
+        email: email.trim(), token: otp.trim(), type: "email",
+      });
+      if (err) { setError("Код буруу эсвэл хугацаа дууссан байна."); return; }
+      const u = await refresh();
+      router.push(u?.role === "admin" ? "/admin" : "/account");
+    } finally { setBusy(false); }
   }
 
   return (
     <AuthShell
-      title="Нэвтрэх"
-      subtitle="Утасны дугаар, нууц үгээрээ нэвтэрнэ үү."
+      title={step === "otp" ? "Баталгаажуулах" : "Нэвтрэх"}
+      subtitle={
+        step === "otp"
+          ? `${email} хаяг руу илгээсэн 6 оронтой кодыг оруулна уу.`
+          : "И-мэйл хаягаа оруулбал нэг удаагийн код илгээнэ."
+      }
       footer={
-        <>
-          Бүртгэл байхгүй юу?{" "}
-          <Link href="/register" style={{ color: "#E10613", fontWeight: 700 }}>
-            Бүртгүүлэх
-          </Link>
-        </>
+        step === "email" ? (
+          <>
+            Бүртгэл байхгүй юу?{" "}
+            <Link href="/register" style={{ color: "#E10613", fontWeight: 700 }}>Бүртгүүлэх</Link>
+          </>
+        ) : (
+          <span onClick={() => { setStep("email"); setOtp(""); setError(""); }} style={{ color: "#8A8F98", cursor: "pointer" }}>
+            ← И-мэйл солих
+          </span>
+        )
       }
     >
-      <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <div>
-          <label style={sx(AUTH_LABEL)}>Утасны дугаар</label>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={sx("background:#050505;border:1px solid #262626;border-radius:10px;padding:14px 12px;color:#8A8F98;font:500 15px Roboto;flex-shrink:0;")}>
-              +976
-            </span>
+      {step === "email" ? (
+        <form onSubmit={sendCode} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div>
+            <label style={sx(AUTH_LABEL)}>И-мэйл</label>
+            <input className="mh-input" type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} style={sx(AUTH_INPUT)} />
+          </div>
+          {error && <div style={sx("font:500 13px Roboto;color:#ef4444;")}>{error}</div>}
+          <button type="submit" disabled={busy} style={sx(AUTH_BTN + (busy ? "opacity:.6;" : ""))}>
+            {busy ? "Илгээж байна…" : "Код авах"}
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={verify} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div>
+            <label style={sx(AUTH_LABEL)}>Баталгаажуулах код</label>
             <input
-              className="mh-input"
-              type="tel"
-              inputMode="numeric"
-              placeholder="8800 0000"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              style={sx(AUTH_INPUT)}
+              className="mh-input" type="tel" inputMode="numeric" placeholder="000000" maxLength={6}
+              value={otp} onChange={(e) => setOtp(e.target.value)}
+              style={sx(AUTH_INPUT + "text-align:center;letter-spacing:.5em;font-size:22px;")}
             />
           </div>
-        </div>
-        <div>
-          <label style={sx(AUTH_LABEL)}>Нууц үг</label>
-          <PasswordInput value={password} onChange={setPassword} />
-        </div>
-        <div style={{ textAlign: "right", marginTop: -6 }}>
-          <Link href="/forgot-password" style={sx("font:500 12px Roboto;color:#8A8F98;text-decoration:underline;")}>
-            Нууц үг мартсан?
-          </Link>
-        </div>
-        {error && <div style={sx("font:500 13px Roboto;color:#ef4444;")}>{error}</div>}
-        <button type="submit" style={sx(AUTH_BTN)}>
-          Нэвтрэх
-        </button>
-      </form>
-
-      <div style={sx("margin-top:18px;background:#0B0B0D;border:1px solid #262626;border-radius:10px;padding:14px 16px;")}>
-        <div style={sx("font:600 11px 'JetBrains Mono';letter-spacing:.1em;color:#E10613;margin-bottom:8px;")}>DEMO БҮРТГЭЛ</div>
-        <div style={sx("font:400 13px Roboto;color:#A3A3A3;line-height:1.7;")}>
-          <b style={{ color: "#fff" }}>Админ:</b> 8080 8080<br />
-          <b style={{ color: "#fff" }}>Хэрэглэгч:</b> 9911 9911<br />
-          Нууц үг (хоёулаа): <b style={{ color: "#fff" }}>1234</b>
-        </div>
-      </div>
+          {error && <div style={sx("font:500 13px Roboto;color:#ef4444;")}>{error}</div>}
+          <button type="submit" disabled={busy} style={sx(AUTH_BTN + (busy ? "opacity:.6;" : ""))}>
+            {busy ? "Шалгаж байна…" : "Нэвтрэх"}
+          </button>
+          <div style={sx("font:400 13px Roboto;color:#8A8F98;text-align:center;")}>
+            Код ирээгүй юу?{" "}
+            <span onClick={() => { if (!busy) sendCode({ preventDefault() {} } as React.FormEvent); }} style={{ color: "#C8C8C8", textDecoration: "underline", cursor: "pointer" }}>Дахин илгээх</span>
+          </div>
+        </form>
+      )}
     </AuthShell>
   );
 }
