@@ -75,8 +75,8 @@ export function Nav() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 30, height: 30, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                <span style={sx("font:600 13px Montserrat;color:#fff;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>
-                  {user!.name || user!.phone}
+                <span style={sx("font:600 13px Montserrat;color:#fff;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>
+                  {user!.lastName || user!.name?.split(" ")[0] || user!.phone}
                 </span>
                 <span style={{ color: "#8A8F98", fontSize: 11 }}>▾</span>
               </button>
