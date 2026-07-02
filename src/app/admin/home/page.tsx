@@ -60,6 +60,7 @@ export default function AdminHome() {
             {busy === "hero_video" ? "Хуулж байна…" : "Видео солих"}
             <input type="file" accept="video/*" disabled={busy === "hero_video"} onChange={(e) => onFile("hero_video", e.target.files?.[0] ?? null)} style={{ display: "none" }} />
           </label>
+          <div style={sx("font:400 11px Roboto;color:#6b7280;margin-top:8px;")}>Санал болгох: 1920×1080 (16:9) · MP4 · &lt; 15MB</div>
         </div>
       </div>
 
@@ -84,6 +85,9 @@ export default function AdminHome() {
                   style={{ display: "none" }}
                 />
               </label>
+              <div style={sx("font:400 11px Roboto;color:#6b7280;margin-top:8px;")}>
+                Санал болгох: {s.key === "hero" ? "1920×1080 (16:9)" : "1200×800 (3:2)"} · JPG · &lt; 300KB
+              </div>
             </div>
           </div>
         ))}

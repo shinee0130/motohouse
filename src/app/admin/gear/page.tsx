@@ -205,6 +205,7 @@ export default function AdminGear() {
               {uploading ? "Хуулж байна…" : "＋ Зураг сонгох (олон)"}
               <input type="file" accept="image/*" multiple disabled={uploading} onChange={(e) => onImages(e.target.files)} style={{ display: "none" }} />
             </label>
+            <div style={sx("font:400 11px Roboto;color:#6b7280;margin-top:8px;")}>Санал болгох: 1200×1200 (квадрат) · цагаан/ил тод дэвсгэр · PNG/JPG · &lt; 300KB</div>
           </div>
           <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
             <input type="checkbox" checked={f.bestSeller} onChange={(e) => setF({ ...f, bestSeller: e.target.checked })} />

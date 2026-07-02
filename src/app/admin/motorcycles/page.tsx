@@ -183,6 +183,7 @@ export default function AdminMotorcycles() {
               {uploading === "img" ? "Хуулж байна…" : "＋ Зураг сонгох (олон)"}
               <input type="file" accept="image/*" multiple disabled={uploading !== ""} onChange={(e) => onImages(e.target.files)} style={{ display: "none" }} />
             </label>
+            <div style={sx("font:400 11px Roboto;color:#6b7280;margin-top:8px;")}>Санал болгох: 1600×1200 (4:3, хэвтээ) · JPG · &lt; 400KB</div>
           </div>
 
           {/* ===== Видео upload ===== */}

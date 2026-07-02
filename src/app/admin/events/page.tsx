@@ -81,6 +81,7 @@ export default function AdminEvents() {
                 <input type="file" accept="image/*" hidden onChange={(e) => { const file = e.target.files?.[0]; if (file) onUpload(file); }} />
               </label>
               {f.image && <button type="button" onClick={() => setF({ ...f, image: "" })} style={sx("background:none;border:none;color:#ef4444;font:600 12px Montserrat;cursor:pointer;text-align:left;")}>Зураг устгах</button>}
+              <div style={sx("font:400 11px Roboto;color:#6b7280;")}>Санал болгох: 1080×1350 (4:5) эсвэл 1080×1080 · JPG/PNG · &lt; 500KB</div>
             </div>
           </div>
 
