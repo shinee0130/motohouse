@@ -99,7 +99,7 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
           <div style={sx("position:relative;flex:1;border-radius:16px;overflow:hidden;border:1px solid #262626;background:#fff;aspect-ratio:1/1;")}>
             {imgs.length ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={imgs[Math.min(activeImg, imgs.length - 1)]} alt={item.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+              <img src={imgs[Math.min(activeImg, imgs.length - 1)]} alt={item.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
             ) : (
               <Slot label="Бүтээгдэхүүн зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
             )}
@@ -269,7 +269,7 @@ function GearMini({ g }: { g: GearItem }) {
       <div style={{ position: "relative", height: 170, background: "#fff" }}>
         {g.images && g.images[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+          <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
         ) : (
           <Slot label="Зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
         )}

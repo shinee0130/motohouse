@@ -49,7 +49,7 @@ export function GearClient({ gear }: { gear: GearItem[] }) {
                 <div style={{ position: "relative", height: 200, background: "#fff" }}>
                   {g.images && g.images[0] ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+                    <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
                   ) : (
                     <Slot label="Бүтээгдэхүүн зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                   )}

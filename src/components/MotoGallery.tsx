@@ -16,7 +16,7 @@ export function MotoGallery({ images, status, video }: { images?: string[]; stat
       <div style={sx("position:relative;border-radius:18px;overflow:hidden;border:1px solid #262626;aspect-ratio:4/3;background:#0d0d0f;")}>
         {has ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={main!} alt="" style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+          <img src={main!} alt="" style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
         ) : (
           <Slot label="Мотоцикл том зураг" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
         )}

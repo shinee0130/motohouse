@@ -155,10 +155,10 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
                   "cursor:pointer;background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;",
                 )}
               >
-                <div style={{ position: "relative", height: 140 }}>
+                <div style={{ position: "relative", height: 150, background: "#0d0d0f" }}>
                   {s.images && s.images.length > 0 ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={s.images[0]} alt={`${s.brand} ${s.model}`} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+                    <img src={s.images[0]} alt={`${s.brand} ${s.model}`} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
                   ) : (
                     <Slot label="Зураг" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                   )}

@@ -21,13 +21,13 @@ export function MotoCard({ m, showCc = false }: { m: Moto; showCc?: boolean }) {
         "cursor:pointer;background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:block;",
       )}
     >
-      <div style={{ position: "relative", height: 180 }}>
+      <div style={{ position: "relative", height: 190, background: "#0d0d0f" }}>
         {m.images && m.images.length > 0 ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={m.images[0]}
             alt={`${m.brand} ${m.model}`}
-            style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")}
+            style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")}
           />
         ) : (
           <Slot label="Мотоцикл зураг" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
