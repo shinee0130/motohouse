@@ -26,30 +26,31 @@ export default async function EventsPage() {
               key={e.id}
               href={`/events/${e.id}`}
               className="mh-card"
-              style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:block;cursor:pointer;")}
+              style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;")}
             >
-              <div style={{ position: "relative", height: 220, background: "#0d0d0f" }}>
+              <div style={{ position: "relative", height: 260, background: "radial-gradient(120% 120% at 50% 0%, #17171a, #0b0b0d)" }}>
                 {e.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={e.image} alt={e.title} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
+                  <img src={e.image} alt={e.title} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:10px;")} />
                 ) : (
                   <Slot label="Event poster" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                 )}
                 <span style={{ position: "absolute", top: 12, left: 12, zIndex: 2, ...sx(badge(e.status)) }}>
                   {e.status}
                 </span>
-                <div
-                  style={sx(
-                    "position:absolute;left:0;right:0;bottom:0;height:60%;background:linear-gradient(transparent,rgba(5,5,5,.9));z-index:1;",
-                  )}
-                />
               </div>
-              <div style={{ padding: "18px 20px" }}>
-                <div style={sx("font:500 11px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;")}>{e.type}</div>
-                <div style={sx("font:700 19px Montserrat;color:#fff;margin-top:6px;")}>{e.title}</div>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 12 }}>
-                  <span style={sx("font:400 13px Roboto;color:#8A8F98;")}>{e.date}</span>
-                  <span style={sx("font:700 14px Montserrat;color:#fff;")}>{e.prize}</span>
+              <div style={{ padding: "16px 18px 18px", display: "flex", flexDirection: "column", flex: 1 }}>
+                <span style={sx("display:inline-block;align-self:flex-start;font:600 10px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;background:rgba(225,6,19,.1);border:1px solid rgba(225,6,19,.3);padding:4px 9px;border-radius:6px;")}>{e.type}</span>
+                <div style={sx("font:700 18px/1.3 Montserrat;color:#fff;margin-top:10px;")}>{e.title}</div>
+                <div style={sx("margin-top:auto;padding-top:14px;border-top:1px solid #1c1c1f;display:flex;flex-direction:column;gap:8px;")}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                    <span style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.1em;color:#8A8F98;")}>ОГНОО</span>
+                    <span style={sx("font:600 13px Roboto;color:#C8C8C8;")}>{e.date}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+                    <span style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.1em;color:#8A8F98;flex-shrink:0;")}>🏆 ШАГНАЛ</span>
+                    <span style={sx("font:700 13px Montserrat;color:#E10613;text-align:right;")}>{e.prize}</span>
+                  </div>
                 </div>
               </div>
             </Link>
