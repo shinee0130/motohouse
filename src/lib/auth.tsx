@@ -27,8 +27,13 @@ const Ctx = createContext<AuthState | null>(null);
 // Идэвхтэй session → апп-ын User болгож ачаална (profiles + user_metadata).
 async function loadUser(): Promise<User | null> {
   const { data: { session } } = await supabase.auth.getSession();
-  const authUser = session?.user;
-  if (!authUser) return null;
+  if (!session) return null;
+  // Токеныг серверт шалгах — хэрэглэгч устсан/хүчингүй бол цэвэрлэнэ (stale session).
+  const { data: { user: authUser }, error } = await supabase.auth.getUser();
+  if (error || !authUser) {
+    await supabase.auth.signOut().catch(() => {});
+    return null;
+  }
 
   const { data: prof } = await supabase.from("profiles").select("*").eq("id", authUser.id).maybeSingle();
   const meta = (authUser.user_metadata ?? {}) as Record<string, string>;
