@@ -12,6 +12,7 @@ export interface User {
   phone: string;
   email?: string;
   role: Role;
+  tier?: string; // bronze | silver | gold | vip
 }
 
 interface AuthState {
@@ -48,6 +49,7 @@ async function loadUser(): Promise<User | null> {
     phone: prof?.phone ?? meta.phone ?? "",
     email: authUser.email ?? prof?.email ?? undefined,
     role: (prof?.role as Role) ?? "customer",
+    tier: prof?.tier ?? "bronze",
   };
 }
 

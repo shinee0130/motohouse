@@ -133,8 +133,18 @@ export async function setSaved(phone: string, kind: "gear" | "moto", itemId: num
 
 // ===== Profiles (бүртгэлтэй хэрэглэгчид) =====
 export interface Profile {
-  phone: string; name: string; first_name?: string; last_name?: string;
-  role: string; email?: string; created_at?: string;
+  id: string; phone: string; name: string; first_name?: string; last_name?: string;
+  role: string; tier?: string; email?: string; created_at?: string;
+}
+// Admin: хэрэглэгчийн эрх (customer/admin) солих
+export async function setUserRole(id: string, role: string) {
+  const { error } = await supabase.from("profiles").update({ role }).eq("id", id);
+  if (error) throw error;
+}
+// Admin: хэрэглэгчийн түвшин (bronze/silver/gold/vip) солих
+export async function setUserTier(id: string, tier: string) {
+  const { error } = await supabase.from("profiles").update({ tier }).eq("id", id);
+  if (error) throw error;
 }
 export async function upsertProfile(p: {
   id: string; phone: string; name: string; role: string;
