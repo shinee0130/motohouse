@@ -38,12 +38,12 @@ export interface Moto {
 }
 
 const ZX10R_IMAGES = [
-  "/assets/motos/zx10r/front-right.webp",
-  "/assets/motos/zx10r/right.webp",
-  "/assets/motos/zx10r/front.webp",
-  "/assets/motos/zx10r/rightback.webp",
-  "/assets/motos/zx10r/dashboard.webp",
-  "/assets/motos/zx10r/gauge.webp",
+  "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/motos/zx10r/front-right.webp",
+  "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/motos/zx10r/right.webp",
+  "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/motos/zx10r/front.webp",
+  "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/motos/zx10r/rightback.webp",
+  "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/motos/zx10r/dashboard.webp",
+  "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/motos/zx10r/gauge.webp",
 ];
 
 export const MOTOS: Moto[] = [

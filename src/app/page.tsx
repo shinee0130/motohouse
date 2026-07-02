@@ -37,18 +37,18 @@ const TRUST = [
 ];
 
 const CATS = [
-  { title: "Мотоцикл", desc: "Sport · Naked · Track", href: "/motorcycles", img: "/assets/categories/moto.webp", setKey: "cat_moto" },
-  { title: "Хэрэгсэл", desc: "Каск · хувцас · хамгаалалт", href: "/gear", img: "/assets/categories/gear.webp", setKey: "cat_gear" },
-  { title: "Сэлбэг", desc: "Яндан · дугуй · батерей", href: "/gear", img: "/assets/categories/parts.webp", setKey: "cat_parts" },
-  { title: "Засвар", desc: "Оношилгоо · тюнинг", href: "/service", img: "/assets/categories/service.webp", setKey: "cat_service" },
+  { title: "Мотоцикл", desc: "Sport · Naked · Track", href: "/motorcycles", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_moto.webp", setKey: "cat_moto" },
+  { title: "Хэрэгсэл", desc: "Каск · хувцас · хамгаалалт", href: "/gear", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_gear.webp", setKey: "cat_gear" },
+  { title: "Сэлбэг", desc: "Яндан · дугуй · батерей", href: "/gear", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_parts.webp", setKey: "cat_parts" },
+  { title: "Засвар", desc: "Оношилгоо · тюнинг", href: "/service", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_service.webp", setKey: "cat_service" },
 ];
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const [motos, gear, allEvents, settings] = await Promise.all([getMotos(), getGearAll(), getEvents(), getSettings()]);
-  const heroImg = settings.hero || "/assets/hero-ducati.webp";
-  const heroVideo = settings.hero_video || "/assets/hero-bg.mp4";
+  const heroImg = settings.hero || "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/hero.webp";
+  const heroVideo = settings.hero_video || "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/hero-bg.mp4";
   const homePoster = settings.home_poster; // урт poster зураг (admin-аас)
 
   const featuredAll = motos.filter((m) => m.featured);

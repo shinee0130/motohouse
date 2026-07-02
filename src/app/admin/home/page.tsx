@@ -51,7 +51,7 @@ export default function AdminHome() {
           {map.hero_video ? (
             <video src={map.hero_video} autoPlay muted loop playsInline style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
           ) : (
-            <video src="/assets/hero-bg.mp4" autoPlay muted loop playsInline style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+            <video src="https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/hero-bg.mp4" autoPlay muted loop playsInline style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
           )}
         </div>
         <div style={{ padding: "14px 16px" }}>
