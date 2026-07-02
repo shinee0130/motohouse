@@ -75,7 +75,7 @@ export default async function HomePage() {
         />
         <div
           style={sx(
-            "position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#050505 24%,rgba(5,5,5,.55) 56%,rgba(5,5,5,.05)),radial-gradient(70% 120% at 88% 12%,rgba(225,6,19,.25),transparent 55%);",
+            "position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(5,5,5,.72),rgba(5,5,5,.32) 45%,rgba(5,5,5,0) 75%),radial-gradient(70% 120% at 88% 12%,rgba(225,6,19,.18),transparent 55%);",
           )}
         />
         <div style={sx(`position:relative;${WRAP}padding-top:clamp(64px,10vw,128px);padding-bottom:clamp(64px,10vw,128px);pointer-events:none;`)}>
