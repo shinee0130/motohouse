@@ -48,8 +48,8 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
               <div style={sx("font:700 14px Montserrat;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{user.name || "Хэрэглэгч"}</div>
               <div style={sx("font:400 12px Roboto;color:#8A8F98;")}>+976 {user.phone}</div>
               {(() => {
-                const T: Record<string, { l: string; c: string }> = { bronze: { l: "Bronze", c: "#cd7f32" }, silver: { l: "Silver", c: "#c0c0c0" }, gold: { l: "Gold", c: "#d4af37" }, vip: { l: "VIP", c: "#E10613" } };
-                const t = T[user.tier ?? "bronze"] ?? T.bronze;
+                const T: Record<string, { l: string; c: string }> = { rookie: { l: "Rookie", c: "#9ca3af" }, bronze: { l: "Bronze", c: "#cd7f32" }, silver: { l: "Silver", c: "#c0c0c0" }, gold: { l: "Gold", c: "#d4af37" }, vip: { l: "VIP", c: "#E10613" } };
+                const t = T[user.tier ?? "rookie"] ?? T.rookie;
                 return <span style={{ display: "inline-block", marginTop: 6, font: "700 10px Montserrat", letterSpacing: ".05em", padding: "3px 8px", borderRadius: 5, color: t.c, background: `${t.c}22`, border: `1px solid ${t.c}55` }}>{t.l} гишүүн</span>;
               })()}
             </div>

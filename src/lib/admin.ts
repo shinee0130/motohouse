@@ -134,16 +134,11 @@ export async function setSaved(phone: string, kind: "gear" | "moto", itemId: num
 // ===== Profiles (бүртгэлтэй хэрэглэгчид) =====
 export interface Profile {
   id: string; phone: string; name: string; first_name?: string; last_name?: string;
-  role: string; tier?: string; email?: string; created_at?: string;
+  role: string; tier?: string; spent?: number; email?: string; created_at?: string;
 }
 // Admin: хэрэглэгчийн эрх (customer/admin) солих
 export async function setUserRole(id: string, role: string) {
   const { error } = await supabase.from("profiles").update({ role }).eq("id", id);
-  if (error) throw error;
-}
-// Admin: хэрэглэгчийн түвшин (bronze/silver/gold/vip) солих
-export async function setUserTier(id: string, tier: string) {
-  const { error } = await supabase.from("profiles").update({ tier }).eq("id", id);
   if (error) throw error;
 }
 export async function upsertProfile(p: {
@@ -154,7 +149,14 @@ export async function upsertProfile(p: {
 }
 export async function getProfiles(): Promise<Profile[]> {
   const { data } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
-  return (data ?? []) as Profile[];
+  const profs = (data ?? []) as Profile[];
+  // Хэрэглэгч тус бүрийн нийт худалдан авалт (цуцлагдаагүй захиалга)
+  const { data: orders } = await supabase.from("orders").select("user_phone,total,status");
+  const spent: Record<string, number> = {};
+  (orders ?? []).forEach((o: { user_phone: string; total: number; status: string }) => {
+    if (o.status !== "Цуцлагдсан") spent[o.user_phone] = (spent[o.user_phone] ?? 0) + (o.total ?? 0);
+  });
+  return profs.map((p) => ({ ...p, spent: spent[p.phone] ?? 0 }));
 }
 
 // ===== Settings (home backgrounds) =====
