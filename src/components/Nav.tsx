@@ -71,14 +71,11 @@ export function Nav() {
             <div style={{ position: "relative" }}>
               <button
                 onClick={() => setAcctOpen((v) => !v)}
-                style={sx("display:flex;align-items:center;gap:10px;background:#111113;border:1px solid #262626;border-radius:999px;padding:6px 12px 6px 6px;cursor:pointer;")}
+                aria-label="Миний бүртгэл"
+                style={sx("display:flex;align-items:center;justify-content:center;background:none;border:none;padding:0;cursor:pointer;")}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 30, height: 30, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                <span style={sx("font:600 13px Montserrat;color:#fff;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>
-                  {user!.lastName || user!.name?.split(" ")[0] || user!.phone}
-                </span>
-                <span style={{ color: "#8A8F98", fontSize: 11 }}>▾</span>
+                <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
               </button>
               {acctOpen && (
                 <>
