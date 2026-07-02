@@ -100,3 +100,10 @@ a {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* мото дэлгэрэнгүй — гар утсан дээр босоо болгох */
+@media (max-width: 820px) {
+  .mh-moto-detail {
+    grid-template-columns: 1fr !important;
+  }
+}

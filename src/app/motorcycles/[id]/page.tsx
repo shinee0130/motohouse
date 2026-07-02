@@ -35,8 +35,9 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
         </Link>
 
         <div
+          className="mh-moto-detail"
           style={sx(
-            "display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:32px;margin-top:20px;align-items:start;",
+            "display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:32px;margin-top:20px;align-items:start;",
           )}
         >
           {/* gallery */}
