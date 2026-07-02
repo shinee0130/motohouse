@@ -41,7 +41,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         <aside style={sx("background:#0e0e10;border:1px solid #262626;border-radius:18px;padding:20px;")}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, paddingBottom: 16, borderBottom: "1px solid #1c1c1f" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/assets/tiers/${user.tier ?? "rookie"}.png`} alt="" style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+            <img src={`/assets/tiers/${user.tier ?? "rookie"}.png`} alt="" style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
             <div style={{ minWidth: 0 }}>
               <div style={sx("font:700 14px Montserrat;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{user.name || "Хэрэглэгч"}</div>
               <div style={sx("font:400 12px Roboto;color:#8A8F98;")}>+976 {user.phone}</div>

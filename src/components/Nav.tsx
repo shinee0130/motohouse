@@ -75,7 +75,7 @@ export function Nav() {
                 style={sx("display:flex;align-items:center;justify-content:center;background:none;border:none;padding:0;cursor:pointer;")}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 60, height: 60, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
               </button>
               {acctOpen && (
                 <>
