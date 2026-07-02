@@ -32,7 +32,7 @@ export function Footer() {
             CONTACT
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12, font: "500 14px Roboto", color: "#C8C8C8" }}>
-            <span>+976 8800 0000</span>
+            <a href="tel:+97690117748" style={sx("color:#C8C8C8;")}>+976 9011-7748</a>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               <a href="https://www.facebook.com/profile.php?id=61557148658508" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
