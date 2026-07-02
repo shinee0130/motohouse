@@ -28,10 +28,10 @@ export default async function EventsPage() {
               className="mh-card"
               style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:block;cursor:pointer;")}
             >
-              <div style={{ position: "relative", height: 200 }}>
+              <div style={{ position: "relative", height: 220, background: "#0d0d0f" }}>
                 {e.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={e.image} alt={e.title} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+                  <img src={e.image} alt={e.title} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
                 ) : (
                   <Slot label="Event poster" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                 )}

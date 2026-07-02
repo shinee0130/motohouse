@@ -18,13 +18,13 @@ export default async function EventDetailPage({ params }: PageProps<"/events/[id
     <div style={sx("max-width:920px;margin:0 auto;padding:clamp(24px,4vw,44px) clamp(20px,4vw,40px);animation:mhfade .5s both;")}>
       <Link href="/events" style={sx("font:600 13px Montserrat;color:#8A8F98;cursor:pointer;")}>← Events руу</Link>
 
-      {/* poster */}
-      <div style={sx("position:relative;border-radius:18px;overflow:hidden;border:1px solid #262626;aspect-ratio:16/10;margin-top:16px;background:#0d0d0f;")}>
+      {/* poster — зургийн жинхэнэ харьцаагаар (босоо ч, хэвтээ ч бүтнээр) */}
+      <div style={sx("position:relative;border-radius:18px;overflow:hidden;border:1px solid #262626;margin-top:16px;background:#0d0d0f;display:flex;justify-content:center;align-items:center;min-height:220px;")}>
         {e.image ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={e.image} alt={e.title} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+          <img src={e.image} alt={e.title} style={{ display: "block", maxWidth: "100%", maxHeight: "78vh", width: "auto", height: "auto" }} />
         ) : (
-          <Slot label="Event poster" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+          <Slot label="Event poster" style={{ width: "100%", aspectRatio: "16/10" }} />
         )}
         <span style={{ position: "absolute", top: 16, left: 16, zIndex: 2, ...sx(badge(e.status)) }}>{e.status}</span>
       </div>
