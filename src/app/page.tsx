@@ -155,11 +155,11 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ===== POSTER (урт зураг) ===== */}
+      {/* ===== POSTER (урт зураг, 2 талруугаа тулсан full-width) ===== */}
       {homePoster && (
-        <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
+        <div style={{ marginTop: "clamp(44px,6vw,72px)" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={homePoster} alt="MOTO HOUSE" style={{ width: "100%", height: "auto", display: "block", borderRadius: 16, border: "1px solid #262626" }} />
+          <img src={homePoster} alt="MOTO HOUSE" style={{ width: "100%", height: "auto", display: "block" }} />
         </div>
       )}
 
