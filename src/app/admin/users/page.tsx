@@ -44,9 +44,8 @@ export default function AdminUsers() {
           return (
             <div key={u.id} style={sx("display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #1c1c1f;")}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 200 }}>
-                <span style={sx("width:38px;height:38px;border-radius:50%;background:#E10613;color:#fff;display:flex;align-items:center;justify-content:center;font:800 15px Montserrat;flex-shrink:0;")}>
-                  {(u.name || u.phone || "U").trim().charAt(0).toUpperCase()}
-                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/assets/tiers/${u.tier ?? "rookie"}.png`} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={sx("font:700 14px Montserrat;color:#fff;")}>{u.name || "—"}</span>

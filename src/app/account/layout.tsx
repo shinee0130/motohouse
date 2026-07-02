@@ -30,7 +30,6 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     );
   }
 
-  const initial = (user.name || user.phone || "U").trim().charAt(0).toUpperCase();
 
   return (
     <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(28px,4vw,48px) clamp(20px,4vw,40px);animation:mhfade .4s both;")}>
@@ -41,9 +40,8 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
         {/* sidebar */}
         <aside style={sx("background:#0e0e10;border:1px solid #262626;border-radius:18px;padding:20px;")}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, paddingBottom: 16, borderBottom: "1px solid #1c1c1f" }}>
-            <span style={sx("width:42px;height:42px;border-radius:50%;background:#E10613;color:#fff;display:flex;align-items:center;justify-content:center;font:800 17px Montserrat;flex-shrink:0;")}>
-              {initial}
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`/assets/tiers/${user.tier ?? "rookie"}.png`} alt="" style={{ width: 44, height: 44, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
             <div style={{ minWidth: 0 }}>
               <div style={sx("font:700 14px Montserrat;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{user.name || "Хэрэглэгч"}</div>
               <div style={sx("font:400 12px Roboto;color:#8A8F98;")}>+976 {user.phone}</div>

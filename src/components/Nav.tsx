@@ -35,7 +35,6 @@ export function Nav() {
   const [acctOpen, setAcctOpen] = useState(false);
 
   const loggedIn = ready && !!user;
-  const initial = (user?.name || user?.phone || "U").trim().charAt(0).toUpperCase();
 
   function doLogout() {
     logout();
@@ -74,9 +73,8 @@ export function Nav() {
                 onClick={() => setAcctOpen((v) => !v)}
                 style={sx("display:flex;align-items:center;gap:10px;background:#111113;border:1px solid #262626;border-radius:999px;padding:6px 12px 6px 6px;cursor:pointer;")}
               >
-                <span style={sx("width:30px;height:30px;border-radius:50%;background:#E10613;color:#fff;display:flex;align-items:center;justify-content:center;font:800 13px Montserrat;")}>
-                  {initial}
-                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 30, height: 30, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
                 <span style={sx("font:600 13px Montserrat;color:#fff;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>
                   {user!.name || user!.phone}
                 </span>
@@ -162,9 +160,8 @@ export function Nav() {
           {loggedIn ? (
             <>
               <div style={sx("display:flex;align-items:center;gap:12px;padding:14px 4px 10px;")}>
-                <span style={sx("width:34px;height:34px;border-radius:50%;background:#E10613;color:#fff;display:flex;align-items:center;justify-content:center;font:800 14px Montserrat;")}>
-                  {initial}
-                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
                 <div>
                   <div style={sx("font:700 14px Montserrat;color:#fff;")}>{user!.name || "Хэрэглэгч"}</div>
                   <div style={sx("font:400 12px Roboto;color:#8A8F98;")}>+976 {user!.phone}</div>
