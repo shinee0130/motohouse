@@ -6,6 +6,7 @@ import { getSettingsMap, updateSetting, uploadSiteImage } from "@/lib/admin";
 
 const SLOTS = [
   { key: "hero", label: "Hero (нүүрний том зураг)" },
+  { key: "home_poster", label: "Нүүр — урт poster зураг" },
   { key: "cat_moto", label: "Категори — Мотоцикл" },
   { key: "cat_gear", label: "Категори — Хэрэгсэл" },
   { key: "cat_parts", label: "Категори — Сэлбэг" },
@@ -86,7 +87,7 @@ export default function AdminHome() {
                 />
               </label>
               <div style={sx("font:400 11px Roboto;color:#6b7280;margin-top:8px;")}>
-                Санал болгох: {s.key === "hero" ? "1920×1080 (16:9)" : "1200×800 (3:2)"} · JPG · &lt; 300KB
+                Санал болгох: {s.key === "hero" ? "1920×1080 (16:9)" : s.key === "home_poster" ? "1600×600 (урт banner) эсвэл дурын" : "1200×800 (3:2)"} · JPG · &lt; 300KB
               </div>
             </div>
           </div>

@@ -49,6 +49,7 @@ export default async function HomePage() {
   const [motos, gear, allEvents, settings] = await Promise.all([getMotos(), getGearAll(), getEvents(), getSettings()]);
   const heroImg = settings.hero || "/assets/hero-ducati.webp";
   const heroVideo = settings.hero_video || "/assets/hero-bg.mp4";
+  const homePoster = settings.home_poster; // урт poster зураг (admin-аас)
 
   const featuredAll = motos.filter((m) => m.featured);
   const featured = (featuredAll.length ? featuredAll : motos).slice(0, 4);
@@ -154,7 +155,16 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ===== BRAND MARQUEE ===== */}
+      {/* ===== POSTER (урт зураг) ===== */}
+      {homePoster && (
+        <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={homePoster} alt="MOTO HOUSE" style={{ width: "100%", height: "auto", display: "block", borderRadius: 16, border: "1px solid #262626" }} />
+        </div>
+      )}
+
+      {/* ===== BRAND MARQUEE (түр нуусан) ===== */}
+      {false && (
       <div style={sx("border-top:1px solid #1c1c1f;margin-top:clamp(44px,6vw,72px);padding:clamp(34px,5vw,52px) 0;overflow:hidden;")}>
         <div style={sx("text-align:center;font:500 12px 'JetBrains Mono';letter-spacing:.26em;color:#8A8F98;")}>
           БИДНИЙ САНАЛ БОЛГОХ БРЭНДҮҮД
@@ -189,6 +199,7 @@ export default async function HomePage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* ===== FEATURED MOTORCYCLES ===== */}
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
