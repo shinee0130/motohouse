@@ -2,91 +2,79 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { AuthShell, AUTH_INPUT, AUTH_LABEL, AUTH_BTN } from "@/components/AuthShell";
-import { useAuth } from "@/lib/auth";
+import { PasswordInput } from "@/components/PasswordInput";
 import { supabase } from "@/lib/supabase";
-import { upsertProfile } from "@/lib/admin";
-
-type Step = "form" | "otp" | "done";
 
 export default function RegisterPage() {
-  const router = useRouter();
-  const { refresh } = useAuth();
-  const [step, setStep] = useState<Step>("form");
   const [lastName, setLastName] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
 
-  async function sendCode(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     if (!lastName.trim()) return setError("Овгоо оруулна уу.");
     if (!name.trim()) return setError("Нэрээ оруулна уу.");
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) return setError("И-мэйл хаягаа зөв оруулна уу.");
     if (phone.replace(/\D/g, "").length !== 8) return setError("Утасны дугаар 8 оронтой байх ёстой.");
+    if (password.length < 6) return setError("Нууц үг дор хаяж 6 тэмдэгт.");
+    if (password !== confirm) return setError("Нууц үг таарахгүй байна.");
     setBusy(true);
     try {
-      const { error: err } = await supabase.auth.signInWithOtp({
+      const fn = name.trim(), ln = lastName.trim();
+      const { error: err } = await supabase.auth.signUp({
         email: email.trim(),
+        password,
         options: {
-          shouldCreateUser: true,
-          data: { first_name: name.trim(), last_name: lastName.trim(), phone: phone.replace(/\D/g, ""), name: `${lastName.trim()} ${name.trim()}`.trim() },
+          emailRedirectTo: `${window.location.origin}/account`,
+          data: { first_name: fn, last_name: ln, phone: phone.replace(/\D/g, ""), name: `${ln} ${fn}`.trim() },
         },
       });
-      if (err) { setError(err.message); return; }
-      setStep("otp");
-    } finally { setBusy(false); }
-  }
-
-  async function verify(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    if (otp.replace(/\D/g, "").length < 6) return setError("6 оронтой кодоо оруулна уу.");
-    setBusy(true);
-    try {
-      const { data, error: err } = await supabase.auth.verifyOtp({
-        email: email.trim(), token: otp.trim(), type: "email",
-      });
-      if (err || !data.user) { setError("Код буруу эсвэл хугацаа дууссан байна."); return; }
-      const fn = name.trim(), ln = lastName.trim();
-      await upsertProfile({
-        id: data.user.id, name: `${ln} ${fn}`.trim(), first_name: fn, last_name: ln,
-        email: email.trim(), phone: phone.replace(/\D/g, ""), role: "customer",
-      }).catch(() => {});
-      await refresh();
-      setStep("done");
+      if (err) {
+        const m = err.message.toLowerCase();
+        setError(m.includes("already") || m.includes("registered") ? "Энэ и-мэйл аль хэдийн бүртгэлтэй байна." : err.message);
+        return;
+      }
+      setDone(true);
     } finally { setBusy(false); }
   }
 
   return (
     <AuthShell
-      title={step === "otp" ? "Баталгаажуулах" : "Бүртгүүлэх"}
-      subtitle={
-        step === "otp"
-          ? `${email} хаяг руу илгээсэн 6 оронтой кодыг оруулна уу.`
-          : "И-мэйл хаягаараа шинэ бүртгэл үүсгэнэ үү."
-      }
+      title={done ? "И-мэйлээ баталгаажуулна уу" : "Бүртгүүлэх"}
+      subtitle={done ? "" : "Мэдээллээ бөглөж бүртгэл үүсгэнэ үү. Дараа нь зөвхөн и-мэйл + нууц үгээрээ нэвтэрнэ."}
       footer={
-        step === "form" ? (
+        done ? (
+          <Link href="/login" style={{ color: "#8A8F98" }}>← Нэвтрэх хуудас</Link>
+        ) : (
           <>
             Бүртгэлтэй юу?{" "}
             <Link href="/login" style={{ color: "#E10613", fontWeight: 700 }}>Нэвтрэх</Link>
           </>
-        ) : step === "otp" ? (
-          <span onClick={() => { setStep("form"); setOtp(""); setError(""); }} style={{ color: "#8A8F98", cursor: "pointer" }}>← Буцах</span>
-        ) : (
-          <Link href="/login" style={{ color: "#8A8F98" }}>← Нэвтрэх хуудас</Link>
         )
       }
     >
-      {step === "form" && (
-        <form onSubmit={sendCode} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {done ? (
+        <div style={sx("text-align:center;padding:10px 0;")}>
+          <div style={sx("font:700 18px Montserrat;color:#22c55e;")}>✓ Бүртгэл үүслээ!</div>
+          <div style={sx("font:400 14px/1.7 Roboto;color:#A3A3A3;margin-top:10px;")}>
+            <b style={{ color: "#fff" }}>{email}</b> хаяг руу баталгаажуулах имэйл илгээлээ.
+            Имэйл доторх <b style={{ color: "#fff" }}>линк дээр дарж</b> баталгаажуулаад нэвтэрнэ үү.
+            <br /><br />
+            <span style={{ color: "#8A8F98", fontSize: 13 }}>Энэ баталгаажуулалт зөвхөн нэг удаа. Дараа нь и-мэйл + нууц үгээрээ шууд нэвтэрнэ.</span>
+          </div>
+          <Link href="/login" style={sx(AUTH_BTN + "display:block;text-decoration:none;margin-top:20px;")}>Нэвтрэх хуудас</Link>
+        </div>
+      ) : (
+        <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div>
               <label style={sx(AUTH_LABEL)}>Овог</label>
@@ -108,32 +96,17 @@ export default function RegisterPage() {
               <input className="mh-input" type="tel" inputMode="numeric" placeholder="8800 0000" value={phone} onChange={(e) => setPhone(e.target.value)} style={sx(AUTH_INPUT)} />
             </div>
           </div>
-          {error && <div style={sx("font:500 13px Roboto;color:#ef4444;")}>{error}</div>}
-          <button type="submit" disabled={busy} style={sx(AUTH_BTN + (busy ? "opacity:.6;" : ""))}>{busy ? "Илгээж байна…" : "Код авах"}</button>
-        </form>
-      )}
-
-      {step === "otp" && (
-        <form onSubmit={verify} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
-            <label style={sx(AUTH_LABEL)}>Баталгаажуулах код</label>
-            <input
-              className="mh-input" type="tel" inputMode="numeric" placeholder="000000" maxLength={6}
-              value={otp} onChange={(e) => setOtp(e.target.value)}
-              style={sx(AUTH_INPUT + "text-align:center;letter-spacing:.5em;font-size:22px;")}
-            />
+            <label style={sx(AUTH_LABEL)}>Нууц үг</label>
+            <PasswordInput value={password} onChange={setPassword} />
+          </div>
+          <div>
+            <label style={sx(AUTH_LABEL)}>Нууц үг давтах</label>
+            <PasswordInput value={confirm} onChange={setConfirm} />
           </div>
           {error && <div style={sx("font:500 13px Roboto;color:#ef4444;")}>{error}</div>}
-          <button type="submit" disabled={busy} style={sx(AUTH_BTN + (busy ? "opacity:.6;" : ""))}>{busy ? "Шалгаж байна…" : "Баталгаажуулах"}</button>
+          <button type="submit" disabled={busy} style={sx(AUTH_BTN + (busy ? "opacity:.6;" : ""))}>{busy ? "Бүртгэж байна…" : "Бүртгүүлэх"}</button>
         </form>
-      )}
-
-      {step === "done" && (
-        <div style={sx("text-align:center;padding:14px 0;")}>
-          <div style={sx("font:700 18px Montserrat;color:#22c55e;")}>✓ Бүртгэл амжилттай!</div>
-          <div style={sx("font:400 14px Roboto;color:#A3A3A3;margin-top:8px;")}>Тавтай морил, {lastName} {name}.</div>
-          <button onClick={() => router.push("/account")} style={sx(AUTH_BTN + "display:block;margin-top:20px;")}>Миний бүртгэл</button>
-        </div>
       )}
     </AuthShell>
   );

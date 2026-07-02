@@ -4,98 +4,50 @@ import { useState } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { AuthShell, AUTH_INPUT, AUTH_LABEL, AUTH_BTN } from "@/components/AuthShell";
-import { PasswordInput } from "@/components/PasswordInput";
-
-type Step = "phone" | "reset" | "done";
+import { supabase } from "@/lib/supabase";
 
 export default function ForgotPasswordPage() {
-  const [step, setStep] = useState<Step>("phone");
-  const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState("");
-  const [pw, setPw] = useState("");
-  const [pw2, setPw2] = useState("");
+  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  function sendCode(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    if (phone.replace(/\D/g, "").length !== 8) return setError("Утасны дугаар 8 оронтой байх ёстой.");
-    setStep("reset");
-  }
-
-  function reset(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    if (otp.replace(/\D/g, "").length < 4) return setError("4 оронтой кодоо оруулна уу.");
-    if (pw.length < 4) return setError("Шинэ нууц үг дор хаяж 4 тэмдэгт.");
-    if (pw !== pw2) return setError("Нууц үг таарахгүй байна.");
-    setStep("done");
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) return setError("И-мэйл хаягаа зөв оруулна уу.");
+    setBusy(true);
+    try {
+      const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (err) { setError(err.message); return; }
+      setSent(true);
+    } finally { setBusy(false); }
   }
 
   return (
     <AuthShell
-      title={step === "done" ? "Амжилттай" : "Нууц үг сэргээх"}
-      subtitle={
-        step === "phone"
-          ? "Бүртгэлтэй утасны дугаараа оруулна уу — баталгаажуулах код илгээнэ."
-          : step === "reset"
-            ? `+976 ${phone.replace(/\D/g, "")} дугаарт илгээсэн код болон шинэ нууц үгээ оруулна уу.`
-            : "Нууц үг шинэчлэгдлээ."
-      }
-      footer={
-        <Link href="/login" style={{ color: "#8A8F98" }}>
-          ← Нэвтрэх хуудас
-        </Link>
-      }
+      title={sent ? "И-мэйл илгээлээ" : "Нууц үг сэргээх"}
+      subtitle={sent ? "" : "Бүртгэлтэй и-мэйл хаягаа оруулна уу — нууц үг сэргээх линк илгээнэ."}
+      footer={<Link href="/login" style={{ color: "#8A8F98" }}>← Нэвтрэх хуудас</Link>}
     >
-      {step === "phone" && (
-        <form onSubmit={sendCode} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div>
-            <label style={sx(AUTH_LABEL)}>Утасны дугаар</label>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={sx("background:#050505;border:1px solid #262626;border-radius:10px;padding:14px 12px;color:#8A8F98;font:500 15px Roboto;flex-shrink:0;")}>+976</span>
-              <input className="mh-input" type="tel" inputMode="numeric" placeholder="8800 0000" value={phone} onChange={(e) => setPhone(e.target.value)} style={sx(AUTH_INPUT)} />
-            </div>
+      {sent ? (
+        <div style={sx("text-align:center;padding:10px 0;")}>
+          <div style={sx("font:700 18px Montserrat;color:#22c55e;")}>✓ Линк илгээлээ</div>
+          <div style={sx("font:400 14px/1.7 Roboto;color:#A3A3A3;margin-top:10px;")}>
+            <b style={{ color: "#fff" }}>{email}</b> хаяг руу нууц үг сэргээх линк илгээлээ. Имэйл доторх линк дээр дарж шинэ нууц үгээ тохируулна уу.
           </div>
-          {error && <div style={sx("font:500 13px Roboto;color:#ef4444;")}>{error}</div>}
-          <button type="submit" style={sx(AUTH_BTN)}>Код авах</button>
-        </form>
-      )}
-
-      {step === "reset" && (
-        <form onSubmit={reset} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div>
-            <label style={sx(AUTH_LABEL)}>Баталгаажуулах код</label>
-            <input
-              className="mh-input"
-              type="tel"
-              inputMode="numeric"
-              placeholder="0000"
-              maxLength={6}
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              style={sx(AUTH_INPUT + "text-align:center;letter-spacing:.5em;font-size:22px;")}
-            />
-          </div>
-          <div>
-            <label style={sx(AUTH_LABEL)}>Шинэ нууц үг</label>
-            <PasswordInput value={pw} onChange={setPw} />
-          </div>
-          <div>
-            <label style={sx(AUTH_LABEL)}>Шинэ нууц үг давтах</label>
-            <PasswordInput value={pw2} onChange={setPw2} />
-          </div>
-          {error && <div style={sx("font:500 13px Roboto;color:#ef4444;")}>{error}</div>}
-          <button type="submit" style={sx(AUTH_BTN)}>Нууц үг шинэчлэх</button>
-        </form>
-      )}
-
-      {step === "done" && (
-        <div style={sx("text-align:center;padding:14px 0;")}>
-          <div style={sx("font:700 18px Montserrat;color:#22c55e;")}>✓ Нууц үг шинэчлэгдлээ</div>
-          <div style={sx("font:400 14px Roboto;color:#A3A3A3;margin-top:8px;")}>Шинэ нууц үгээрээ нэвтэрнэ үү.</div>
-          <Link href="/login" style={sx(AUTH_BTN + "display:block;text-decoration:none;margin-top:20px;")}>Нэвтрэх</Link>
         </div>
+      ) : (
+        <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <div>
+            <label style={sx(AUTH_LABEL)}>И-мэйл</label>
+            <input className="mh-input" type="email" placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} style={sx(AUTH_INPUT)} />
+          </div>
+          {error && <div style={sx("font:500 13px Roboto;color:#ef4444;")}>{error}</div>}
+          <button type="submit" disabled={busy} style={sx(AUTH_BTN + (busy ? "opacity:.6;" : ""))}>{busy ? "Илгээж байна…" : "Сэргээх линк авах"}</button>
+        </form>
       )}
     </AuthShell>
   );
