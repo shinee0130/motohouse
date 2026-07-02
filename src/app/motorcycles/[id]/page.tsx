@@ -155,7 +155,12 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
                 )}
               >
                 <div style={{ position: "relative", height: 140 }}>
-                  <Slot label="Зураг" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                  {s.images && s.images.length > 0 ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={s.images[0]} alt={`${s.brand} ${s.model}`} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+                  ) : (
+                    <Slot label="Зураг" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                  )}
                 </div>
                 <div style={{ padding: "14px 16px" }}>
                   <div style={sx("font:700 16px Montserrat;color:#fff;")}>{s.brand} {s.model}</div>
