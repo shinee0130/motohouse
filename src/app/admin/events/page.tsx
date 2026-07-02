@@ -47,6 +47,7 @@ export default function AdminEvents() {
   async function onUpload(file: File) {
     setUploading(true);
     try { const url = await uploadEvent(file); setF((p) => ({ ...p, image: url })); }
+    catch (err) { alert("Зураг оруулахад алдаа гарлаа: " + (err instanceof Error ? err.message : String(err))); }
     finally { setUploading(false); }
   }
   async function openParts(e: EventItem) {
