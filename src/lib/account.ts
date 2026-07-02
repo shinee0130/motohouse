@@ -1,4 +1,4 @@
-// Demo account өгөгдөл (backend холбогдох хүртэлх жишээ).
+// Захиалгын төрөл + badge (өгөгдөл нь Supabase-ээс).
 
 export interface Order {
   id: string;
@@ -10,12 +10,6 @@ export interface Order {
   userPhone?: string; // захиалагчийн утас (admin талд)
   userName?: string;  // захиалагчийн нэр (profiles-аас)
 }
-
-export const ORDERS: Order[] = [
-  { id: "MH-1042", date: "2026.06.28", item: "Shoei GT-Air 3 (M)", qty: 1, total: 2400000, status: "Хүргэгдсэн" },
-  { id: "MH-1051", date: "2026.06.29", item: "Akrapovic Slip-On", qty: 1, total: 4200000, status: "Баталгаажсан" },
-  { id: "MH-1063", date: "2026.06.30", item: "Dainese Carbon 4 (L)", qty: 1, total: 550000, status: "Хүлээгдэж буй" },
-];
 
 export function orderBadge(status: Order["status"]): string {
   const base = "font:700 11px Montserrat;letter-spacing:.04em;padding:5px 11px;border-radius:6px;display:inline-block;";
