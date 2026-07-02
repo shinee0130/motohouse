@@ -29,6 +29,9 @@ export default function RegisterPage() {
     if (password !== confirm) return setError("Нууц үг таарахгүй байна.");
     setBusy(true);
     try {
+      // Утас давхардаж байгаа эсэх
+      const { data: phoneTaken } = await supabase.rpc("phone_taken", { p: phone.replace(/\D/g, "") });
+      if (phoneTaken) { setError("Энэ утасны дугаар өөр бүртгэлд ашиглагдсан байна."); return; }
       const fn = name.trim(), ln = lastName.trim();
       const { error: err } = await supabase.auth.signUp({
         email: email.trim(),
@@ -40,7 +43,9 @@ export default function RegisterPage() {
       });
       if (err) {
         const m = err.message.toLowerCase();
-        setError(m.includes("already") || m.includes("registered") ? "Энэ и-мэйл аль хэдийн бүртгэлтэй байна." : err.message);
+        if (m.includes("already") || m.includes("registered")) setError("Энэ и-мэйл аль хэдийн бүртгэлтэй байна.");
+        else if (m.includes("database") || m.includes("duplicate")) setError("И-мэйл эсвэл утас давхардаж байна. Дахин шалгана уу.");
+        else setError(err.message);
         return;
       }
       setDone(true);

@@ -32,6 +32,10 @@ export default function ProfilePage() {
     if (!ln) return setErr("Овгоо оруулна уу.");
     if (!fn) return setErr("Нэрээ оруулна уу.");
     if (ph && ph.length !== 8) return setErr("Утасны дугаар 8 оронтой байх ёстой.");
+    if (ph) {
+      const { data: taken } = await supabase.rpc("phone_taken", { p: ph });
+      if (taken) return setErr("Энэ утасны дугаар өөр бүртгэлд ашиглагдсан байна.");
+    }
     await update({ name: `${ln} ${fn}`.trim(), firstName: fn, lastName: ln, phone: ph });
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
