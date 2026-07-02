@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { sx } from "@/lib/sx";
 import { SERVICES } from "@/lib/data";
 import { useAuth } from "@/lib/auth";
 import { createBooking } from "@/lib/admin";
+import { supabase } from "@/lib/supabase";
 import { Calendar } from "@/components/Calendar";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:13px 15px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
@@ -23,6 +24,20 @@ export default function ServicePage() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
+  const [booked, setBooked] = useState<string[]>([]); // тухайн өдрийн авагдсан цагууд
+
+  // Огноо солигдоход тухайн өдрийн авагдсан цагийг татна
+  useEffect(() => {
+    if (!date) { setBooked([]); return; }
+    let alive = true;
+    supabase.rpc("booked_times", { d: date }).then(({ data }) => {
+      if (!alive) return;
+      const taken = (data ?? []) as string[];
+      setBooked(taken);
+      setTime((cur) => (taken.includes(cur) ? "" : cur)); // авагдсан бол сонголтыг арилгана
+    });
+    return () => { alive = false; };
+  }, [date]);
 
   function chip(active: boolean): string {
     const base = "cursor:pointer;font:600 13px Roboto;padding:11px 14px;border-radius:10px;text-align:center;user-select:none;";
@@ -41,6 +56,13 @@ export default function ServicePage() {
     if (phone.replace(/\D/g, "").length !== 8) return setError("Утасны дугаар 8 оронтой байх ёстой.");
     setBusy(true);
     try {
+      // Давхар захиалгаас сэргийлэх — сүүлийн байдлаар шалгах
+      const { data: taken } = await supabase.rpc("booked_times", { d: date });
+      if (((taken ?? []) as string[]).includes(time)) {
+        setBooked((taken ?? []) as string[]); setTime("");
+        setError("Уучлаарай, энэ цаг дөнгөж авагдлаа. Өөр цаг сонгоно уу.");
+        return;
+      }
       await createBooking({
         service_type: serviceType, booking_date: date, booking_time: time,
         name: name.trim(), phone: phone.replace(/\D/g, ""), moto_model: model.trim(),
@@ -98,12 +120,20 @@ export default function ServicePage() {
             {/* Баруун: цаг + холбоо */}
             <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
               <div>
-                <label style={sx(LABEL)}>3. Цаг</label>
+                <label style={sx(LABEL)}>3. Цаг {date && booked.length > 0 && <span style={sx("color:#8A8F98;font-weight:400;")}>· авагдсан цаг саарал</span>}</label>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(72px,1fr))", gap: 8 }}>
-                  {TIMES.map((t) => (
-                    <div key={t} onClick={() => setTime(t)} style={sx(chip(time === t))}>{t}</div>
-                  ))}
+                  {TIMES.map((t) => {
+                    const taken = booked.includes(t);
+                    return taken ? (
+                      <div key={t} title="Авагдсан" style={sx("font:600 13px Roboto;padding:11px 14px;border-radius:10px;text-align:center;background:#0b0b0d;color:#4b4b50;border:1px solid #1c1c1f;text-decoration:line-through;cursor:not-allowed;")}>{t}</div>
+                    ) : (
+                      <div key={t} onClick={() => setTime(t)} style={sx(chip(time === t))}>{t}</div>
+                    );
+                  })}
                 </div>
+                {date && booked.length >= TIMES.length && (
+                  <div style={sx("font:500 12px Roboto;color:#f59e0b;margin-top:8px;")}>Энэ өдрийн бүх цаг авагдсан байна. Өөр өдөр сонгоно уу.</div>
+                )}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 <div><label style={sx(LABEL)}>4. Холбоо барих</label>
