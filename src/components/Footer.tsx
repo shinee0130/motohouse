@@ -31,9 +31,20 @@ export function Footer() {
           <div style={sx("font:600 11px 'JetBrains Mono';letter-spacing:.2em;color:#8A8F98;margin-bottom:12px;")}>
             CONTACT
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 9, font: "500 14px Roboto", color: "#C8C8C8" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, font: "500 14px Roboto", color: "#C8C8C8" }}>
             <span>+976 8800 0000</span>
-            <span>Facebook · Instagram · TikTok</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <a href="https://www.facebook.com/profile.php?id=61557148658508" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/assets/social/facebook.png" alt="Facebook" width={28} height={28} style={sx("width:28px;height:28px;border-radius:7px;display:block;")} />
+              </a>
+              <a href="https://www.instagram.com/moto_house_mgl/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/assets/social/instagram.png" alt="Instagram" width={28} height={28} style={sx("width:28px;height:28px;border-radius:7px;display:block;")} />
+              </a>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/assets/social/tiktok.png" alt="TikTok" width={28} height={28} style={sx("width:28px;height:28px;border-radius:7px;display:block;")} />
+            </div>
             <span>Улаанбаатар, Монгол</span>
           </div>
         </div>
