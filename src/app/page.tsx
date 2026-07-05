@@ -48,7 +48,7 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const [motos, gear, allEvents, settings] = await Promise.all([getMotos(), getGearAll(), getEvents(), getSettings()]);
   const heroImg = settings.hero || "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/hero.webp";
-  const heroVideo = settings.hero_video || "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/hero-bg.mp4";
+  // hero видеог түр хассан (Free egress хэмнэх) — сэргээхэд доорх <img>-ийг <video>-оор солино
   const homePoster = settings.home_poster; // урт poster зураг (admin-аас)
 
   const featuredAll = motos.filter((m) => m.featured);
@@ -65,13 +65,10 @@ export default async function HomePage() {
     <div style={{ animation: "mhfade .5s both" }}>
       {/* ===== HERO ===== */}
       <div style={sx("position:relative;overflow:hidden;border-bottom:1px solid #1c1c1f;")}>
-        <video
-          src={heroVideo}
-          poster={heroImg}
-          autoPlay
-          muted
-          loop
-          playsInline
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={heroImg}
+          alt=""
           style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;")}
         />
         <div
