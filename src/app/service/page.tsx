@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { SERVICES } from "@/lib/data";
 import { useAuth } from "@/lib/auth";
@@ -14,6 +15,7 @@ const TIMES = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "1
 
 export default function ServicePage() {
   const { user } = useAuth();
+  const router = useRouter();
   const [serviceType, setServiceType] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -49,6 +51,7 @@ export default function ServicePage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    if (!user) { router.push("/login"); return; }
     if (!serviceType) return setError("Үйлчилгээний төрлөө сонгоно уу.");
     if (!date) return setError("Огноогоо сонгоно уу.");
     if (!time) return setError("Цагаа сонгоно уу.");
@@ -146,9 +149,10 @@ export default function ServicePage() {
                 <input className="mh-input" placeholder="Мотоциклын модель (заавал биш)" value={model} onChange={(e) => setModel(e.target.value)} style={sx(INPUT)} />
                 <textarea className="mh-input" placeholder="Асуудал / нэмэлт тэмдэглэл" rows={3} value={note} onChange={(e) => setNote(e.target.value)} style={sx(INPUT + "resize:vertical;")} />
               </div>
+              {!user && <div style={sx("font:500 12px Roboto;color:#8A8F98;")}>Цаг захиалахын тулд эхлээд нэвтэрсэн байх шаардлагатай.</div>}
               {error && <div style={sx("font:500 13px Roboto;color:#ef4444;")}>{error}</div>}
               <button type="submit" disabled={busy} style={sx(`background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px;border:none;border-radius:11px;text-transform:uppercase;cursor:pointer;${busy ? "opacity:.6;" : ""}`)}>
-                {busy ? "Илгээж байна…" : "Цаг захиалах"}
+                {busy ? "Илгээж байна…" : user ? "Цаг захиалах" : "Нэвтэрч захиалах"}
               </button>
             </div>
           </form>
