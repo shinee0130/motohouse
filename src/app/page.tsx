@@ -2,7 +2,7 @@ import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { MotoCard } from "@/components/MotoCard";
 import { Slot } from "@/components/Slot";
-import { fmt, badge } from "@/lib/data";
+import { fmt, badge, isPart, type GearItem } from "@/lib/data";
 import { getMotos, getGearAll, getEvents, getSettings } from "@/lib/queries";
 import { T } from "@/lib/i18n";
 import {
@@ -54,13 +54,47 @@ export default async function HomePage() {
 
   const featuredAll = motos.filter((m) => m.featured);
   const featured = (featuredAll.length ? featuredAll : motos).slice(0, 4);
-  const bestGear = gear.slice(0, 4);
+  const bestGear = gear.filter((g) => !isPart(g)).slice(0, 4);
+  const bestParts = gear.filter(isPart).slice(0, 4);
   const events = allEvents.slice(0, 3);
 
   // Каталогт зарагддаг брэндүүд → зөвхөн бодит логотой нь marquee-д.
   const BRANDS = Array.from(new Set([...motos.map((m) => m.brand), ...gear.map((g) => g.brand)]));
   const logoBrands = BRANDS.filter((b) => BRAND_LOGOS[b]);
   const brands = [...logoBrands, ...logoBrands];
+  const renderProductCards = (items: GearItem[], baseHref: "/gear" | "/parts") =>
+    items.map((g) => {
+      const sale = g.oldPrice > g.price ? Math.round((1 - g.price / g.oldPrice) * 100) : 0;
+      return (
+        <Link key={g.id} href={`${baseHref}/${g.id}`} className="mh-card" style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;cursor:pointer;")}>
+          <div style={{ position: "relative", height: 190, background: "#fff" }}>
+            {g.images && g.images[0] ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
+            ) : (
+              <Slot label="Бүтээгдэхүүн зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+            )}
+            {sale > 0 && (
+              <span style={sx("position:absolute;top:10px;left:10px;z-index:2;font:800 11px Montserrat;letter-spacing:.04em;color:#fff;background:#E10613;padding:5px 9px;border-radius:4px;")}>
+                SALE -{sale}%
+              </span>
+            )}
+          </div>
+          <div style={{ padding: "14px 16px" }}>
+            <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>
+              {g.brand.toUpperCase()} · {g.category}
+            </div>
+            <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:4px;")}>{g.name}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 10 }}>
+              {g.oldPrice > g.price && (
+                <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}>{fmt(g.oldPrice)}</span>
+              )}
+              <span style={sx("font:800 16px Montserrat;color:#fff;")}>{fmt(g.price)}</span>
+            </div>
+          </div>
+        </Link>
+      );
+    });
 
   return (
     <div style={{ animation: "mhfade .5s both" }}>
@@ -256,40 +290,27 @@ export default async function HomePage() {
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
         <div style={sx("display:flex;align-items:flex-end;justify-content:space-between;gap:16px;")}>
           <div>
-            <div style={sx(SECTION_LABEL)}>GEAR · PARTS</div>
-            <h2 style={sx(SECTION_TITLE)}><T>Эрэлттэй бараа</T></h2>
+            <div style={sx(SECTION_LABEL)}>RIDER GEAR</div>
+            <h2 style={sx(SECTION_TITLE)}><T>Эрэлттэй дагалдах хэрэгсэл</T></h2>
           </div>
           <Link href="/gear" style={sx(SEE_ALL)}><T>Бүгдийг →</T></Link>
         </div>
         <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;margin-top:24px;")}>
-          {bestGear.map((g) => {
-            const sale = Math.round((1 - g.price / g.oldPrice) * 100);
-            return (
-              <Link key={g.id} href={`/gear/${g.id}`} className="mh-card" style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;cursor:pointer;")}>
-                <div style={{ position: "relative", height: 190, background: "#fff" }}>
-                  {g.images && g.images[0] ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
-                  ) : (
-                    <Slot label="Бүтээгдэхүүн зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
-                  )}
-                  <span style={sx("position:absolute;top:10px;left:10px;z-index:2;font:800 11px Montserrat;letter-spacing:.04em;color:#fff;background:#E10613;padding:5px 9px;border-radius:4px;")}>
-                    SALE -{sale}%
-                  </span>
-                </div>
-                <div style={{ padding: "14px 16px" }}>
-                  <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>
-                    {g.brand.toUpperCase()} · {g.category}
-                  </div>
-                  <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:4px;")}>{g.name}</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 10 }}>
-                    <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}>{fmt(g.oldPrice)}</span>
-                    <span style={sx("font:800 16px Montserrat;color:#fff;")}>{fmt(g.price)}</span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+          {renderProductCards(bestGear, "/gear")}
+        </div>
+      </div>
+
+      {/* ===== PARTS BESTSELLERS ===== */}
+      <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
+        <div style={sx("display:flex;align-items:flex-end;justify-content:space-between;gap:16px;")}>
+          <div>
+            <div style={sx(SECTION_LABEL)}>PERFORMANCE PARTS</div>
+            <h2 style={sx(SECTION_TITLE)}><T>Эрэлттэй сэлбэг</T></h2>
+          </div>
+          <Link href="/parts" style={sx(SEE_ALL)}><T>Бүгдийг →</T></Link>
+        </div>
+        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;margin-top:24px;")}>
+          {renderProductCards(bestParts, "/parts")}
         </div>
       </div>
 

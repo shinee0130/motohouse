@@ -12,6 +12,7 @@ export default async function PartsPage() {
       label="PERFORMANCE PARTS"
       title="Сэлбэг"
       desc="Яндан, дугуй, батерей болон тогтмол солих сэлбэгүүдийг олон улсын захиалгад тохируулан бэлтгэх боломжтой."
+      baseHref="/parts"
     />
   );
 }

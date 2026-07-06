@@ -39,7 +39,19 @@ function Accordion({ title, children, open: openDefault = false }: { title: stri
   );
 }
 
-export function GearDetail({ item, related, more }: { item: GearItem; related: GearItem[]; more: GearItem[] }) {
+export function GearDetail({
+  item,
+  related,
+  more,
+  baseHref = "/gear",
+  baseLabel = "Gear",
+}: {
+  item: GearItem;
+  related: GearItem[];
+  more: GearItem[];
+  baseHref?: "/gear" | "/parts";
+  baseLabel?: string;
+}) {
   const { user } = useAuth();
   const { t } = useI18n();
   const router = useRouter();
@@ -51,7 +63,7 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
   const [saved, setSavedState] = useState(false);
   const [busy, setBusy] = useState(false);
   const [cartMsg, setCartMsg] = useState(false);
-  const sale = Math.round((1 - item.price / item.oldPrice) * 100);
+  const sale = item.oldPrice > item.price ? Math.round((1 - item.price / item.oldPrice) * 100) : 0;
 
   useEffect(() => {
     if (user) getSavedIds(user.phone, "gear").then((ids) => setSavedState(ids.includes(item.id)));
@@ -76,7 +88,7 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
     <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(20px,4vw,40px) clamp(20px,4vw,40px);animation:mhfade .5s both;")}>
       {/* breadcrumb */}
       <div style={sx("font:500 12px Roboto;color:#8A8F98;margin-bottom:18px;")}>
-        <Link href="/gear" style={{ cursor: "pointer" }}>Gear</Link>
+        <Link href={baseHref} style={{ cursor: "pointer" }}>{baseLabel}</Link>
         <span style={{ margin: "0 8px", color: "#3a3a3f" }}>/</span>
         <span>{item.category}</span>
         <span style={{ margin: "0 8px", color: "#3a3a3f" }}>/</span>
@@ -276,7 +288,7 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
           <h2 style={sx("font:800 20px Montserrat;color:#fff;text-transform:uppercase;")}>Хамт авах</h2>
           <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;margin-top:18px;")}>
             {related.map((g) => (
-              <GearMini key={g.id} g={g} />
+              <GearMini key={g.id} g={g} baseHref={baseHref} />
             ))}
           </div>
         </div>
@@ -288,7 +300,7 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
           <h2 style={sx("font:800 20px Montserrat;color:#fff;text-transform:uppercase;")}>Танд таалагдаж магадгүй</h2>
           <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;margin-top:18px;")}>
             {more.map((g) => (
-              <GearMini key={g.id} g={g} />
+              <GearMini key={g.id} g={g} baseHref={baseHref} />
             ))}
           </div>
         </div>
@@ -297,10 +309,10 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
   );
 }
 
-function GearMini({ g }: { g: GearItem }) {
+function GearMini({ g, baseHref }: { g: GearItem; baseHref: "/gear" | "/parts" }) {
   return (
     <Link
-      href={`/gear/${g.id}`}
+      href={`${baseHref}/${g.id}`}
       className="mh-card"
       style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;cursor:pointer;")}
     >

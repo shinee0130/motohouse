@@ -101,6 +101,8 @@ export const EN: Record<string, string> = {
     "Helmets, apparel, intercoms, protection, and everyday riding accessories.",
   "Дэлгүүр үзэх": "Shop now",
   "Эрэлттэй бараа": "Popular gear",
+  "Эрэлттэй дагалдах хэрэгсэл": "Popular riding gear",
+  "Эрэлттэй сэлбэг": "Popular parts",
   "ОГНОО": "DATE",
   "🏆 ШАГНАЛ": "🏆 PRIZE",
   "MOTO HOUSE-ийн мэдээллийг түрүүлж аваарай": "Get MOTO HOUSE updates first",

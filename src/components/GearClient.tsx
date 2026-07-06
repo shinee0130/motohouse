@@ -20,11 +20,13 @@ export function GearClient({
   label = "GEAR · PARTS",
   title = "Хэрэгсэл ба сэлбэг",
   desc = "Каск, хувцас, хамгаалалт болон сэлбэгийг ангиллаар нь хурдан сонгоорой.",
+  baseHref = "/gear",
 }: {
   gear: GearItem[];
   label?: string;
   title?: string;
   desc?: string;
+  baseHref?: "/gear" | "/parts";
 }) {
   const { t } = useI18n();
   const [cat, setCat] = useState("All");
@@ -50,11 +52,11 @@ export function GearClient({
 
         <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-top:22px;")}>
           {list.map((g) => {
-            const sale = Math.round((1 - g.price / g.oldPrice) * 100);
+            const sale = g.oldPrice > g.price ? Math.round((1 - g.price / g.oldPrice) * 100) : 0;
             return (
               <Link
                 key={g.id}
-                href={`/gear/${g.id}`}
+                href={`${baseHref}/${g.id}`}
                 className="mh-card"
                 style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;cursor:pointer;")}
               >
@@ -65,9 +67,11 @@ export function GearClient({
                   ) : (
                     <Slot label={t("Бүтээгдэхүүн зураг")} light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                   )}
-                  <span style={sx("position:absolute;top:10px;left:10px;z-index:2;font:800 11px Montserrat;letter-spacing:.04em;color:#fff;background:#E10613;padding:5px 9px;border-radius:4px;")}>
-                    SALE -{sale}%
-                  </span>
+                  {sale > 0 && (
+                    <span style={sx("position:absolute;top:10px;left:10px;z-index:2;font:800 11px Montserrat;letter-spacing:.04em;color:#fff;background:#E10613;padding:5px 9px;border-radius:4px;")}>
+                      SALE -{sale}%
+                    </span>
+                  )}
                 </div>
                 <div style={{ padding: "14px 16px" }}>
                   <span style={sx("font:700 13px Montserrat;letter-spacing:.08em;color:#E10613;")}>{"★★★★★".slice(0, g.rating)}</span>
@@ -76,7 +80,9 @@ export function GearClient({
                   </div>
                   <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:3px;")}>{g.name}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 11 }}>
-                    <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}>{fmt(g.oldPrice)}</span>
+                    {g.oldPrice > g.price && (
+                      <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}>{fmt(g.oldPrice)}</span>
+                    )}
                     <span style={sx("font:800 16px Montserrat;color:#fff;")}>{fmt(g.price)}</span>
                   </div>
                 </div>
