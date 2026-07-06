@@ -7,17 +7,18 @@ import { sx } from "@/lib/sx";
 import { Brand } from "./Brand";
 import { useAuth } from "@/lib/auth";
 import { cartCount, CART_EVENT } from "@/lib/cart";
+import { IconHome, IconBike, IconHelmet, IconCog, IconWrench, IconMap, IconFlag, IconGift, IconCart } from "./icons";
 
 const NAV = [
-  { label: "Нүүр", href: "/", icon: "⌂" },
-  { label: "Мотоцикл", href: "/motorcycles", icon: "🏍" },
-  { label: "Хэрэгсэл", href: "/gear", icon: "🪖" },
-  { label: "Сэлбэг", href: "/parts", icon: "⚙️" },
-  { label: "Засвар", href: "/service", icon: "🔧" },
-  { label: "Аялал", href: "/travel", icon: "🗺" },
-  { label: "Events", href: "/events", icon: "🏁" },
-  { label: "Giveaway", href: "/giveaway", icon: "🎁" },
-  { label: "Миний сагс", href: "/cart", icon: "🛒" },
+  { label: "Нүүр", href: "/", Icon: IconHome },
+  { label: "Мотоцикл", href: "/motorcycles", Icon: IconBike },
+  { label: "Хэрэгсэл", href: "/gear", Icon: IconHelmet },
+  { label: "Сэлбэг", href: "/parts", Icon: IconCog },
+  { label: "Засвар", href: "/service", Icon: IconWrench },
+  { label: "Аялал", href: "/travel", Icon: IconMap },
+  { label: "Events", href: "/events", Icon: IconFlag },
+  { label: "Giveaway", href: "/giveaway", Icon: IconGift },
+  { label: "Миний сагс", href: "/cart", Icon: IconCart },
 ];
 
 const ACCOUNT_MENU = [
@@ -90,8 +91,8 @@ export function Nav() {
           <div style={{ marginLeft: "auto" }} />
 
           {/* сагс */}
-          <Link href="/cart" aria-label="Миний сагс" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 10, border: "1px solid #262626", fontSize: 19, flexShrink: 0 }}>
-            🛒
+          <Link href="/cart" aria-label="Миний сагс" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 10, border: "1px solid #262626", color: "#fff", flexShrink: 0 }}>
+            <IconCart style={{ width: 21, height: 21 }} />
             {cart > 0 && (
               <span style={sx("position:absolute;top:-6px;right:-6px;background:#E10613;color:#fff;font:800 10px Montserrat;min-width:18px;height:18px;padding:0 5px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;")}>
                 {cart}
@@ -123,7 +124,7 @@ export function Nav() {
                         onClick={() => setAcctOpen(false)}
                         style={sx("display:block;padding:10px 12px;border-radius:8px;font:700 13px Montserrat;color:#fff;background:#E10613;margin-bottom:4px;")}
                       >
-                        ⚙ Admin panel
+                        Admin panel
                       </Link>
                     )}
                     {ACCOUNT_MENU.map((m) => (
@@ -210,7 +211,7 @@ export function Nav() {
                     : "color:#A3A3A3;background:transparent;"),
                 )}
               >
-                <span style={{ width: 22, textAlign: "center", flexShrink: 0 }}>{item.icon}</span>
+                <item.Icon style={{ width: 20, height: 20, flexShrink: 0, opacity: on ? 1 : 0.75 }} />
                 {item.label}
                 {item.href === "/cart" && cart > 0 && (
                   <span style={sx(`margin-left:auto;font:800 11px Montserrat;min-width:22px;height:22px;padding:0 6px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;${on ? "background:#fff;color:#E10613;" : "background:#E10613;color:#fff;"}`)}>
@@ -239,7 +240,7 @@ export function Nav() {
                     onClick={() => setOpen(false)}
                     style={sx("display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:11px;font:700 14px Montserrat;color:#E10613;")}
                   >
-                    <span style={{ width: 22, textAlign: "center" }}>⚙</span> Admin panel
+                    <IconCog style={{ width: 20, height: 20, flexShrink: 0 }} /> Admin panel
                   </Link>
                 )}
                 {ACCOUNT_MENU.map((m) => (

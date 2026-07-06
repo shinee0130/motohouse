@@ -77,3 +77,52 @@ export function IconCog({ style }: { style?: CSSProperties }) {
     </svg>
   );
 }
+
+export function IconHome({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" style={base(style)}>
+      <path d="M4 11l8-7 8 7" />
+      <path d="M6 9.5V20h12V9.5" />
+      <path d="M10 20v-6h4v6" />
+    </svg>
+  );
+}
+
+export function IconMap({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" style={base(style)}>
+      <path d="M9 4L4 6v14l5-2 6 2 5-2V4l-5 2z" />
+      <path d="M9 4v14M15 6v14" />
+    </svg>
+  );
+}
+
+export function IconFlag({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" style={base(style)}>
+      <path d="M5 21V4" />
+      <path d="M5 4h13l-2.5 4L18 12H5" />
+    </svg>
+  );
+}
+
+export function IconGift({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" style={base(style)}>
+      <rect x="4" y="8" width="16" height="4" />
+      <path d="M6 12v8h12v-8" />
+      <path d="M12 8v12" />
+      <path d="M12 8c-2-4.5-7-2.5-4.5 0M12 8c2-4.5 7-2.5 4.5 0" />
+    </svg>
+  );
+}
+
+export function IconCart({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" style={base(style)}>
+      <path d="M3 5h2.5l2 11h11l2-8H7" />
+      <circle cx="9.5" cy="19.5" r="1.5" />
+      <circle cx="17" cy="19.5" r="1.5" />
+    </svg>
+  );
+}
