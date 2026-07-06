@@ -34,7 +34,7 @@ const TRUST = [
   { Icon: IconTruck, t: "Дотоод ба олон улсын хүргэлт", d: "Монголд шуурхай, гадаад захиалгад бэлтгэнэ" },
   { Icon: IconCard, t: "Олон улсын төлбөр", d: "Visa · Mastercard · American Express · Apple Pay · Google Pay" },
   { Icon: IconWrench, t: "Мэргэжлийн засвар", d: "Туршлагатай механик баг" },
-  { Icon: IconShield, t: "Нягт шалгасан бараа", d: "Бичиг баримт, тохирц, савлагааг шалгана" },
+  { Icon: IconShield, t: "Баталгаат оригинал бараа", d: "Эх сурвалж, тохирц, чанарыг баталгаажуулна" },
 ];
 
 const CATS = [
