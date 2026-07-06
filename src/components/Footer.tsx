@@ -31,8 +31,8 @@ export function Footer() {
             <Link href="/parts" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Сэлбэг")}</Link>
             <Link href="/service" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Засвар")}</Link>
             <Link href="/travel" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Аялал")}</Link>
-            <Link href="/events" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Эвент")}</Link>
-            <Link href="/giveaway" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Сугалаа")}</Link>
+            <Link href="/events" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Event")}</Link>
+            <Link href="/giveaway" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Giveaway")}</Link>
           </div>
         </div>
         <div>

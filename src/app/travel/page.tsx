@@ -4,7 +4,7 @@ import { getEvents } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 
-// Аялал — admin дээр Төрөл нь "АЯЛАЛ" (эсвэл RIDE/TRAVEL/TOUR) гэсэн эвентүүд энд гарна.
+// Аялал — admin дээр Төрөл нь "АЯЛАЛ" (эсвэл RIDE/TRAVEL/TOUR) гэсэн Event-үүд энд гарна.
 const isTravel = (t: string) => {
   const u = t.toUpperCase();
   return u.includes("АЯЛАЛ") || u.includes("RIDE") || u.includes("TRAVEL") || u.includes("TOUR");

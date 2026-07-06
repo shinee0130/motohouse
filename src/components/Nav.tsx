@@ -17,8 +17,8 @@ const NAV = [
   { label: "Сэлбэг", href: "/parts", Icon: IconPackage },
   { label: "Засвар", href: "/service", Icon: IconWrench },
   { label: "Аялал", href: "/travel", Icon: IconRoute },
-  { label: "Эвент", href: "/events", Icon: IconCalendar },
-  { label: "Сугалаа", href: "/giveaway", Icon: IconTicket },
+  { label: "Event", href: "/events", Icon: IconCalendar },
+  { label: "Giveaway", href: "/giveaway", Icon: IconTicket },
   { label: "Миний сагс", href: "/cart", Icon: IconCart },
 ];
 

@@ -48,7 +48,7 @@ export function EventParticipate({ eventId, status, initial }: { eventId: number
             {busy ? "…" : joined ? "✓ Оролцсон" : user ? "Оролцох" : "Нэвтэрч оролцох"}
           </button>
         )}
-        {closed && <span style={sx("font:600 13px Roboto;color:#8A8F98;")}>Энэ giveaway дууссан</span>}
+        {closed && <span style={sx("font:600 13px Roboto;color:#8A8F98;")}>Энэ Giveaway дууссан</span>}
       </div>
 
       {list.length > 0 ? (

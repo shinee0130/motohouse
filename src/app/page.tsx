@@ -298,7 +298,7 @@ export default async function HomePage() {
         <div style={sx("display:flex;align-items:flex-end;justify-content:space-between;gap:16px;")}>
           <div>
             <div style={sx(SECTION_LABEL)}>COMMUNITY</div>
-            <h2 style={sx(SECTION_TITLE)}><T>Эвент ба сугалаа</T></h2>
+            <h2 style={sx(SECTION_TITLE)}><T>Event & Giveaway</T></h2>
           </div>
           <Link href="/events" style={sx(SEE_ALL)}><T>Бүгдийг →</T></Link>
         </div>
@@ -341,7 +341,7 @@ export default async function HomePage() {
               <T>MOTO HOUSE-ийн мэдээллийг түрүүлж аваарай</T>
             </div>
             <div style={sx("font:400 14px Roboto;color:#A3A3A3;margin-top:8px;max-width:480px;")}>
-              <T>Шинэ бараа, экспортын боломж, эвент, сугалаа болон засварын зөвлөгөөг и-мэйлээр хүргэнэ.</T>
+              <T>Шинэ бараа, экспортын боломж, Event, Giveaway болон засварын зөвлөгөөг и-мэйлээр хүргэнэ.</T>
             </div>
           </div>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>

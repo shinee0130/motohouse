@@ -40,7 +40,7 @@ export default function AdminEvents() {
     } finally { setBusy(false); }
   }
   async function del(id: number) {
-    if (!confirm("Энэ эвентийг устгах уу?")) return;
+    if (!confirm("Энэ Event-ийг устгах уу?")) return;
     await deleteEvent(id);
     await refresh();
   }
@@ -59,7 +59,7 @@ export default function AdminEvents() {
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <div style={sx("font:700 18px Montserrat;color:#fff;")}>Events & Giveaway ({list.length})</div>
-        {editing === null && <button onClick={() => { setF(empty); setEditing("new"); }} style={sx(BTN)}>+ Шинэ эвент</button>}
+        {editing === null && <button onClick={() => { setF(empty); setEditing("new"); }} style={sx(BTN)}>+ Шинэ Event</button>}
       </div>
 
       {editing !== null && (

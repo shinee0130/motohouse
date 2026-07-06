@@ -11,9 +11,9 @@ export const EN: Record<string, string> = {
   "Сэлбэг": "Parts",
   "Засвар": "Service",
   "Аялал": "Rides",
-  "Эвент": "Events",
-  "Сугалаа": "Giveaway",
-  "Эвент ба сугалаа": "Events & Giveaway",
+  "Event": "Event",
+  "Giveaway": "Giveaway",
+  "Event & Giveaway": "Event & Giveaway",
   "Миний сагс": "My cart",
   "Нэвтрэх": "Sign in",
   "Гарах": "Sign out",
@@ -105,11 +105,11 @@ export const EN: Record<string, string> = {
   "🏆 ШАГНАЛ": "🏆 PRIZE",
   "MOTO HOUSE-ийн мэдээллийг түрүүлж аваарай": "Get MOTO HOUSE updates first",
   "MOTO HOUSE-тэй холбогдоорой": "Get MOTO HOUSE updates first",
-  "Шинэ бараа, эвент, сугалаа болон засварын зөвлөгөөг и-мэйлээр хүргэнэ.":
+  "Шинэ бараа, Event, Giveaway болон засварын зөвлөгөөг и-мэйлээр хүргэнэ.":
     "Get updates on new arrivals, events, giveaways, and service tips by email.",
-  "Шинэ бараа, экспортын боломж, эвент, сугалаа болон засварын зөвлөгөөг и-мэйлээр хүргэнэ.":
+  "Шинэ бараа, экспортын боломж, Event, Giveaway болон засварын зөвлөгөөг и-мэйлээр хүргэнэ.":
     "Get updates on new arrivals, export availability, events, giveaways, and service tips by email.",
-  "И-мэйлээ үлдээгээрэй — drop, giveaway, performance parts-ийн мэдээллийг хүргэнэ.":
+  "И-мэйлээ үлдээгээрэй — drop, Giveaway, performance parts-ийн мэдээллийг хүргэнэ.":
     "Get updates on new arrivals, events, giveaways, and service tips by email.",
   "И-мэйл хаяг": "Email address",
   "Бүртгүүлэх": "Subscribe",
@@ -156,8 +156,8 @@ export const EN: Record<string, string> = {
 
   // ===== Events / service =====
   "Одоогоор мэдээлэл алга. Тун удахгүй!": "No updates yet. Please check back soon.",
-  "Одоогоор эвент алга. Тун удахгүй зарлана!": "No events are scheduled yet. New dates will be announced soon.",
-  "Одоогоор идэвхтэй giveaway алга. Тун удахгүй!": "No active giveaways right now. A new one is coming soon.",
+  "Одоогоор Event алга. Тун удахгүй зарлана!": "No events are scheduled yet. New dates will be announced soon.",
+  "Одоогоор идэвхтэй Giveaway алга. Тун удахгүй!": "No active giveaways right now. A new one is coming soon.",
   "Одоогоор товлогдсон аялал алга. Тун удахгүй зарлана — хамт аялцгаая!": "No rides are scheduled yet. New routes will be announced soon.",
   "GROUP RIDE": "GROUP RIDE",
   "UPCOMING RIDES": "UPCOMING RIDES",
@@ -210,7 +210,7 @@ export const EN: Record<string, string> = {
   "Ус ба нэмэлт түлш": "Water and extra fuel",
   "Дулаан бээлий": "Warm gloves",
   "Борооны давхарга": "Rain layer",
-  "Эвентийн зураг": "Event poster",
+  "Event зураг": "Event poster",
   "Winner": "Winner",
   "Ongoing": "Ongoing",
   "Closed": "Closed",

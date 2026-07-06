@@ -51,7 +51,7 @@ export function EventsGrid({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={e.image} alt={e.title} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:10px;")} />
                 ) : (
-                  <Slot label={t("Эвентийн зураг")} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                  <Slot label={t("Event зураг")} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                 )}
                 <span style={{ position: "absolute", top: 12, left: 12, zIndex: 2, ...sx(badge(e.status)) }}>
                   {t(e.status)}
