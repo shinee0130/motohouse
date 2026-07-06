@@ -227,12 +227,12 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
             </div>
           )}
           <div style={sx("font:400 12px Roboto;color:#8A8F98;text-align:center;margin-top:12px;")}>
-            {t("Одоогоор захиалгыг баталгаажуулсны дараа төлбөр/хүргэлтийг тохирно. Удахгүй олон улсын карт болон digital wallet төлбөрүүд холбогдоно.")}
+            {t("Захиалгыг баталгаажуулсны дараа төлбөр/хүргэлтийг тохирно. Олон улсын карт болон digital wallet төлбөрүүдийг дэмжинэ.")}
           </div>
           <div style={sx("background:#0B0B0D;border:1px solid #262626;border-radius:14px;padding:14px;margin-top:14px;")}>
             <div style={sx("font:700 11px 'JetBrains Mono';letter-spacing:.12em;color:#E10613;text-transform:uppercase;")}>{t("Төлбөрийн боломжууд")}</div>
             <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:7px;")}>
-              {t("Visa, Mastercard, American Express, UnionPay, T Card, Apple Pay, Google Pay, WeChat Pay, QPay, SocialPay, HiPay удахгүй дэмжигдэнэ.")}
+              {t("Visa, Mastercard, American Express, UnionPay, T Card, Apple Pay, Google Pay, WeChat Pay, QPay, SocialPay, HiPay дэмжинэ.")}
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 10 }}>
               {PAYMENT_METHODS.map((method) => (

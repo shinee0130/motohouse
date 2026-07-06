@@ -54,7 +54,7 @@ export default function CartPage() {
         <div style={sx("background:#111113;border:1px solid #262626;border-radius:18px;padding:clamp(28px,5vw,48px);margin-top:26px;text-align:center;")}>
           <div style={sx("font:800 22px Montserrat;color:#22c55e;")}>✓ Захиалга илгээгдлээ!</div>
           <div style={sx("font:400 14px Roboto;color:#A3A3A3;margin-top:10px;")}>
-            {t("Одоогоор захиалгыг баталгаажуулсны дараа төлбөр/хүргэлтийг тохирно. Удахгүй олон улсын карт болон digital wallet төлбөрүүд холбогдоно.")}
+            {t("Захиалгыг баталгаажуулсны дараа төлбөр/хүргэлтийг тохирно. Олон улсын карт болон digital wallet төлбөрүүдийг дэмжинэ.")}
           </div>
           <Link href="/account/orders" style={sx("display:inline-block;margin-top:20px;background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.05em;padding:13px 24px;border-radius:10px;text-transform:uppercase;cursor:pointer;")}>
             Миний захиалга
@@ -111,12 +111,12 @@ export default function CartPage() {
             </button>
           </div>
           <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:12px;")}>
-            {t("Одоогоор захиалгыг баталгаажуулсны дараа төлбөр/хүргэлтийг тохирно. Удахгүй олон улсын карт болон digital wallet төлбөрүүд холбогдоно.")}
+            {t("Захиалгыг баталгаажуулсны дараа төлбөр/хүргэлтийг тохирно. Олон улсын карт болон digital wallet төлбөрүүдийг дэмжинэ.")}
           </div>
           <div style={sx("background:#0B0B0D;border:1px solid #262626;border-radius:14px;padding:14px 16px;margin-top:14px;")}>
             <div style={sx("font:700 11px 'JetBrains Mono';letter-spacing:.12em;color:#E10613;text-transform:uppercase;")}>{t("Төлбөрийн боломжууд")}</div>
             <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:7px;")}>
-              {t("Visa, Mastercard, American Express, UnionPay, T Card, Apple Pay, Google Pay, WeChat Pay, QPay, SocialPay, HiPay удахгүй дэмжигдэнэ.")}
+              {t("Visa, Mastercard, American Express, UnionPay, T Card, Apple Pay, Google Pay, WeChat Pay, QPay, SocialPay, HiPay дэмжинэ.")}
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 10 }}>
               {PAYMENT_METHODS.map((method) => (
