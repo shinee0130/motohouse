@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { sx } from "@/lib/sx";
@@ -8,11 +8,11 @@ import { Brand } from "./Brand";
 import { useAuth } from "@/lib/auth";
 
 const NAV = [
-  { label: "Нүүр", href: "/" },
-  { label: "Мотоцикл", href: "/motorcycles" },
-  { label: "Хэрэгсэл & сэлбэг", href: "/gear" },
-  { label: "Засвар", href: "/service" },
-  { label: "Events & Giveaway", href: "/events" },
+  { label: "Нүүр", href: "/", icon: "⌂" },
+  { label: "Мотоцикл", href: "/motorcycles", icon: "🏍" },
+  { label: "Хэрэгсэл & сэлбэг", href: "/gear", icon: "🛡" },
+  { label: "Засвар", href: "/service", icon: "🔧" },
+  { label: "Events & Giveaway", href: "/events", icon: "🎁" },
 ];
 
 const ACCOUNT_MENU = [
@@ -31,10 +31,19 @@ export function Nav() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, ready, logout } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [acctOpen, setAcctOpen] = useState(false);
+  const [open, setOpen] = useState(false); // sidebar
+  const [acctOpen, setAcctOpen] = useState(false); // avatar dropdown
 
   const loggedIn = ready && !!user;
+
+  // Хуудас солигдоход sidebar хаана
+  useEffect(() => { setOpen(false); setAcctOpen(false); }, [pathname]);
+
+  // Sidebar нээлттэй үед body scroll түгжинэ
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
 
   function doLogout() {
     logout();
@@ -44,28 +53,26 @@ export function Nav() {
   }
 
   return (
-    <div style={sx("position:sticky;top:0;z-index:50;background:#070708;border-bottom:1px solid #1c1c1f;")}>
-      <div style={sx("max-width:1280px;margin:0 auto;padding:0 clamp(20px,4vw,40px);height:72px;display:flex;align-items:center;justify-content:space-between;gap:20px;")}>
-        <Link href="/" onClick={() => setOpen(false)} style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
-          <Brand height={46} />
-        </Link>
+    <>
+      {/* ===== HEADER (цомхон) ===== */}
+      <div style={sx("position:sticky;top:0;z-index:50;background:#070708;border-bottom:1px solid #1c1c1f;")}>
+        <div style={sx("max-width:1280px;margin:0 auto;padding:0 clamp(16px,3vw,32px);height:72px;display:flex;align-items:center;gap:16px;")}>
+          {/* цэсний товч */}
+          <button
+            onClick={() => setOpen(true)}
+            aria-label="Цэс нээх"
+            style={sx("background:none;border:1px solid #262626;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:4px;flex-shrink:0;")}
+          >
+            <span style={{ width: 18, height: 2, background: "#fff", display: "block" }} />
+            <span style={{ width: 18, height: 2, background: "#E10613", display: "block" }} />
+            <span style={{ width: 18, height: 2, background: "#fff", display: "block" }} />
+          </button>
 
-        {/* desktop */}
-        <div className="mh-desktop-nav" style={{ alignItems: "center", gap: "30px" }}>
-          {NAV.map((item) => {
-            const on = isActive(pathname, item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                style={sx(
-                  `cursor:pointer;font:600 14px Montserrat;letter-spacing:.02em;color:${on ? "#fff" : "#A3A3A3"};border-bottom:2px solid ${on ? "#E10613" : "transparent"};padding-bottom:4px;`,
-                )}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
+          <Link href="/" style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
+            <Brand height={44} />
+          </Link>
+
+          <div style={{ marginLeft: "auto" }} />
 
           {loggedIn ? (
             <div style={{ position: "relative" }}>
@@ -75,12 +82,12 @@ export function Nav() {
                 style={sx("display:flex;align-items:center;justify-content:center;background:none;border:none;padding:0;cursor:pointer;")}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 60, height: 60, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
               </button>
               {acctOpen && (
                 <>
                   <div onClick={() => setAcctOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
-                  <div style={sx("position:absolute;top:48px;right:0;z-index:50;min-width:210px;background:#111113;border:1px solid #262626;border-radius:14px;padding:8px;box-shadow:0 12px 40px rgba(0,0,0,.5);")}>
+                  <div style={sx("position:absolute;top:60px;right:0;z-index:50;min-width:210px;background:#111113;border:1px solid #262626;border-radius:14px;padding:8px;box-shadow:0 12px 40px rgba(0,0,0,.5);")}>
                     <div style={sx("padding:10px 12px 12px;border-bottom:1px solid #1c1c1f;margin-bottom:6px;")}>
                       <div style={sx("font:700 14px Montserrat;color:#fff;")}>{user!.name || "Хэрэглэгч"}</div>
                       <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:2px;")}>+976 {user!.phone}</div>
@@ -117,29 +124,53 @@ export function Nav() {
           ) : (
             <Link
               href="/login"
-              style={sx("background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.06em;padding:11px 20px;border-radius:9px;text-transform:uppercase;cursor:pointer;")}
+              style={sx("background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.06em;padding:11px 20px;border-radius:9px;text-transform:uppercase;cursor:pointer;white-space:nowrap;")}
             >
               Нэвтрэх
             </Link>
           )}
         </div>
-
-        {/* mobile toggle */}
-        <button
-          className="mh-mobile-toggle"
-          onClick={() => setOpen((v) => !v)}
-          aria-label="Цэс"
-          style={sx("background:none;border:1px solid #262626;border-radius:8px;width:44px;height:44px;align-items:center;justify-content:center;cursor:pointer;gap:4px;flex-direction:column;")}
-        >
-          <span style={{ width: 18, height: 2, background: "#fff", display: "block" }} />
-          <span style={{ width: 18, height: 2, background: "#fff", display: "block" }} />
-          <span style={{ width: 18, height: 2, background: "#fff", display: "block" }} />
-        </button>
       </div>
 
-      {/* mobile menu */}
-      {open && (
-        <div className="mh-mobile-menu" style={sx("border-top:1px solid #1c1c1f;padding:12px clamp(20px,4vw,40px) 20px;flex-direction:column;gap:4px;")}>
+      {/* ===== SIDEBAR DRAWER ===== */}
+      {/* overlay */}
+      <div
+        onClick={() => setOpen(false)}
+        style={{
+          position: "fixed", inset: 0, zIndex: 90,
+          background: "rgba(0,0,0,.6)", backdropFilter: "blur(2px)",
+          opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none",
+          transition: "opacity .25s ease",
+        }}
+      />
+      {/* panel */}
+      <aside
+        style={{
+          position: "fixed", top: 0, left: 0, bottom: 0, zIndex: 95,
+          width: "min(300px, 84vw)",
+          background: "#0e0e10", borderRight: "1px solid #1c1c1f",
+          display: "flex", flexDirection: "column",
+          transform: open ? "translateX(0)" : "translateX(-105%)",
+          transition: "transform .28s cubic-bezier(.22,.8,.3,1)",
+          boxShadow: open ? "20px 0 60px rgba(0,0,0,.5)" : "none",
+        }}
+      >
+        {/* дээд хэсэг: лого + хаах */}
+        <div style={sx("display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #1c1c1f;")}>
+          <Link href="/" onClick={() => setOpen(false)} style={{ display: "flex", alignItems: "center" }}>
+            <Brand height={38} />
+          </Link>
+          <button
+            onClick={() => setOpen(false)}
+            aria-label="Хаах"
+            style={sx("background:none;border:1px solid #262626;border-radius:8px;width:36px;height:36px;color:#8A8F98;font:600 16px Montserrat;cursor:pointer;")}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* цэс */}
+        <nav style={{ display: "flex", flexDirection: "column", gap: 2, padding: "14px 12px", overflowY: "auto", flex: 1 }}>
           {NAV.map((item) => {
             const on = isActive(pathname, item.href);
             return (
@@ -147,60 +178,74 @@ export function Nav() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                style={sx(`cursor:pointer;font:600 16px Montserrat;color:${on ? "#E10613" : "#C8C8C8"};padding:12px 4px;border-bottom:1px solid #1c1c1f;`)}
+                style={sx(
+                  `display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:11px;cursor:pointer;font:600 15px Montserrat;letter-spacing:.01em;` +
+                  (on
+                    ? "color:#fff;background:#E10613;"
+                    : "color:#A3A3A3;background:transparent;"),
+                )}
               >
+                <span style={{ width: 22, textAlign: "center", flexShrink: 0 }}>{item.icon}</span>
                 {item.label}
               </Link>
             );
           })}
 
-          {loggedIn ? (
-            <>
-              <div style={sx("display:flex;align-items:center;gap:12px;padding:14px 4px 10px;")}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                <div>
-                  <div style={sx("font:700 14px Montserrat;color:#fff;")}>{user!.name || "Хэрэглэгч"}</div>
-                  <div style={sx("font:400 12px Roboto;color:#8A8F98;")}>+976 {user!.phone}</div>
+          {/* бүртгэлийн хэсэг */}
+          <div style={sx("border-top:1px solid #1c1c1f;margin-top:12px;padding-top:12px;")}>
+            {loggedIn ? (
+              <>
+                <div style={sx("display:flex;align-items:center;gap:12px;padding:6px 14px 12px;")}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                  <div style={{ minWidth: 0 }}>
+                    <div style={sx("font:700 13px Montserrat;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{user!.name || "Хэрэглэгч"}</div>
+                    <div style={sx("font:400 11px Roboto;color:#8A8F98;")}>+976 {user!.phone}</div>
+                  </div>
                 </div>
-              </div>
-              {user!.role === "admin" && (
-                <Link
-                  href="/admin"
-                  onClick={() => setOpen(false)}
-                  style={sx("text-align:center;background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.04em;padding:13px;border-radius:10px;margin-bottom:6px;")}
+                {user!.role === "admin" && (
+                  <Link
+                    href="/admin"
+                    onClick={() => setOpen(false)}
+                    style={sx("display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:11px;font:700 14px Montserrat;color:#E10613;")}
+                  >
+                    <span style={{ width: 22, textAlign: "center" }}>⚙</span> Admin panel
+                  </Link>
+                )}
+                {ACCOUNT_MENU.map((m) => (
+                  <Link
+                    key={m.href}
+                    href={m.href}
+                    onClick={() => setOpen(false)}
+                    style={sx("display:block;padding:11px 14px 11px 48px;border-radius:11px;font:600 14px Montserrat;color:#A3A3A3;")}
+                  >
+                    {m.label}
+                  </Link>
+                ))}
+                <button
+                  onClick={doLogout}
+                  style={sx("width:100%;text-align:left;padding:12px 14px 12px 48px;border-radius:11px;background:none;border:none;cursor:pointer;font:600 14px Montserrat;color:#E10613;")}
                 >
-                  ⚙ Admin panel
-                </Link>
-              )}
-              {ACCOUNT_MENU.map((m) => (
-                <Link
-                  key={m.href}
-                  href={m.href}
-                  onClick={() => setOpen(false)}
-                  style={sx("font:600 15px Montserrat;color:#C8C8C8;padding:11px 4px;border-bottom:1px solid #1c1c1f;")}
-                >
-                  {m.label}
-                </Link>
-              ))}
-              <button
-                onClick={doLogout}
-                style={sx("margin-top:10px;text-align:center;background:#111113;color:#E10613;border:1px solid #E10613;font:700 14px Montserrat;letter-spacing:.06em;padding:14px;border-radius:10px;text-transform:uppercase;cursor:pointer;")}
+                  Гарах
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setOpen(false)}
+                style={sx("display:block;text-align:center;background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:14px;border-radius:11px;text-transform:uppercase;cursor:pointer;margin:4px 2px;")}
               >
-                Гарах
-              </button>
-            </>
-          ) : (
-            <Link
-              href="/login"
-              onClick={() => setOpen(false)}
-              style={sx("margin-top:10px;text-align:center;background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:14px;border-radius:10px;text-transform:uppercase;cursor:pointer;")}
-            >
-              Нэвтрэх
-            </Link>
-          )}
+                Нэвтрэх
+              </Link>
+            )}
+          </div>
+        </nav>
+
+        {/* доод хэсэг */}
+        <div style={sx("padding:14px 18px;border-top:1px solid #1c1c1f;font:500 11px 'JetBrains Mono';letter-spacing:.1em;color:#5b5b60;")}>
+          RIDE. POWER. LIVE.
         </div>
-      )}
-    </div>
+      </aside>
+    </>
   );
 }
