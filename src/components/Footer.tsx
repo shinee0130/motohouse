@@ -22,7 +22,7 @@ export function Footer() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
             <Link href="/motorcycles" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Мотоцикл</Link>
-            <Link href="/gear" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Хэрэгсэл</Link>
+            <Link href="/gear" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Дагалдах хэрэгсэл</Link>
             <Link href="/parts" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Сэлбэг</Link>
             <Link href="/service" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Засвар</Link>
             <Link href="/travel" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Аялал</Link>

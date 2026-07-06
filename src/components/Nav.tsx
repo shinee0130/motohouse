@@ -12,7 +12,7 @@ import { IconHome, IconBike, IconHelmet, IconCog, IconWrench, IconMap, IconFlag,
 const NAV = [
   { label: "Нүүр", href: "/", Icon: IconHome },
   { label: "Мотоцикл", href: "/motorcycles", Icon: IconBike },
-  { label: "Хэрэгсэл", href: "/gear", Icon: IconHelmet },
+  { label: "Дагалдах хэрэгсэл", href: "/gear", Icon: IconHelmet },
   { label: "Сэлбэг", href: "/parts", Icon: IconCog },
   { label: "Засвар", href: "/service", Icon: IconWrench },
   { label: "Аялал", href: "/travel", Icon: IconMap },

@@ -10,7 +10,7 @@ export default async function GearPage() {
     <GearClient
       gear={gear.filter((g) => !isPart(g))}
       label="RIDER GEAR"
-      title="Хэрэгсэл"
+      title="Дагалдах хэрэгсэл"
       desc="Каск, хувцас, бээлий, хамгаалалт, intercom — албан ёсны брэндүүд."
     />
   );

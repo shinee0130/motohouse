@@ -60,7 +60,7 @@ export default function CartPage() {
         <div style={sx("background:#111113;border:1px solid #262626;border-radius:18px;padding:44px 24px;margin-top:26px;text-align:center;")}>
           <div style={sx("font:600 16px Montserrat;color:#C8C8C8;")}>Сагс хоосон байна 🛒</div>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 20, flexWrap: "wrap" }}>
-            <Link href="/gear" style={sx("background:#E10613;color:#fff;font:700 13px Montserrat;padding:12px 22px;border-radius:10px;cursor:pointer;")}>Хэрэгсэл үзэх</Link>
+            <Link href="/gear" style={sx("background:#E10613;color:#fff;font:700 13px Montserrat;padding:12px 22px;border-radius:10px;cursor:pointer;")}>Дагалдах хэрэгсэл үзэх</Link>
             <Link href="/parts" style={sx("border:1px solid #444;color:#fff;font:700 13px Montserrat;padding:12px 22px;border-radius:10px;cursor:pointer;")}>Сэлбэг үзэх</Link>
           </div>
         </div>
