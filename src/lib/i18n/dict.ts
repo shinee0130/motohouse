@@ -66,7 +66,7 @@ export const EN: Record<string, string> = {
   "Мэргэжлийн механик баг": "Handled by an experienced mechanic team",
   "Баталгаатай худалдан авалт": "Verified purchase",
   "Баталгаат оригинал бараа": "Guaranteed genuine products",
-  "Эх сурвалж, тохирц, чанарыг баталгаажуулна": "Source, fitment, and quality are verified",
+  "Албан эх сурвалжтай, оригинал": "Official-source genuine products",
   "Баталгаа": "Verified purchase",
   "Бичиг баримтыг нягталж хүлээлгэнэ": "Documents checked before handover",
   "Гаалийн бичиг бүртэй": "Documents checked before handover",

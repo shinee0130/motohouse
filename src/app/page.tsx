@@ -34,7 +34,7 @@ const TRUST = [
   { Icon: IconTruck, t: "Дотоод ба олон улсын хүргэлт", d: "Монголд шуурхай, гадаад захиалгад бэлтгэнэ" },
   { Icon: IconCard, t: "Олон улсын төлбөр", d: "Visa · Mastercard · American Express · Apple Pay · Google Pay" },
   { Icon: IconWrench, t: "Мэргэжлийн засвар", d: "Туршлагатай механик баг" },
-  { Icon: IconShield, t: "Баталгаат оригинал бараа", d: "Эх сурвалж, тохирц, чанарыг баталгаажуулна" },
+  { Icon: IconShield, t: "Баталгаат оригинал бараа", d: "Албан эх сурвалжтай, оригинал" },
 ];
 
 const CATS = [
@@ -104,15 +104,15 @@ export default async function HomePage() {
 
       {/* ===== TRUST BAR ===== */}
       <div style={sx("border-bottom:1px solid #1c1c1f;background:#0B0B0D;")}>
-        <div style={sx(`${WRAP}display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;`)}>
+        <div className="mh-trust-grid" style={sx(`${WRAP}display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;`)}>
           {TRUST.map(({ Icon, t, d }) => (
-            <div key={t} style={{ display: "flex", alignItems: "center", gap: 14, padding: "22px 8px" }}>
+            <div className="mh-trust-item" key={t} style={{ display: "flex", alignItems: "center", gap: 14, padding: "22px 12px", minWidth: 0 }}>
               <span style={{ color: "#E10613", flexShrink: 0, display: "flex" }}>
                 <Icon />
               </span>
-              <div>
-                <div style={sx("font:700 14px Montserrat;color:#fff;")}><T>{t}</T></div>
-                <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:2px;")}><T>{d}</T></div>
+              <div style={{ minWidth: 0 }}>
+                <div style={sx("font:700 14px/1.25 Montserrat;color:#fff;")}><T>{t}</T></div>
+                <div style={sx("font:400 12px/1.35 Roboto;color:#8A8F98;margin-top:3px;max-width:230px;")}><T>{d}</T></div>
               </div>
             </div>
           ))}
