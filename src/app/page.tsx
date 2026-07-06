@@ -39,7 +39,7 @@ const TRUST = [
 const CATS = [
   { title: "Мотоцикл", desc: "Sport · Naked · Track", href: "/motorcycles", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_moto.webp", setKey: "cat_moto" },
   { title: "Хэрэгсэл", desc: "Каск · хувцас · хамгаалалт", href: "/gear", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_gear.webp", setKey: "cat_gear" },
-  { title: "Сэлбэг", desc: "Яндан · дугуй · батерей", href: "/gear", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_parts.webp", setKey: "cat_parts" },
+  { title: "Сэлбэг", desc: "Яндан · дугуй · батерей", href: "/parts", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_parts.webp", setKey: "cat_parts" },
   { title: "Засвар", desc: "Оношилгоо · тюнинг", href: "/service", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_service.webp", setKey: "cat_service" },
 ];
 

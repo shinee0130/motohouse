@@ -14,7 +14,17 @@ function chip(active: boolean): string {
     : base + "background:#111113;color:#A3A3A3;border:1px solid #262626;";
 }
 
-export function GearClient({ gear }: { gear: GearItem[] }) {
+export function GearClient({
+  gear,
+  label = "GEAR · PARTS",
+  title = "Premium Gear & Parts",
+  desc = "Каск, хувцас, хамгаалалт болон сэлбэг — албан ёсны брэндүүд.",
+}: {
+  gear: GearItem[];
+  label?: string;
+  title?: string;
+  desc?: string;
+}) {
   const [cat, setCat] = useState("All");
   const cats = useMemo(() => ["All", ...Array.from(new Set(gear.map((g) => g.category)))], [gear]);
   const list = cat === "All" ? gear : gear.filter((g) => g.category === cat);
@@ -22,12 +32,12 @@ export function GearClient({ gear }: { gear: GearItem[] }) {
   return (
     <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(32px,5vw,56px) clamp(20px,4vw,40px);")}>
       <div style={{ animation: "mhfade .5s both" }}>
-        <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.24em;color:#E10613;")}>GEAR · PARTS</div>
+        <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.24em;color:#E10613;")}>{label}</div>
         <h1 style={sx("font:800 clamp(30px,5vw,46px) Montserrat;color:#fff;margin-top:6px;text-transform:uppercase;")}>
-          Premium Gear &amp; Parts
+          {title}
         </h1>
         <p style={sx("font:400 15px Roboto;color:#8A8F98;margin-top:8px;max-width:620px;")}>
-          Online payment v1-д байхгүй — request илгээж, admin холбогдоно. Parts дээр compatibility тод харагдана.
+          {desc}
         </p>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 22 }}>

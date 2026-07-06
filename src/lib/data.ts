@@ -61,6 +61,10 @@ export const SERVICES: string[] = [
   "Оношилгоо", "Яндан суурилуулах", "Ерөнхий засвар", "Custom тюнинг", "Импортын зөвлөгөө",
 ];
 
+// Сэлбэгт тооцох ангиллууд — бусад нь хэрэгсэл (rider gear).
+export const PARTS_CATS = ["Exhaust", "Battery", "Tire"];
+export const isPart = (g: GearItem) => PARTS_CATS.includes(g.category);
+
 export interface EventItem {
   id: number;
   type: string;

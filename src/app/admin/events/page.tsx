@@ -85,7 +85,7 @@ export default function AdminEvents() {
             </div>
           </div>
 
-          <div><label style={sx(LABEL)}>Төрөл</label><input value={f.type} onChange={(e) => setF({ ...f, type: e.target.value })} placeholder="GIVEAWAY / RACE" style={sx(INPUT)} /></div>
+          <div><label style={sx(LABEL)}>Төрөл</label><input value={f.type} onChange={(e) => setF({ ...f, type: e.target.value })} placeholder="GIVEAWAY / RACE / АЯЛАЛ" style={sx(INPUT)} /></div>
           <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Гарчиг *</label><input value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Төлөв</label>
             <select value={f.status} onChange={(e) => setF({ ...f, status: e.target.value })} style={sx(INPUT + "cursor:pointer;")}>

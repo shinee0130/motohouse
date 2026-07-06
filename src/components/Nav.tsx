@@ -6,13 +6,18 @@ import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { Brand } from "./Brand";
 import { useAuth } from "@/lib/auth";
+import { cartCount, CART_EVENT } from "@/lib/cart";
 
 const NAV = [
   { label: "Нүүр", href: "/", icon: "⌂" },
   { label: "Мотоцикл", href: "/motorcycles", icon: "🏍" },
-  { label: "Хэрэгсэл & сэлбэг", href: "/gear", icon: "🛡" },
+  { label: "Хэрэгсэл", href: "/gear", icon: "🪖" },
+  { label: "Сэлбэг", href: "/parts", icon: "⚙️" },
   { label: "Засвар", href: "/service", icon: "🔧" },
-  { label: "Events & Giveaway", href: "/events", icon: "🎁" },
+  { label: "Аялал", href: "/travel", icon: "🗺" },
+  { label: "Events", href: "/events", icon: "🏁" },
+  { label: "Giveaway", href: "/giveaway", icon: "🎁" },
+  { label: "Миний сагс", href: "/cart", icon: "🛒" },
 ];
 
 const ACCOUNT_MENU = [
@@ -33,11 +38,21 @@ export function Nav() {
   const { user, ready, logout } = useAuth();
   const [open, setOpen] = useState(false); // sidebar
   const [acctOpen, setAcctOpen] = useState(false); // avatar dropdown
+  const [cart, setCart] = useState(0); // сагсны тоо
 
   const loggedIn = ready && !!user;
 
   // Хуудас солигдоход sidebar хаана
   useEffect(() => { setOpen(false); setAcctOpen(false); }, [pathname]);
+
+  // Сагсны тоог сонсох
+  useEffect(() => {
+    const load = () => setCart(cartCount());
+    load();
+    window.addEventListener(CART_EVENT, load);
+    window.addEventListener("storage", load);
+    return () => { window.removeEventListener(CART_EVENT, load); window.removeEventListener("storage", load); };
+  }, []);
 
   // Sidebar нээлттэй үед body scroll түгжинэ
   useEffect(() => {
@@ -73,6 +88,16 @@ export function Nav() {
           </Link>
 
           <div style={{ marginLeft: "auto" }} />
+
+          {/* сагс */}
+          <Link href="/cart" aria-label="Миний сагс" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 10, border: "1px solid #262626", fontSize: 19, flexShrink: 0 }}>
+            🛒
+            {cart > 0 && (
+              <span style={sx("position:absolute;top:-6px;right:-6px;background:#E10613;color:#fff;font:800 10px Montserrat;min-width:18px;height:18px;padding:0 5px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;")}>
+                {cart}
+              </span>
+            )}
+          </Link>
 
           {loggedIn ? (
             <div style={{ position: "relative" }}>
@@ -187,6 +212,11 @@ export function Nav() {
               >
                 <span style={{ width: 22, textAlign: "center", flexShrink: 0 }}>{item.icon}</span>
                 {item.label}
+                {item.href === "/cart" && cart > 0 && (
+                  <span style={sx(`margin-left:auto;font:800 11px Montserrat;min-width:22px;height:22px;padding:0 6px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;${on ? "background:#fff;color:#E10613;" : "background:#E10613;color:#fff;"}`)}>
+                    {cart}
+                  </span>
+                )}
               </Link>
             );
           })}

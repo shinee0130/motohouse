@@ -9,6 +9,7 @@ import { fmt, type GearItem } from "@/lib/data";
 import { useAuth } from "@/lib/auth";
 import { getSavedIds } from "@/lib/queries";
 import { createOrder, setSaved } from "@/lib/admin";
+import { addToCart } from "@/lib/cart";
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -45,6 +46,7 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
   const [orderId, setOrderId] = useState<string | null>(null);
   const [saved, setSavedState] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [cartMsg, setCartMsg] = useState(false);
   const sale = Math.round((1 - item.price / item.oldPrice) * 100);
 
   useEffect(() => {
@@ -196,6 +198,25 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
           >
             {busy ? "Илгээж байна…" : user ? "Захиалга өгөх" : "Нэвтэрч захиалах"}
           </button>
+          <button
+            onClick={() => {
+              addToCart({
+                id: item.id, name: item.name, price: item.price,
+                image: item.images?.[0],
+                meta: [size, color].filter(Boolean).join(" · ") || undefined,
+              });
+              setCartMsg(true);
+              setTimeout(() => setCartMsg(false), 2200);
+            }}
+            style={sx("width:100%;margin-top:10px;background:#111113;color:#fff;border:1px solid #333;font:700 14px Montserrat;letter-spacing:.04em;padding:15px;border-radius:12px;text-transform:uppercase;cursor:pointer;")}
+          >
+            🛒 Сагслах
+          </button>
+          {cartMsg && (
+            <div style={sx("font:500 13px Roboto;color:#22c55e;text-align:center;margin-top:10px;")}>
+              ✓ Сагсанд нэмэгдлээ. <Link href="/cart" style={{ color: "#22c55e", textDecoration: "underline" }}>Сагс үзэх</Link>
+            </div>
+          )}
           {orderId && (
             <div style={sx("font:500 13px Roboto;color:#22c55e;text-align:center;margin-top:12px;")}>
               ✓ Захиалга #{orderId} үүслээ. <Link href="/account/orders" style={{ color: "#22c55e", textDecoration: "underline" }}>Миний захиалга</Link>

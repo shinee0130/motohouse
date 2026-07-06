@@ -21,10 +21,13 @@ export function Footer() {
             PAGES
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-            <Link href="/motorcycles" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Motorcycles</Link>
-            <Link href="/gear" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Gear &amp; Parts</Link>
-            <Link href="/service" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Service</Link>
+            <Link href="/motorcycles" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Мотоцикл</Link>
+            <Link href="/gear" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Хэрэгсэл</Link>
+            <Link href="/parts" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Сэлбэг</Link>
+            <Link href="/service" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Засвар</Link>
+            <Link href="/travel" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Аялал</Link>
             <Link href="/events" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Events</Link>
+            <Link href="/giveaway" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>Giveaway</Link>
           </div>
         </div>
         <div>
