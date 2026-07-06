@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { sx } from "@/lib/sx";
 import { MotoCard } from "@/components/MotoCard";
 import { statusLabel, type Moto, type MotoStatus } from "@/lib/data";
+import { useI18n } from "@/lib/i18n";
 
 type SortKey = "featured" | "priceAsc" | "priceDesc";
 const BRANDS = ["All", "Kawasaki", "Yamaha", "Honda", "Ducati", "BMW"];
@@ -18,6 +19,7 @@ function chip(active: boolean): string {
 }
 
 export function MotorcyclesClient({ motos }: { motos: Moto[] }) {
+  const { t } = useI18n();
   const [brand, setBrand] = useState("All");
   const [status, setStatus] = useState<"All" | MotoStatus>("All");
   const [sort, setSort] = useState<SortKey>("featured");
@@ -46,14 +48,14 @@ export function MotorcyclesClient({ motos }: { motos: Moto[] }) {
         <div style={sx("display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:26px;justify-content:space-between;")}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {BRANDS.map((b) => (
-              <span key={b} onClick={() => setBrand(b)} style={sx(chip(brand === b))}>{b}</span>
+              <span key={b} onClick={() => setBrand(b)} style={sx(chip(brand === b))}>{t(b)}</span>
             ))}
           </div>
           <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Хайх: model..."
+              placeholder={t("Хайх: model...")}
               className="mh-input"
               style={sx("background:#111113;border:1px solid #262626;border-radius:9px;padding:11px 15px;color:#fff;font:400 14px Roboto;width:180px;outline:none;")}
             />
@@ -63,8 +65,8 @@ export function MotorcyclesClient({ motos }: { motos: Moto[] }) {
               style={sx("background:#111113;border:1px solid #262626;border-radius:9px;padding:11px 14px;color:#fff;font:500 13px Roboto;outline:none;cursor:pointer;")}
             >
               <option value="featured">Featured</option>
-              <option value="priceAsc">Үнэ ↑</option>
-              <option value="priceDesc">Үнэ ↓</option>
+              <option value="priceAsc">{t("Үнэ ↑")}</option>
+              <option value="priceDesc">{t("Үнэ ↓")}</option>
             </select>
           </div>
         </div>
@@ -72,13 +74,13 @@ export function MotorcyclesClient({ motos }: { motos: Moto[] }) {
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
           {STATUSES.map((s) => (
             <span key={s} onClick={() => setStatus(s)} style={sx(chip(status === s))}>
-              {s === "All" ? "Бүгд" : statusLabel(s)}
+              {s === "All" ? t("Бүгд") : t(statusLabel(s))}
             </span>
           ))}
         </div>
 
         <div style={sx("font:400 13px 'JetBrains Mono';color:#8A8F98;margin-top:18px;")}>
-          {list.length} мотоцикл олдлоо
+          {list.length} {t("мотоцикл олдлоо")}
         </div>
 
         <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:14px;")}>

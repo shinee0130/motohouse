@@ -79,6 +79,17 @@ export function IconCog({ style }: { style?: CSSProperties }) {
   );
 }
 
+export function IconPackage({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" style={base(style)}>
+      <path d="M4 8.5 12 4l8 4.5-8 4.5z" />
+      <path d="M4 8.5v7L12 20l8-4.5v-7" />
+      <path d="M12 13v7" />
+      <path d="M8 6.3 16 11" />
+    </svg>
+  );
+}
+
 export function IconHome({ style }: { style?: CSSProperties }) {
   return (
     <svg viewBox="0 0 24 24" style={base(style)}>
@@ -94,6 +105,26 @@ export function IconMap({ style }: { style?: CSSProperties }) {
     <svg viewBox="0 0 24 24" style={base(style)}>
       <path d="M9 4L4 6v14l5-2 6 2 5-2V4l-5 2z" />
       <path d="M9 4v14M15 6v14" />
+    </svg>
+  );
+}
+
+export function IconRoute({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" style={base(style)}>
+      <circle cx="6" cy="6" r="2.2" />
+      <circle cx="18" cy="18" r="2.2" />
+      <path d="M8 6h4.5a3.5 3.5 0 0 1 0 7H11a3.5 3.5 0 0 0 0 7h4.8" />
+    </svg>
+  );
+}
+
+export function IconCalendar({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" style={base(style)}>
+      <rect x="4" y="5" width="16" height="15" rx="2" />
+      <path d="M8 3v4M16 3v4M4 10h16" />
+      <path d="M8 14h2M13 14h3M8 17h2" />
     </svg>
   );
 }
@@ -114,6 +145,15 @@ export function IconGift({ style }: { style?: CSSProperties }) {
       <path d="M6 12v8h12v-8" />
       <path d="M12 8v12" />
       <path d="M12 8c-2-4.5-7-2.5-4.5 0M12 8c2-4.5 7-2.5 4.5 0" />
+    </svg>
+  );
+}
+
+export function IconTicket({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" style={base(style)}>
+      <path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z" />
+      <path d="M9 8.5v7M15 9.5l-4 5" />
     </svg>
   );
 }

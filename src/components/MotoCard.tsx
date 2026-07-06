@@ -1,10 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { Slot } from "./Slot";
 import { fmt, badge, statusLabel, type Moto } from "@/lib/data";
+import { useI18n } from "@/lib/i18n";
 
 // Жагсаалт / онцлох хэсэгт ашиглах мотоциклын карт.
 export function MotoCard({ m, showCc = false }: { m: Moto; showCc?: boolean }) {
+  const { t } = useI18n();
   const priceEl = m.salePrice ? (
     <span style={{ display: "inline-flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
       <span style={sx("font:500 13px Montserrat;color:#6b7280;text-decoration:line-through;")}>{fmt(m.price)}</span>
@@ -30,10 +34,10 @@ export function MotoCard({ m, showCc = false }: { m: Moto; showCc?: boolean }) {
             style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")}
           />
         ) : (
-          <Slot label="Мотоцикл зураг" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+          <Slot label={t("Мотоцикл зураг")} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
         )}
         <span style={{ position: "absolute", top: 12, left: 12, zIndex: 2, ...sx(badge(m.status)) }}>
-          {statusLabel(m.status)}
+          {t(statusLabel(m.status))}
         </span>
       </div>
       <div style={{ padding: "18px 20px" }}>

@@ -1,4 +1,5 @@
 import { EventsGrid } from "@/components/EventsGrid";
+import { TravelMapClient } from "@/components/TravelMapClient";
 import { getEvents } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
@@ -11,12 +12,16 @@ const isTravel = (t: string) => {
 
 export default async function TravelPage() {
   const all = await getEvents();
+  const travelEvents = all.filter((e) => isTravel(e.type));
   return (
-    <EventsGrid
-      label="GROUP RIDE"
-      title="Аялал"
-      events={all.filter((e) => isTravel(e.type))}
-      emptyText="Одоогоор товлогдсон аялал алга. Тун удахгүй зарлана — хамт аялцгаая! 🏍"
-    />
+    <>
+      <TravelMapClient />
+      <EventsGrid
+        label="UPCOMING RIDES"
+        title="Товлогдсон аяллууд"
+        events={travelEvents}
+        emptyText="Одоогоор товлогдсон аялал алга. Map дээрх route-уудаас аяллын санаа аваарай."
+      />
+    </>
   );
 }

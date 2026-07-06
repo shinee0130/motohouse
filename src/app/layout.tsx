@@ -3,11 +3,12 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
+import { I18nProvider } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   title: "motohouse",
   description:
-    "Мотоцикл худалдаа, premium gear, performance parts, засвар үйлчилгээ болон rider community-ийн нэгдсэн платформ.",
+    "Монголд суурилсан мотоцикл, riding gear, сэлбэг, засвар үйлчилгээ болон олон улсын захиалга нийлүүлэлтийн платформ.",
 };
 
 export default function RootLayout({
@@ -28,11 +29,13 @@ export default function RootLayout({
             flexDirection: "column",
           }}
         >
-          <AuthProvider>
-            <Nav />
-            <div style={{ flex: 1 }}>{children}</div>
-            <Footer />
-          </AuthProvider>
+          <I18nProvider>
+            <AuthProvider>
+              <Nav />
+              <div style={{ flex: 1 }}>{children}</div>
+              <Footer />
+            </AuthProvider>
+          </I18nProvider>
         </div>
       </body>
     </html>

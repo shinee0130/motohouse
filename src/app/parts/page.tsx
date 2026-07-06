@@ -11,7 +11,7 @@ export default async function PartsPage() {
       gear={gear.filter(isPart)}
       label="PERFORMANCE PARTS"
       title="Сэлбэг"
-      desc="Яндан, дугуй, батерей болон performance сэлбэг — тохирох моделиудтай нь."
+      desc="Яндан, дугуй, батерей болон тогтмол солих сэлбэгүүдийг олон улсын захиалгад тохируулан бэлтгэх боломжтой."
     />
   );
 }

@@ -11,7 +11,7 @@ export default async function GearPage() {
       gear={gear.filter((g) => !isPart(g))}
       label="RIDER GEAR"
       title="Дагалдах хэрэгсэл"
-      desc="Каск, хувцас, бээлий, хамгаалалт, intercom — албан ёсны брэндүүд."
+      desc="Каск, бээлий, хамгаалалтын хувцас, intercom болон riding gear-ийг Монголд худалдаалж, гадаад захиалгад бэлтгэнэ."
     />
   );
 }

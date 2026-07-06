@@ -8,7 +8,7 @@ export default async function GiveawayPage() {
   return (
     <EventsGrid
       label="WIN BIG"
-      title="Giveaway"
+      title="Сугалаа"
       events={all.filter((e) => e.type.toUpperCase().includes("GIVEAWAY"))}
       emptyText="Одоогоор идэвхтэй giveaway алга. Тун удахгүй!"
     />

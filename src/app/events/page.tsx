@@ -10,7 +10,7 @@ export default async function EventsPage() {
   return (
     <EventsGrid
       label="COMMUNITY"
-      title="Events"
+      title="Эвент"
       events={all.filter((e) => !isGiveaway(e.type))}
       emptyText="Одоогоор эвент алга. Тун удахгүй зарлана!"
     />

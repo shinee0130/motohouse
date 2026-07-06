@@ -7,17 +7,18 @@ import { sx } from "@/lib/sx";
 import { Brand } from "./Brand";
 import { useAuth } from "@/lib/auth";
 import { cartCount, CART_EVENT } from "@/lib/cart";
-import { IconHome, IconBike, IconHelmet, IconCog, IconWrench, IconMap, IconFlag, IconGift, IconCart } from "./icons";
+import { LanguageToggle, useI18n } from "@/lib/i18n";
+import { IconHome, IconBike, IconHelmet, IconCog, IconWrench, IconRoute, IconCalendar, IconTicket, IconCart, IconPackage } from "./icons";
 
 const NAV = [
   { label: "Нүүр", href: "/", Icon: IconHome },
   { label: "Мотоцикл", href: "/motorcycles", Icon: IconBike },
   { label: "Дагалдах хэрэгсэл", href: "/gear", Icon: IconHelmet },
-  { label: "Сэлбэг", href: "/parts", Icon: IconCog },
+  { label: "Сэлбэг", href: "/parts", Icon: IconPackage },
   { label: "Засвар", href: "/service", Icon: IconWrench },
-  { label: "Аялал", href: "/travel", Icon: IconMap },
-  { label: "Events", href: "/events", Icon: IconFlag },
-  { label: "Giveaway", href: "/giveaway", Icon: IconGift },
+  { label: "Аялал", href: "/travel", Icon: IconRoute },
+  { label: "Эвент", href: "/events", Icon: IconCalendar },
+  { label: "Сугалаа", href: "/giveaway", Icon: IconTicket },
   { label: "Миний сагс", href: "/cart", Icon: IconCart },
 ];
 
@@ -37,6 +38,7 @@ export function Nav() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, ready, logout } = useAuth();
+  const { t } = useI18n();
   const [open, setOpen] = useState(false); // sidebar
   const [acctOpen, setAcctOpen] = useState(false); // avatar dropdown
   const [cart, setCart] = useState(0); // сагсны тоо
@@ -76,7 +78,7 @@ export function Nav() {
           {/* цэсний товч */}
           <button
             onClick={() => setOpen(true)}
-            aria-label="Цэс нээх"
+            aria-label={t("Цэс нээх")}
             style={sx("background:none;border:1px solid #262626;border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:4px;flex-shrink:0;")}
           >
             <span style={{ width: 18, height: 2, background: "#fff", display: "block" }} />
@@ -91,7 +93,9 @@ export function Nav() {
           <div style={{ marginLeft: "auto" }} />
 
           {/* сагс */}
-          <Link href="/cart" aria-label="Миний сагс" style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 10, border: "1px solid #262626", color: "#fff", flexShrink: 0 }}>
+          <LanguageToggle compact />
+
+          <Link href="/cart" aria-label={t("Миний сагс")} style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 10, border: "1px solid #262626", color: "#fff", flexShrink: 0 }}>
             <IconCart style={{ width: 21, height: 21 }} />
             {cart > 0 && (
               <span style={sx("position:absolute;top:-6px;right:-6px;background:#E10613;color:#fff;font:800 10px Montserrat;min-width:18px;height:18px;padding:0 5px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;")}>
@@ -104,7 +108,7 @@ export function Nav() {
             <div style={{ position: "relative" }}>
               <button
                 onClick={() => setAcctOpen((v) => !v)}
-                aria-label="Миний бүртгэл"
+                aria-label={t("Миний бүртгэл")}
                 style={sx("display:flex;align-items:center;justify-content:center;background:none;border:none;padding:0;cursor:pointer;")}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -115,7 +119,7 @@ export function Nav() {
                   <div onClick={() => setAcctOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 40 }} />
                   <div style={sx("position:absolute;top:60px;right:0;z-index:50;min-width:210px;background:#111113;border:1px solid #262626;border-radius:14px;padding:8px;box-shadow:0 12px 40px rgba(0,0,0,.5);")}>
                     <div style={sx("padding:10px 12px 12px;border-bottom:1px solid #1c1c1f;margin-bottom:6px;")}>
-                      <div style={sx("font:700 14px Montserrat;color:#fff;")}>{user!.name || "Хэрэглэгч"}</div>
+                      <div style={sx("font:700 14px Montserrat;color:#fff;")}>{user!.name || t("Хэрэглэгч")}</div>
                       <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:2px;")}>+976 {user!.phone}</div>
                     </div>
                     {user!.role === "admin" && (
@@ -134,14 +138,14 @@ export function Nav() {
                         onClick={() => setAcctOpen(false)}
                         style={sx("display:block;padding:10px 12px;border-radius:8px;font:600 13px Montserrat;color:#C8C8C8;")}
                       >
-                        {m.label}
+                        {t(m.label)}
                       </Link>
                     ))}
                     <button
                       onClick={doLogout}
                       style={sx("width:100%;text-align:left;padding:10px 12px;border-radius:8px;background:none;border:none;cursor:pointer;font:600 13px Montserrat;color:#E10613;margin-top:4px;border-top:1px solid #1c1c1f;")}
                     >
-                      Гарах
+                      {t("Гарах")}
                     </button>
                   </div>
                 </>
@@ -152,7 +156,7 @@ export function Nav() {
               href="/login"
               style={sx("background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.06em;padding:11px 20px;border-radius:9px;text-transform:uppercase;cursor:pointer;white-space:nowrap;")}
             >
-              Нэвтрэх
+              {t("Нэвтрэх")}
             </Link>
           )}
         </div>
@@ -188,7 +192,7 @@ export function Nav() {
           </Link>
           <button
             onClick={() => setOpen(false)}
-            aria-label="Хаах"
+            aria-label={t("Хаах")}
             style={sx("background:none;border:1px solid #262626;border-radius:8px;width:36px;height:36px;color:#8A8F98;font:600 16px Montserrat;cursor:pointer;")}
           >
             ✕
@@ -212,7 +216,7 @@ export function Nav() {
                 )}
               >
                 <item.Icon style={{ width: 20, height: 20, flexShrink: 0, opacity: on ? 1 : 0.75 }} />
-                {item.label}
+                {t(item.label)}
                 {item.href === "/cart" && cart > 0 && (
                   <span style={sx(`margin-left:auto;font:800 11px Montserrat;min-width:22px;height:22px;padding:0 6px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;${on ? "background:#fff;color:#E10613;" : "background:#E10613;color:#fff;"}`)}>
                     {cart}
@@ -230,7 +234,7 @@ export function Nav() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
                   <div style={{ minWidth: 0 }}>
-                    <div style={sx("font:700 13px Montserrat;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{user!.name || "Хэрэглэгч"}</div>
+                    <div style={sx("font:700 13px Montserrat;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{user!.name || t("Хэрэглэгч")}</div>
                     <div style={sx("font:400 11px Roboto;color:#8A8F98;")}>+976 {user!.phone}</div>
                   </div>
                 </div>
@@ -250,14 +254,14 @@ export function Nav() {
                     onClick={() => setOpen(false)}
                     style={sx("display:block;padding:11px 14px 11px 48px;border-radius:11px;font:600 14px Montserrat;color:#A3A3A3;")}
                   >
-                    {m.label}
+                    {t(m.label)}
                   </Link>
                 ))}
                 <button
                   onClick={doLogout}
                   style={sx("width:100%;text-align:left;padding:12px 14px 12px 48px;border-radius:11px;background:none;border:none;cursor:pointer;font:600 14px Montserrat;color:#E10613;")}
                 >
-                  Гарах
+                  {t("Гарах")}
                 </button>
               </>
             ) : (
@@ -266,15 +270,16 @@ export function Nav() {
                 onClick={() => setOpen(false)}
                 style={sx("display:block;text-align:center;background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:14px;border-radius:11px;text-transform:uppercase;cursor:pointer;margin:4px 2px;")}
               >
-                Нэвтрэх
+                {t("Нэвтрэх")}
               </Link>
             )}
           </div>
         </nav>
 
         {/* доод хэсэг */}
-        <div style={sx("padding:14px 18px;border-top:1px solid #1c1c1f;font:500 11px 'JetBrains Mono';letter-spacing:.1em;color:#5b5b60;")}>
-          RIDE. POWER. LIVE.
+        <div style={sx("padding:14px 18px;border-top:1px solid #1c1c1f;display:flex;align-items:center;justify-content:space-between;gap:12px;")}>
+          <span style={sx("font:500 11px 'JetBrains Mono';letter-spacing:.1em;color:#5b5b60;")}>RIDE. POWER. LIVE.</span>
+          <LanguageToggle compact />
         </div>
       </aside>
     </>

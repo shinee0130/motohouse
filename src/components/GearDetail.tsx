@@ -10,6 +10,9 @@ import { useAuth } from "@/lib/auth";
 import { getSavedIds } from "@/lib/queries";
 import { createOrder, setSaved } from "@/lib/admin";
 import { addToCart } from "@/lib/cart";
+import { useI18n } from "@/lib/i18n";
+
+const PAYMENT_METHODS = ["Visa", "Mastercard", "American Express", "UnionPay", "T Card", "Apple Pay", "Google Pay", "WeChat Pay", "QPay", "SocialPay", "HiPay"];
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -38,6 +41,7 @@ function Accordion({ title, children, open: openDefault = false }: { title: stri
 
 export function GearDetail({ item, related, more }: { item: GearItem; related: GearItem[]; more: GearItem[] }) {
   const { user } = useAuth();
+  const { t } = useI18n();
   const router = useRouter();
   const [color, setColor] = useState(item.colors?.[0] ?? "");
   const [size, setSize] = useState("");
@@ -223,7 +227,20 @@ export function GearDetail({ item, related, more }: { item: GearItem; related: G
             </div>
           )}
           <div style={sx("font:400 12px Roboto;color:#8A8F98;text-align:center;margin-top:12px;")}>
-            Online төлбөр v1-д байхгүй — захиалга илгээснээр admin холбогдож, төлбөр/хүргэлтийг зохицуулна.
+            {t("Одоогоор захиалгыг баталгаажуулсны дараа төлбөр/хүргэлтийг тохирно. Удахгүй олон улсын карт болон digital wallet төлбөрүүд холбогдоно.")}
+          </div>
+          <div style={sx("background:#0B0B0D;border:1px solid #262626;border-radius:14px;padding:14px;margin-top:14px;")}>
+            <div style={sx("font:700 11px 'JetBrains Mono';letter-spacing:.12em;color:#E10613;text-transform:uppercase;")}>{t("Төлбөрийн боломжууд")}</div>
+            <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:7px;")}>
+              {t("Visa, Mastercard, American Express, UnionPay, T Card, Apple Pay, Google Pay, WeChat Pay, QPay, SocialPay, HiPay удахгүй дэмжигдэнэ.")}
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 10 }}>
+              {PAYMENT_METHODS.map((method) => (
+                <span key={method} style={sx("font:700 10px Montserrat;color:#C8C8C8;border:1px solid #333;background:#111113;border-radius:999px;padding:6px 9px;")}>
+                  {method}
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* accordions */}

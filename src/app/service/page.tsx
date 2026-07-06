@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth";
 import { createBooking } from "@/lib/admin";
 import { supabase } from "@/lib/supabase";
 import { Calendar } from "@/components/Calendar";
+import { useI18n } from "@/lib/i18n";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:13px 15px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
 const LABEL = "font:600 12px Montserrat;letter-spacing:.04em;color:#C8C8C8;margin-bottom:8px;display:block;";
@@ -15,6 +16,7 @@ const TIMES = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "1
 
 export default function ServicePage() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const router = useRouter();
   const [serviceType, setServiceType] = useState("");
   const [date, setDate] = useState("");
@@ -82,24 +84,24 @@ export default function ServicePage() {
       <div style={{ animation: "mhfade .5s both" }}>
         <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.24em;color:#E10613;")}>EXPERT SERVICE</div>
         <h1 style={sx("font:800 clamp(30px,5vw,46px) Montserrat;color:#fff;margin-top:6px;text-transform:uppercase;")}>
-          Засварын цаг захиалга
+          {t("Засварын цаг захиалга")}
         </h1>
         <p style={sx("font:400 14px Roboto;color:#8A8F98;margin-top:8px;max-width:560px;")}>
-          Үйлчилгээний төрөл, огноо, цагаа сонгож цаг захиална. Бид баталгаажуулж холбогдоно.
+          {t("Үйлчилгээний төрөл, огноо, цагаа сонгож цаг захиална. Бид баталгаажуулж холбогдоно.")}
         </p>
 
         {sent ? (
           <div style={sx("background:#111113;border:1px solid #262626;border-radius:18px;padding:clamp(28px,5vw,48px);margin-top:28px;text-align:center;max-width:560px;")}>
-            <div style={sx("font:800 22px Montserrat;color:#22c55e;")}>✓ Цаг захиалагдлаа!</div>
+            <div style={sx("font:800 22px Montserrat;color:#22c55e;")}>✓ {t("Цаг захиалагдлаа!")}</div>
             <div style={sx("font:400 14px Roboto;color:#A3A3A3;margin-top:10px;")}>
-              <b style={{ color: "#fff" }}>{serviceType}</b> — {date} {time}<br />
-              Бид удахгүй холбогдож баталгаажуулна.
+              <b style={{ color: "#fff" }}>{t(serviceType)}</b> — {date} {time}<br />
+              {t("Бид удахгүй холбогдож баталгаажуулна.")}
             </div>
             <button
               onClick={() => { setSent(false); setServiceType(""); setDate(""); setTime(""); setModel(""); setNote(""); }}
               style={sx("margin-top:20px;background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.05em;padding:13px 24px;border:none;border-radius:10px;cursor:pointer;")}
             >
-              Дахин захиалах
+              {t("Дахин захиалах")}
             </button>
           </div>
         ) : (
@@ -107,15 +109,15 @@ export default function ServicePage() {
             {/* Зүүн: төрөл + огноо */}
             <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
               <div>
-                <label style={sx(LABEL)}>1. Үйлчилгээний төрөл</label>
+                <label style={sx(LABEL)}>{t("1. Үйлчилгээний төрөл")}</label>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                   {SERVICES.map((s) => (
-                    <div key={s} onClick={() => setServiceType(s)} style={sx(chip(serviceType === s))}>{s}</div>
+                    <div key={s} onClick={() => setServiceType(s)} style={sx(chip(serviceType === s))}>{t(s)}</div>
                   ))}
                 </div>
               </div>
               <div>
-                <label style={sx(LABEL)}>2. Огноо</label>
+                <label style={sx(LABEL)}>{t("2. Огноо")}</label>
                 <Calendar value={date} onChange={setDate} />
               </div>
             </div>
@@ -123,36 +125,36 @@ export default function ServicePage() {
             {/* Баруун: цаг + холбоо */}
             <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
               <div>
-                <label style={sx(LABEL)}>3. Цаг {date && booked.length > 0 && <span style={sx("color:#8A8F98;font-weight:400;")}>· авагдсан цаг саарал</span>}</label>
+                <label style={sx(LABEL)}>{t("3. Цаг")} {date && booked.length > 0 && <span style={sx("color:#8A8F98;font-weight:400;")}>· {t("авагдсан цаг саарал")}</span>}</label>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(72px,1fr))", gap: 8 }}>
-                  {TIMES.map((t) => {
-                    const taken = booked.includes(t);
+                  {TIMES.map((slot) => {
+                    const taken = booked.includes(slot);
                     return taken ? (
-                      <div key={t} title="Авагдсан" style={sx("font:600 13px Roboto;padding:11px 14px;border-radius:10px;text-align:center;background:#0b0b0d;color:#4b4b50;border:1px solid #1c1c1f;text-decoration:line-through;cursor:not-allowed;")}>{t}</div>
+                      <div key={slot} title={t("Авагдсан")} style={sx("font:600 13px Roboto;padding:11px 14px;border-radius:10px;text-align:center;background:#0b0b0d;color:#4b4b50;border:1px solid #1c1c1f;text-decoration:line-through;cursor:not-allowed;")}>{slot}</div>
                     ) : (
-                      <div key={t} onClick={() => setTime(t)} style={sx(chip(time === t))}>{t}</div>
+                      <div key={slot} onClick={() => setTime(slot)} style={sx(chip(time === slot))}>{slot}</div>
                     );
                   })}
                 </div>
                 {date && booked.length >= TIMES.length && (
-                  <div style={sx("font:500 12px Roboto;color:#f59e0b;margin-top:8px;")}>Энэ өдрийн бүх цаг авагдсан байна. Өөр өдөр сонгоно уу.</div>
+                  <div style={sx("font:500 12px Roboto;color:#f59e0b;margin-top:8px;")}>{t("Энэ өдрийн бүх цаг авагдсан байна. Өөр өдөр сонгоно уу.")}</div>
                 )}
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <div><label style={sx(LABEL)}>4. Холбоо барих</label>
-                  <input className="mh-input" placeholder="Нэр" value={name} onChange={(e) => setName(e.target.value)} style={sx(INPUT)} />
+                <div><label style={sx(LABEL)}>{t("4. Холбоо барих")}</label>
+                  <input className="mh-input" placeholder={t("Нэр")} value={name} onChange={(e) => setName(e.target.value)} style={sx(INPUT)} />
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={sx("background:#050505;border:1px solid #262626;border-radius:9px;padding:13px 12px;color:#8A8F98;font:500 14px Roboto;flex-shrink:0;")}>+976</span>
-                  <input className="mh-input" type="tel" inputMode="numeric" placeholder="Утас" value={phone} onChange={(e) => setPhone(e.target.value)} style={sx(INPUT)} />
+                  <input className="mh-input" type="tel" inputMode="numeric" placeholder={t("Утас")} value={phone} onChange={(e) => setPhone(e.target.value)} style={sx(INPUT)} />
                 </div>
-                <input className="mh-input" placeholder="Мотоциклын модель (заавал биш)" value={model} onChange={(e) => setModel(e.target.value)} style={sx(INPUT)} />
-                <textarea className="mh-input" placeholder="Асуудал / нэмэлт тэмдэглэл" rows={3} value={note} onChange={(e) => setNote(e.target.value)} style={sx(INPUT + "resize:vertical;")} />
+                <input className="mh-input" placeholder={t("Мотоциклын модель (заавал биш)")} value={model} onChange={(e) => setModel(e.target.value)} style={sx(INPUT)} />
+                <textarea className="mh-input" placeholder={t("Асуудал / нэмэлт тэмдэглэл")} rows={3} value={note} onChange={(e) => setNote(e.target.value)} style={sx(INPUT + "resize:vertical;")} />
               </div>
-              {!user && <div style={sx("font:500 12px Roboto;color:#8A8F98;")}>Цаг захиалахын тулд эхлээд нэвтэрсэн байх шаардлагатай.</div>}
+              {!user && <div style={sx("font:500 12px Roboto;color:#8A8F98;")}>{t("Цаг захиалахын тулд эхлээд нэвтэрсэн байх шаардлагатай.")}</div>}
               {error && <div style={sx("font:500 13px Roboto;color:#ef4444;")}>{error}</div>}
               <button type="submit" disabled={busy} style={sx(`background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px;border:none;border-radius:11px;text-transform:uppercase;cursor:pointer;${busy ? "opacity:.6;" : ""}`)}>
-                {busy ? "Илгээж байна…" : user ? "Цаг захиалах" : "Нэвтэрч захиалах"}
+                {busy ? t("Илгээж байна…") : user ? t("Цаг захиалах") : t("Нэвтэрч захиалах")}
               </button>
             </div>
           </form>

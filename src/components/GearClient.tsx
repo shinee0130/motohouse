@@ -5,6 +5,7 @@ import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { Slot } from "@/components/Slot";
 import { fmt, type GearItem } from "@/lib/data";
+import { useI18n } from "@/lib/i18n";
 
 function chip(active: boolean): string {
   const base =
@@ -17,14 +18,15 @@ function chip(active: boolean): string {
 export function GearClient({
   gear,
   label = "GEAR · PARTS",
-  title = "Premium Gear & Parts",
-  desc = "Каск, хувцас, хамгаалалт болон сэлбэг — албан ёсны брэндүүд.",
+  title = "Хэрэгсэл ба сэлбэг",
+  desc = "Каск, хувцас, хамгаалалт болон сэлбэгийг ангиллаар нь хурдан сонгоорой.",
 }: {
   gear: GearItem[];
   label?: string;
   title?: string;
   desc?: string;
 }) {
+  const { t } = useI18n();
   const [cat, setCat] = useState("All");
   const cats = useMemo(() => ["All", ...Array.from(new Set(gear.map((g) => g.category)))], [gear]);
   const list = cat === "All" ? gear : gear.filter((g) => g.category === cat);
@@ -32,17 +34,17 @@ export function GearClient({
   return (
     <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(32px,5vw,56px) clamp(20px,4vw,40px);")}>
       <div style={{ animation: "mhfade .5s both" }}>
-        <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.24em;color:#E10613;")}>{label}</div>
+        <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.24em;color:#E10613;")}>{t(label)}</div>
         <h1 style={sx("font:800 clamp(30px,5vw,46px) Montserrat;color:#fff;margin-top:6px;text-transform:uppercase;")}>
-          {title}
+          {t(title)}
         </h1>
         <p style={sx("font:400 15px Roboto;color:#8A8F98;margin-top:8px;max-width:620px;")}>
-          {desc}
+          {t(desc)}
         </p>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 22 }}>
           {cats.map((c) => (
-            <span key={c} onClick={() => setCat(c)} style={sx(chip(cat === c))}>{c}</span>
+            <span key={c} onClick={() => setCat(c)} style={sx(chip(cat === c))}>{t(c)}</span>
           ))}
         </div>
 
@@ -61,7 +63,7 @@ export function GearClient({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
                   ) : (
-                    <Slot label="Бүтээгдэхүүн зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                    <Slot label={t("Бүтээгдэхүүн зураг")} light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                   )}
                   <span style={sx("position:absolute;top:10px;left:10px;z-index:2;font:800 11px Montserrat;letter-spacing:.04em;color:#fff;background:#E10613;padding:5px 9px;border-radius:4px;")}>
                     SALE -{sale}%
