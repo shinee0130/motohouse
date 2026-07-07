@@ -287,8 +287,8 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ===== POSTER 2 (promo ба riding gear хооронд) — X-Pro брэнд рүү ===== */}
-      <Poster mn={homePoster2} en={settings.home_poster2_en} href="/gear?brand=X-Pro" />
+      {/* ===== POSTER 2 (promo ба riding gear хооронд) — Nexx брэнд рүү ===== */}
+      <Poster mn={homePoster2} en={settings.home_poster2_en} href="/gear?brand=Nexx" />
 
       {/* ===== GEAR BESTSELLERS ===== */}
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
