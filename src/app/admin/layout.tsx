@@ -9,8 +9,10 @@ import { useAuth } from "@/lib/auth";
 const MENU = [
   { label: "Хяналтын самбар", href: "/admin" },
   { label: "Мотоцикл", href: "/admin/motorcycles" },
-  { label: "Бараа / сэлбэг", href: "/admin/gear" },
-  { label: "Events & Giveaway", href: "/admin/events" },
+  { label: "Дагалдах хэрэгсэл", href: "/admin/gear" },
+  { label: "Сэлбэг", href: "/admin/parts" },
+  { label: "Events", href: "/admin/events" },
+  { label: "Giveaway", href: "/admin/giveaway" },
   { label: "Аялал", href: "/admin/tours" },
   { label: "Захиалга", href: "/admin/orders" },
   { label: "Захиалгын хүсэлт", href: "/admin/requests" },
