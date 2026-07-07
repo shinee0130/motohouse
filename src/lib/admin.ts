@@ -39,6 +39,7 @@ function gearRow(g: Partial<GearItem>): any {
     sku: g.sku, description: g.desc, features: g.features ?? [],
     sizes: g.sizes ?? [], colors: g.colors ?? [], images: g.images ?? [],
     best_seller: g.bestSeller ?? false,
+    gender: g.gender || "unisex",
     name_en: g.nameEn || null, description_en: g.descEn || null,
     meta_en: g.metaEn || null, features_en: g.featuresEn ?? null,
   };

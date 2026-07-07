@@ -192,8 +192,8 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ===== POSTER 1 (full-width) ===== */}
-      <Poster mn={homePoster} en={settings.home_poster_en} />
+      {/* ===== POSTER 1 (full-width) — эмэгтэй rider gear рүү холбоно ===== */}
+      <Poster mn={homePoster} en={settings.home_poster_en} href="/gear?for=women" />
 
       {/* ===== BRAND MARQUEE (түр нуусан) ===== */}
       {false && (

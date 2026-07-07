@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { Slot } from "@/components/Slot";
-import { type GearItem } from "@/lib/data";
+import { GENDERS, type GearItem } from "@/lib/data";
 import { Price } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
 
@@ -22,17 +22,23 @@ export function GearClient({
   title = "Хэрэгсэл ба сэлбэг",
   desc = "Каск, хувцас, хамгаалалт болон сэлбэгийг ангиллаар нь хурдан сонгоорой.",
   baseHref = "/gear",
+  initialGender = "all",
 }: {
   gear: GearItem[];
   label?: string;
   title?: string;
   desc?: string;
   baseHref?: "/gear" | "/parts";
+  initialGender?: string;
 }) {
   const { t, loc } = useI18n();
   const [cat, setCat] = useState("All");
+  const [gender, setGender] = useState(initialGender);
   const cats = useMemo(() => ["All", ...Array.from(new Set(gear.map((g) => g.category)))], [gear]);
-  const list = cat === "All" ? gear : gear.filter((g) => g.category === cat);
+  // "Хэнд зориулсан" шүүлт нь эмэгтэй/эрэгтэй тэмдэглэсэн бараа байвал л харагдана
+  const hasGendered = useMemo(() => gear.some((g) => g.gender === "women" || g.gender === "men"), [gear]);
+  const byGender = gender === "all" ? gear : gear.filter((g) => g.gender === gender);
+  const list = cat === "All" ? byGender : byGender.filter((g) => g.category === cat);
 
   return (
     <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(32px,5vw,56px) clamp(20px,4vw,40px);")}>
@@ -45,7 +51,17 @@ export function GearClient({
           {t(desc)}
         </p>
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 22 }}>
+        {/* Хэнд зориулсан шүүлт (эмэгтэй/эрэгтэй бараа байвал л) */}
+        {hasGendered && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 18 }}>
+            <span onClick={() => setGender("all")} style={sx(chip(gender === "all"))}>{t("Бүгд")}</span>
+            {GENDERS.filter((g) => g.v !== "unisex").map((g) => (
+              <span key={g.v} onClick={() => setGender(g.v)} style={sx(chip(gender === g.v))}>{t(g.mn)}</span>
+            ))}
+          </div>
+        )}
+
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
           {cats.map((c) => (
             <span key={c} onClick={() => setCat(c)} style={sx(chip(cat === c))}>{t(c)}</span>
           ))}

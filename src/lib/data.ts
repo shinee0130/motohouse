@@ -56,6 +56,7 @@ export interface GearItem {
   colors?: string[];
   images?: string[];
   bestSeller?: boolean;
+  gender?: string; // "unisex" | "women" | "men" — хэнд зориулсан (ангилал биш, шүүлт)
   nameEn?: string; // англи хувилбарууд (хоосон бол монголоор)
   descEn?: string;
   metaEn?: string;
@@ -70,6 +71,13 @@ export const SERVICES: string[] = [
 // Сэлбэгт тооцох ангиллууд — бусад нь хэрэгсэл (rider gear).
 export const PARTS_CATS = ["Exhaust", "Battery", "Tire"];
 export const isPart = (g: GearItem) => PARTS_CATS.includes(g.category);
+
+// Хэнд зориулсан — ангилал БИШ, тусдаа шүүлт.
+export const GENDERS: { v: string; mn: string; en: string }[] = [
+  { v: "unisex", mn: "Унисекс", en: "Unisex" },
+  { v: "women", mn: "Эмэгтэй", en: "Women" },
+  { v: "men", mn: "Эрэгтэй", en: "Men" },
+];
 
 export interface EventItem {
   id: number;

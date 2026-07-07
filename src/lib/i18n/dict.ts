@@ -450,6 +450,11 @@ export const EN: Record<string, string> = {
   "Сул суудлаас хэтэрсэн байна.": "Exceeds the available spots.",
   "Өөрийн мотоциклийн моделийг бичнэ үү.": "Please enter your motorcycle model.",
   "Уучлаарай, суудал дөнгөж дүүрлээ. Хуудсаа шинэчилнэ үү.": "Sorry, the spots just filled up. Please refresh the page.",
+  // Хэнд зориулсан (gear gender шүүлт)
+  "Эмэгтэй": "Women",
+  "Эрэгтэй": "Men",
+  "Унисекс": "Unisex",
+
   // tour + booking статус
   "Нээлттэй": "Open",
   "Дүүрсэн": "Full",

@@ -24,6 +24,7 @@ function mapGear(r: any): GearItem {
     colors: r.colors?.length ? r.colors : undefined,
     images: r.images ?? [],
     bestSeller: r.best_seller,
+    gender: r.gender ?? "unisex",
     nameEn: r.name_en ?? undefined, descEn: r.description_en ?? undefined,
     metaEn: r.meta_en ?? undefined, featuresEn: r.features_en ?? undefined,
   };
