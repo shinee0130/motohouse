@@ -41,6 +41,7 @@ async function loadUser(): Promise<User | null> {
   const first = prof?.first_name ?? meta.first_name ?? "";
   const last = prof?.last_name ?? meta.last_name ?? "";
   const name = prof?.name ?? meta.name ?? [last, first].filter(Boolean).join(" ").trim();
+  const role = (prof?.role as Role) ?? "customer";
 
   return {
     name: name || (authUser.email ?? ""),
@@ -48,8 +49,9 @@ async function loadUser(): Promise<User | null> {
     lastName: last || undefined,
     phone: prof?.phone ?? meta.phone ?? "",
     email: authUser.email ?? prof?.email ?? undefined,
-    role: (prof?.role as Role) ?? "customer",
-    tier: prof?.tier ?? "bronze",
+    role,
+    // Админ хэрэглэгч бүр автоматаар VIP түвшинтэй
+    tier: role === "admin" ? "vip" : (prof?.tier ?? "bronze"),
   };
 }
 

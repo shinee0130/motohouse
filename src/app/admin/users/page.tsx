@@ -41,12 +41,14 @@ export default function AdminUsers() {
 
       <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;")}>
         {list.map((u) => {
-          const tier = TIERS[u.tier ?? "rookie"] ?? TIERS.rookie;
+          // Админ хэрэглэгч бүр автоматаар VIP түвшинтэй
+          const effTier = u.role === "admin" ? "vip" : (u.tier ?? "rookie");
+          const tier = TIERS[effTier] ?? TIERS.rookie;
           return (
             <div key={u.id} style={sx("display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #1c1c1f;")}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 200 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/assets/tiers/${u.tier ?? "rookie"}.png`} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                <img src={`/assets/tiers/${effTier}.png`} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={sx("font:700 14px Montserrat;color:#fff;")}>{u.name || "—"}</span>
