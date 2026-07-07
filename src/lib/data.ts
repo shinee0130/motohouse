@@ -1,12 +1,13 @@
 // MOTO HOUSE — өгөгдөл (v1: hardcoded, дараа нь Supabase руу шилжих суурь)
 
-export type MotoStatus = "Available" | "Reserved" | "Incoming";
+export type MotoStatus = "Available" | "Reserved" | "Incoming" | "Sold";
 
 // Статусын монгол label (хадгалах утга нь англиар, харуулахдаа монголоор)
 export const MOTO_STATUS_LABEL: Record<MotoStatus, string> = {
   Available: "Бэлэн",
   Reserved: "Захиалагдсан",
   Incoming: "Замд яваа",
+  Sold: "Зарагдсан",
 };
 export function statusLabel(s: string): string {
   return (MOTO_STATUS_LABEL as Record<string, string>)[s] ?? s;

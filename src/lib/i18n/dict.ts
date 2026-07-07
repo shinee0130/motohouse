@@ -149,6 +149,7 @@ export const EN: Record<string, string> = {
   "Яндан, дугуй, батерей болон performance сэлбэг — тохирох моделиудтай нь.":
     "Exhausts, tires, batteries, and routine replacement parts.",
   "Бэлэн": "Available",
+  "Зарагдсан": "Sold",
   "Захиалагдсан": "Reserved",
   "Замд яваа": "Incoming",
   "Хайх: model...": "Search model...",

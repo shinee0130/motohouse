@@ -8,7 +8,7 @@ import { useI18n } from "@/lib/i18n";
 
 type SortKey = "featured" | "priceAsc" | "priceDesc";
 const BRANDS = ["All", "Kawasaki", "Yamaha", "Honda", "Ducati", "BMW"];
-const STATUSES: ("All" | MotoStatus)[] = ["All", "Available", "Reserved", "Incoming"];
+const STATUSES: ("All" | MotoStatus)[] = ["All", "Available", "Reserved", "Incoming", "Sold"];
 
 function chip(active: boolean): string {
   const base =
