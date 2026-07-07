@@ -24,6 +24,7 @@ export function GearClient({
   baseHref = "/gear",
   initialGender = "all",
   initialBrand = "all",
+  initialCat = "All",
 }: {
   gear: GearItem[];
   label?: string;
@@ -32,12 +33,17 @@ export function GearClient({
   baseHref?: "/gear" | "/parts";
   initialGender?: string;
   initialBrand?: string;
+  initialCat?: string;
 }) {
   const { t, loc } = useI18n();
-  const [cat, setCat] = useState("All");
+  const [cat, setCat] = useState(initialCat);
   const [gender, setGender] = useState(initialGender);
   const [brand, setBrand] = useState(initialBrand);
-  const cats = useMemo(() => ["All", ...Array.from(new Set(gear.map((g) => g.category)))], [gear]);
+  const cats = useMemo(() => {
+    const c = ["All", ...Array.from(new Set(gear.map((g) => g.category)))];
+    if (initialCat !== "All" && !c.includes(initialCat)) c.push(initialCat);
+    return c;
+  }, [gear, initialCat]);
   // Брэндүүд — өгөгдлөөс + initialBrand (жиш постероос X-Pro) чипээр харагдана
   const brands = useMemo(() => {
     const b = Array.from(new Set(gear.map((g) => g.brand).filter(Boolean))).sort();

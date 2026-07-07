@@ -318,8 +318,8 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ===== POSTER 3 (parts ба event хооронд) ===== */}
-      <Poster mn={homePoster3} en={settings.home_poster3_en} />
+      {/* ===== POSTER 3 (parts ба event хооронд) — Merch ангилал руу ===== */}
+      <Poster mn={homePoster3} en={settings.home_poster3_en} href="/gear?cat=Merch" />
 
       {/* ===== EVENTS TEASER ===== */}
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
