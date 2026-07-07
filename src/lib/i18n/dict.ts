@@ -364,6 +364,20 @@ export const EN: Record<string, string> = {
   "Ачаалж байна…": "Loading…",
   "Хадгалсан зүйл алга. Мотоцикл эсвэл барааны хуудаснаас ♥ дарж хадгалаарай.": "No saved items yet. Tap ♥ on a motorcycle or product page to save it.",
   "Хасах": "Remove",
+
+  // ===== Cart: shipping address (олон улсын хүргэлт) =====
+  "Хүргэлтийн хаяг": "Shipping address",
+  "Улс болон хаягаа оруулаарай — admin хүргэлтийн үнийг тооцож холбогдоно.": "Enter your country and address — admin will calculate shipping and get in touch.",
+  "Хүргэх улс": "Destination country",
+  "Улс сонгох…": "Select country…",
+  "Бусад…": "Other…",
+  "Улсын нэр": "Country name",
+  "Хүлээн авагчийн нэр": "Recipient name",
+  "Хүргэх хаяг (хот, гудамж, шуудангийн код)": "Delivery address (city, street, postal code)",
+  "Хүргэх улсаа сонгоно уу.": "Please select a destination country.",
+  "Хүлээн авагчийн нэрээ оруулна уу.": "Please enter the recipient name.",
+  "Утасны дугаараа оруулна уу.": "Please enter a phone number.",
+  "Хүргэх хаягаа оруулна уу.": "Please enter a delivery address.",
 };
 
 export const tFor = (lang: Lang) => (s: string): string => (lang === "en" ? EN[s] ?? s : s);

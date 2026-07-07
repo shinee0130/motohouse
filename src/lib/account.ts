@@ -9,6 +9,10 @@ export interface Order {
   status: "Хүлээгдэж буй" | "Баталгаажсан" | "Хүргэгдсэн" | "Цуцлагдсан";
   userPhone?: string; // захиалагчийн утас (admin талд)
   userName?: string;  // захиалагчийн нэр (profiles-аас)
+  shipCountry?: string; // хүргэх улс (олон улсын захиалга)
+  shipName?: string;    // хүлээн авагчийн нэр
+  shipPhone?: string;   // хүлээн авагчийн утас
+  shipAddress?: string; // бүтэн хаяг
 }
 
 export function orderBadge(status: Order["status"]): string {

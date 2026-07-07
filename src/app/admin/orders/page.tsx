@@ -70,6 +70,13 @@ export default function AdminOrders() {
                   {o.userPhone && <span style={sx("font:400 12px 'JetBrains Mono';color:#8A8F98;")}>· {o.userPhone}</span>}
                 </div>
                 <div style={sx("font:400 11px 'JetBrains Mono';color:#6b7280;margin-top:4px;")}>{o.id} · {o.date} · {o.qty}ш</div>
+                {o.shipCountry && (
+                  <div style={sx("margin-top:8px;background:#0B0B0D;border:1px solid #262626;border-radius:9px;padding:8px 10px;max-width:340px;")}>
+                    <div style={sx("font:700 10px 'JetBrains Mono';letter-spacing:.1em;color:#E10613;")}>🚚 ХҮРГЭЛТ · {o.shipCountry}</div>
+                    <div style={sx("font:600 12px Roboto;color:#C8C8C8;margin-top:4px;")}>{o.shipName}{o.shipPhone ? ` · ${o.shipPhone}` : ""}</div>
+                    {o.shipAddress && <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:2px;white-space:pre-wrap;")}>{o.shipAddress}</div>}
+                  </div>
+                )}
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <span style={sx("font:800 15px Montserrat;color:#fff;")}>{fmt(o.total)}</span>

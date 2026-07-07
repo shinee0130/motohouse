@@ -11,6 +11,10 @@ import { getCart, setCartQty, removeFromCart, clearCart, CART_EVENT, type CartIt
 import { useI18n } from "@/lib/i18n";
 
 const PAYMENT_METHODS = ["Visa", "Mastercard", "American Express", "UnionPay", "T Card", "Apple Pay", "Google Pay", "WeChat Pay", "QPay", "SocialPay", "HiPay"];
+const COUNTRIES = ["Mongolia", "China", "Japan", "South Korea", "Kazakhstan", "Russia", "USA", "Germany", "United Kingdom", "France", "Australia"];
+const OTHER = "__other";
+const SHIP_INPUT = "background:#050505;border:1px solid #262626;border-radius:10px;padding:12px 14px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
+const SHIP_LABEL = "font:600 11px Montserrat;letter-spacing:.03em;color:#A3A3A3;margin-bottom:6px;display:block;";
 
 export default function CartPage() {
   const { user } = useAuth();
@@ -21,6 +25,14 @@ export default function CartPage() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
 
+  // хүргэлтийн хаяг (олон улсын захиалга)
+  const [shipCountry, setShipCountry] = useState("");
+  const [customCountry, setCustomCountry] = useState("");
+  const [shipName, setShipName] = useState("");
+  const [shipPhone, setShipPhone] = useState("");
+  const [shipAddress, setShipAddress] = useState("");
+  const [err, setErr] = useState("");
+
   useEffect(() => {
     const load = () => setItems(getCart());
     load(); setReady(true);
@@ -28,15 +40,27 @@ export default function CartPage() {
     return () => window.removeEventListener(CART_EVENT, load);
   }, []);
 
+  useEffect(() => {
+    if (user) { setShipName((n) => n || user.name || ""); setShipPhone((p) => p || user.phone || ""); }
+  }, [user]);
+
   const total = items.reduce((s, x) => s + x.price * x.qty, 0);
 
   async function checkout() {
     if (!user) { router.push("/login"); return; }
-    setBusy(true);
+    const country = shipCountry === OTHER ? customCountry.trim() : shipCountry;
+    if (!country) return setErr(t("Хүргэх улсаа сонгоно уу."));
+    if (!shipName.trim()) return setErr(t("Хүлээн авагчийн нэрээ оруулна уу."));
+    if (!shipPhone.trim()) return setErr(t("Утасны дугаараа оруулна уу."));
+    if (!shipAddress.trim()) return setErr(t("Хүргэх хаягаа оруулна уу."));
+    setErr(""); setBusy(true);
     try {
       for (const it of items) {
         const label = `${it.name}${it.meta ? ` (${it.meta})` : ""}${it.qty > 1 ? ` ×${it.qty}` : ""}`;
-        await createOrder({ userPhone: user.phone, item: label, total: it.price * it.qty });
+        await createOrder({
+          userPhone: user.phone, item: label, total: it.price * it.qty,
+          shipCountry: country, shipName: shipName.trim(), shipPhone: shipPhone.trim(), shipAddress: shipAddress.trim(),
+        });
       }
       clearCart();
       setDone(true);
@@ -95,6 +119,38 @@ export default function CartPage() {
                 <button onClick={() => removeFromCart(it.id, it.meta)} aria-label="Устгах" style={sx("background:none;border:none;color:#ef4444;font:700 16px Montserrat;cursor:pointer;padding:6px;")}>✕</button>
               </div>
             ))}
+          </div>
+
+          {/* хүргэлтийн хаяг */}
+          <div style={sx("background:#111113;border:1px solid #262626;border-radius:16px;padding:18px 18px 20px;margin-top:20px;")}>
+            <div style={sx("font:700 11px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;text-transform:uppercase;")}>{t("Хүргэлтийн хаяг")}</div>
+            <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:6px;margin-bottom:14px;")}>{t("Улс болон хаягаа оруулаарай — admin хүргэлтийн үнийг тооцож холбогдоно.")}</div>
+            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;")}>
+              <div>
+                <label style={sx(SHIP_LABEL)}>{t("Хүргэх улс")}</label>
+                <select value={shipCountry} onChange={(e) => setShipCountry(e.target.value)} style={sx(SHIP_INPUT + "cursor:pointer;")}>
+                  <option value="">{t("Улс сонгох…")}</option>
+                  {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  <option value={OTHER}>{t("Бусад…")}</option>
+                </select>
+                {shipCountry === OTHER && (
+                  <input value={customCountry} onChange={(e) => setCustomCountry(e.target.value)} placeholder={t("Улсын нэр")} style={sx(SHIP_INPUT + "margin-top:8px;")} />
+                )}
+              </div>
+              <div>
+                <label style={sx(SHIP_LABEL)}>{t("Хүлээн авагчийн нэр")}</label>
+                <input value={shipName} onChange={(e) => setShipName(e.target.value)} style={sx(SHIP_INPUT)} />
+              </div>
+              <div>
+                <label style={sx(SHIP_LABEL)}>{t("Утасны дугаар")}</label>
+                <input value={shipPhone} onChange={(e) => setShipPhone(e.target.value)} style={sx(SHIP_INPUT)} />
+              </div>
+            </div>
+            <div style={{ marginTop: 12 }}>
+              <label style={sx(SHIP_LABEL)}>{t("Хүргэх хаяг (хот, гудамж, шуудангийн код)")}</label>
+              <textarea value={shipAddress} onChange={(e) => setShipAddress(e.target.value)} rows={3} style={sx(SHIP_INPUT + "resize:vertical;")} />
+            </div>
+            {err && <div style={sx("font:500 13px Roboto;color:#ef4444;margin-top:10px;")}>{err}</div>}
           </div>
 
           <div style={sx("display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:20px;")}>

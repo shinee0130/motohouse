@@ -32,7 +32,11 @@ function mapEvent(r: any): EventItem {
   };
 }
 function mapOrder(r: any): Order {
-  return { id: r.id, date: r.order_date, item: r.item, qty: r.qty, total: r.total, status: r.status };
+  return {
+    id: r.id, date: r.order_date, item: r.item, qty: r.qty, total: r.total, status: r.status,
+    shipCountry: r.ship_country ?? undefined, shipName: r.ship_name ?? undefined,
+    shipPhone: r.ship_phone ?? undefined, shipAddress: r.ship_address ?? undefined,
+  };
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 

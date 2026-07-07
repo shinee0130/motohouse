@@ -89,13 +89,18 @@ export async function updateOrderStatus(id: string, status: string) {
 }
 
 // Хэрэглэгчийн захиалга үүсгэх (detail хуудаснаас)
-export async function createOrder(o: { userPhone: string; item: string; total: number }): Promise<string> {
+export async function createOrder(o: {
+  userPhone: string; item: string; total: number;
+  shipCountry?: string; shipName?: string; shipPhone?: string; shipAddress?: string;
+}): Promise<string> {
   const id = `MH-${Date.now().toString().slice(-6)}`;
   const d = new Date();
   const date = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
   const { error } = await supabase.from("orders").insert({
     id, user_phone: o.userPhone, item: o.item, qty: 1, total: o.total,
     status: "Хүлээгдэж буй", order_date: date,
+    ship_country: o.shipCountry || null, ship_name: o.shipName || null,
+    ship_phone: o.shipPhone || null, ship_address: o.shipAddress || null,
   });
   if (error) throw error;
   return id;
