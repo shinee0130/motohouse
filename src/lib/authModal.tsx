@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { AUTH_INPUT, AUTH_LABEL, AUTH_BTN } from "@/components/AuthShell";
 import { PasswordInput } from "@/components/PasswordInput";
+import { Brand } from "@/components/Brand";
 
 type Mode = "login" | "register";
 type Ctx = { open: (mode?: Mode) => void; close: () => void };
@@ -56,7 +57,10 @@ function AuthModal({ mode, setMode, close }: { mode: Mode; setMode: (m: Mode) =>
         style={sx("position:relative;width:100%;max-width:440px;background:#0c0c0e;border:1px solid #262626;border-radius:20px;padding:clamp(24px,4vw,36px);box-shadow:0 24px 70px rgba(0,0,0,.6);margin:auto;")}
       >
         <button onClick={close} aria-label={t("Хаах")}
-          style={sx("position:absolute;top:16px;right:16px;background:none;border:1px solid #262626;border-radius:8px;width:34px;height:34px;color:#8A8F98;font:600 15px Montserrat;cursor:pointer;")}>✕</button>
+          style={sx("position:absolute;top:16px;right:16px;background:none;border:1px solid #262626;border-radius:8px;width:34px;height:34px;color:#8A8F98;font:600 15px Montserrat;cursor:pointer;z-index:1;")}>✕</button>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: 20 }}>
+          <Brand height={40} />
+        </div>
         {mode === "login"
           ? <LoginForm t={t} refresh={refresh} close={close} toRegister={() => setMode("register")} />
           : <RegisterForm t={t} toLogin={() => setMode("login")} />}
