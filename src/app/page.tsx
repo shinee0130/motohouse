@@ -7,6 +7,7 @@ import { Price } from "@/lib/currency";
 import { getMotos, getGearAll, getEvents, getSettings } from "@/lib/queries";
 import { T, Loc } from "@/lib/i18n";
 import { NewsletterInput } from "@/components/NewsletterInput";
+import { Poster } from "@/components/Poster";
 import {
   IconTruck,
   IconCard,
@@ -55,6 +56,7 @@ export default async function HomePage() {
   const homePoster = settings.home_poster; // урт poster зураг (admin-аас)
   const homePoster2 = settings.home_poster2; // 2 дахь poster (promo ба riding gear хооронд)
   const homePoster3 = settings.home_poster3; // 3 дахь poster (parts ба event хооронд)
+  // Постер бүрийн англи хувилбар (сонгох; байхгүй бол монголоор fallback)
 
   const featuredAll = motos.filter((m) => m.featured);
   const featured = (featuredAll.length ? featuredAll : motos).slice(0, 4);
@@ -190,13 +192,8 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ===== POSTER (урт зураг, 2 талруугаа тулсан full-width) ===== */}
-      {homePoster && (
-        <div style={{ marginTop: "clamp(44px,6vw,72px)" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={homePoster} alt="MOTO HOUSE" style={{ width: "100%", height: "auto", display: "block" }} />
-        </div>
-      )}
+      {/* ===== POSTER 1 (full-width) ===== */}
+      <Poster mn={homePoster} en={settings.home_poster_en} />
 
       {/* ===== BRAND MARQUEE (түр нуусан) ===== */}
       {false && (
@@ -290,13 +287,8 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ===== POSTER 2 (promo ба riding gear хооронд, full-width) ===== */}
-      {homePoster2 && (
-        <div style={{ marginTop: "clamp(44px,6vw,72px)" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={homePoster2} alt="MOTO HOUSE" style={{ width: "100%", height: "auto", display: "block" }} />
-        </div>
-      )}
+      {/* ===== POSTER 2 (promo ба riding gear хооронд) ===== */}
+      <Poster mn={homePoster2} en={settings.home_poster2_en} />
 
       {/* ===== GEAR BESTSELLERS ===== */}
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
@@ -326,13 +318,8 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ===== POSTER 3 (parts ба event хооронд, full-width) ===== */}
-      {homePoster3 && (
-        <div style={{ marginTop: "clamp(44px,6vw,72px)" }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={homePoster3} alt="MOTO HOUSE" style={{ width: "100%", height: "auto", display: "block" }} />
-        </div>
-      )}
+      {/* ===== POSTER 3 (parts ба event хооронд) ===== */}
+      <Poster mn={homePoster3} en={settings.home_poster3_en} />
 
       {/* ===== EVENTS TEASER ===== */}
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>

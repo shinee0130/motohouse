@@ -7,8 +7,11 @@ import { getSettingsMap, updateSetting, uploadSiteImage } from "@/lib/admin";
 const SLOTS = [
   { key: "hero", label: "Hero (нүүрний том зураг)" },
   { key: "home_poster", label: "Нүүр — урт poster зураг" },
+  { key: "home_poster_en", label: "Нүүр — урт poster (Англи хувилбар, сонгох)" },
   { key: "home_poster2", label: "Нүүр — 2 дахь poster (Service ба Riding gear хооронд)" },
+  { key: "home_poster2_en", label: "Нүүр — 2 дахь poster (Англи хувилбар, сонгох)" },
   { key: "home_poster3", label: "Нүүр — 3 дахь poster (Сэлбэг ба Event хооронд)" },
+  { key: "home_poster3_en", label: "Нүүр — 3 дахь poster (Англи хувилбар, сонгох)" },
   { key: "cat_moto", label: "Категори — Мотоцикл" },
   { key: "cat_gear", label: "Категори — Хэрэгсэл" },
   { key: "cat_parts", label: "Категори — Сэлбэг" },
