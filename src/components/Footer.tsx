@@ -5,6 +5,10 @@ import { sx } from "@/lib/sx";
 import { Brand } from "./Brand";
 import { useI18n } from "@/lib/i18n";
 
+// Хөгжүүлэгчийн portfolio холбоос — дараа portfolio хийхэд энд URL-ээ оруулбал
+// footer доорх "Scott" автоматаар тухайн хаяг руу үсэрдэг линк болно.
+const DEV_PORTFOLIO = "";
+
 export function Footer() {
   const { t } = useI18n();
 
@@ -116,7 +120,12 @@ export function Footer() {
           "border-top:1px solid #1c1c1f;padding:18px clamp(20px,4vw,40px);text-align:center;font:500 12px 'JetBrains Mono';color:#555;letter-spacing:.1em;",
         )}
       >
-        © 2026 MOTO HOUSE · RIDE. POWER. LIVE. · Developed by Scott
+        © 2026 MOTO HOUSE · RIDE. POWER. LIVE. · Developed by{" "}
+        {DEV_PORTFOLIO ? (
+          <a href={DEV_PORTFOLIO} target="_blank" rel="noopener noreferrer" style={sx("color:#E10613;font-weight:700;text-decoration:none;")}>Scott</a>
+        ) : (
+          <span style={sx("color:#E10613;font-weight:700;")}>Scott</span>
+        )}
       </div>
     </div>
   );
