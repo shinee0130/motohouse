@@ -9,10 +9,29 @@ import { getRates } from "@/lib/fx";
 import { AuthModalProvider } from "@/lib/authModal";
 import { CartModalProvider } from "@/lib/cartModal";
 
+const SITE_DESC =
+  "Монголд суурилсан мотоцикл, riding gear, сэлбэг, засвар үйлчилгээ болон олон улсын захиалга нийлүүлэлтийн платформ.";
+
 export const metadata: Metadata = {
-  title: "motohouse",
-  description:
-    "Монголд суурилсан мотоцикл, riding gear, сэлбэг, засвар үйлчилгээ болон олон улсын захиалга нийлүүлэлтийн платформ.",
+  metadataBase: new URL("https://motohouse.mn"),
+  title: {
+    default: "MOTO HOUSE — RIDE. POWER. LIVE.",
+    template: "%s · MOTO HOUSE",
+  },
+  description: SITE_DESC,
+  openGraph: {
+    type: "website",
+    siteName: "MOTO HOUSE",
+    title: "MOTO HOUSE — RIDE. POWER. LIVE.",
+    description: SITE_DESC,
+    url: "https://motohouse.mn",
+    locale: "mn_MN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MOTO HOUSE — RIDE. POWER. LIVE.",
+    description: SITE_DESC,
+  },
 };
 
 export default async function RootLayout({
