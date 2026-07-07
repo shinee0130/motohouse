@@ -140,6 +140,57 @@ export async function getMyOrderRequests(phone: string): Promise<OrderRequest[]>
   return (data ?? []).map(mapRequest);
 }
 
+// ---- Tours (Аялал) + bookings ----
+export interface Tour {
+  id: number; title: string; description?: string; region?: string; image?: string;
+  durationDays: number; startDate?: string; price: number; maxCapacity: number; booked: number;
+  rentalAvailable: boolean; rentalMoto?: string; status: string; featured?: boolean;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapTour(r: any): Tour {
+  return {
+    id: r.id, title: r.title, description: r.description ?? undefined, region: r.region ?? undefined,
+    image: r.image ?? undefined, durationDays: r.duration_days, startDate: r.start_date ?? undefined,
+    price: r.price, maxCapacity: r.max_capacity, booked: r.booked ?? 0,
+    rentalAvailable: r.rental_available, rentalMoto: r.rental_moto ?? undefined,
+    status: r.status, featured: r.featured ?? false,
+  };
+}
+export async function getTours(): Promise<Tour[]> {
+  const { data, error } = await supabase.from("tours").select("*").order("start_date");
+  if (error) throw error;
+  return (data ?? []).map(mapTour);
+}
+export async function getTour(id: number): Promise<Tour | null> {
+  const { data } = await supabase.from("tours").select("*").eq("id", id).maybeSingle();
+  return data ? mapTour(data) : null;
+}
+
+export interface TourBooking {
+  id: string; tourId: number; tourTitle?: string; people: number;
+  motoChoice: string; motoModel?: string; note?: string; total: number;
+  status: string; date: string; name?: string; phone?: string; userPhone?: string;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapTourBooking(r: any): TourBooking {
+  return {
+    id: r.id, tourId: r.tour_id, people: r.people, motoChoice: r.moto_choice,
+    motoModel: r.moto_model ?? undefined, note: r.note ?? undefined, total: r.total,
+    status: r.status, date: (r.created_at ?? "").slice(0, 10),
+    name: r.name ?? undefined, phone: r.phone ?? undefined, userPhone: r.user_phone ?? undefined,
+    tourTitle: r.tours?.title ?? undefined,
+  };
+}
+export async function getTourBookings(): Promise<TourBooking[]> {
+  const { data, error } = await supabase.from("tour_bookings").select("*, tours(title)").order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map(mapTourBooking);
+}
+export async function getMyTourBookings(phone: string): Promise<TourBooking[]> {
+  const { data } = await supabase.from("tour_bookings").select("*, tours(title)").eq("user_phone", phone).order("created_at", { ascending: false });
+  return (data ?? []).map(mapTourBooking);
+}
+
 // ---- Saved (Хадгалсан) ----
 export async function getSavedItems(phone: string): Promise<{ gear: GearItem[]; motos: Moto[] }> {
   const { data } = await supabase.from("saved").select("*").eq("user_phone", phone).order("created_at", { ascending: false });

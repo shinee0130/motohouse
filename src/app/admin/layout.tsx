@@ -11,6 +11,7 @@ const MENU = [
   { label: "Мотоцикл", href: "/admin/motorcycles" },
   { label: "Бараа / сэлбэг", href: "/admin/gear" },
   { label: "Events & Giveaway", href: "/admin/events" },
+  { label: "Аялал", href: "/admin/tours" },
   { label: "Захиалга", href: "/admin/orders" },
   { label: "Захиалгын хүсэлт", href: "/admin/requests" },
   { label: "Засварын цаг", href: "/admin/service" },

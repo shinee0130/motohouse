@@ -11,6 +11,7 @@ const MENU = [
   { label: "Хяналтын самбар", href: "/account" },
   { label: "Миний захиалга", href: "/account/orders" },
   { label: "Миний хүсэлтүүд", href: "/account/requests" },
+  { label: "Миний аяллууд", href: "/account/bookings" },
   { label: "Хадгалсан", href: "/account/wishlist" },
   { label: "Профайл", href: "/account/profile" },
 ];

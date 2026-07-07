@@ -2,6 +2,7 @@
 
 import { supabase } from "./supabase";
 import type { Moto, GearItem, EventItem } from "./data";
+import type { Tour } from "./queries";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -124,6 +125,52 @@ export async function updateOrderRequest(id: string, patch: { status?: string; q
 }
 export async function uploadRequestImage(file: File): Promise<string> {
   return uploadTo("requests", file);
+}
+
+// ===== Tours (Аялал) =====
+function tourRow(t: Partial<Tour>): any {
+  return {
+    title: t.title, description: t.description ?? null, region: t.region ?? null, image: t.image ?? null,
+    duration_days: t.durationDays ?? 1, start_date: t.startDate ?? null, price: t.price ?? 0,
+    max_capacity: t.maxCapacity ?? 10, rental_available: t.rentalAvailable ?? true,
+    rental_moto: t.rentalMoto ?? null, status: t.status ?? "Нээлттэй", featured: t.featured ?? false,
+  };
+}
+export async function createTour(t: Partial<Tour>) {
+  const { error } = await supabase.from("tours").insert(tourRow(t));
+  if (error) throw error;
+}
+export async function updateTour(id: number, t: Partial<Tour>) {
+  const { error } = await supabase.from("tours").update(tourRow(t)).eq("id", id);
+  if (error) throw error;
+}
+export async function deleteTour(id: number) {
+  const { error } = await supabase.from("tours").delete().eq("id", id);
+  if (error) throw error;
+}
+export async function uploadTourImage(file: File): Promise<string> {
+  return uploadTo("tours", file);
+}
+// Хэрэглэгчийн аяллын booking. Багтаамж хэтэрвэл DB trigger алдаа өгнө → "TOUR_FULL".
+export async function createTourBooking(b: {
+  tourId: number; userPhone: string; name: string; phone: string;
+  people: number; motoChoice: string; motoModel?: string; note?: string; total: number;
+}): Promise<string> {
+  const id = `TB-${Date.now().toString().slice(-6)}`;
+  const { error } = await supabase.from("tour_bookings").insert({
+    id, tour_id: b.tourId, user_phone: b.userPhone, name: b.name, phone: b.phone,
+    people: b.people, moto_choice: b.motoChoice, moto_model: b.motoModel || null,
+    note: b.note || null, total: b.total, status: "Шинэ",
+  });
+  if (error) {
+    if ((error.message || "").includes("TOUR_FULL")) throw new Error("TOUR_FULL");
+    throw error;
+  }
+  return id;
+}
+export async function updateTourBookingStatus(id: string, status: string) {
+  const { error } = await supabase.from("tour_bookings").update({ status }).eq("id", id);
+  if (error) throw error;
 }
 
 // ===== Service bookings (Засварын цаг захиалга) =====
