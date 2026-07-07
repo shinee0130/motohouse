@@ -5,7 +5,7 @@ import { Slot } from "@/components/Slot";
 import { badge, isPart, type GearItem } from "@/lib/data";
 import { Price } from "@/lib/currency";
 import { getMotos, getGearAll, getEvents, getSettings } from "@/lib/queries";
-import { T } from "@/lib/i18n";
+import { T, Loc } from "@/lib/i18n";
 import { NewsletterInput } from "@/components/NewsletterInput";
 import {
   IconTruck,
@@ -86,7 +86,7 @@ export default async function HomePage() {
             <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>
               {g.brand.toUpperCase()} · {g.category}
             </div>
-            <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:4px;")}>{g.name}</div>
+            <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:4px;")}><Loc mn={g.name} en={g.nameEn} /></div>
             <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 10 }}>
               {g.oldPrice > g.price && (
                 <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={g.oldPrice} /></span>
@@ -339,7 +339,7 @@ export default async function HomePage() {
               </div>
               <div style={{ padding: "16px 18px", display: "flex", flexDirection: "column", flex: 1 }}>
                 <span style={sx("display:inline-block;align-self:flex-start;font:600 10px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;background:rgba(225,6,19,.1);border:1px solid rgba(225,6,19,.3);padding:4px 9px;border-radius:6px;")}>{e.type}</span>
-                <div style={sx("font:700 17px/1.3 Montserrat;color:#fff;margin-top:10px;")}>{e.title}</div>
+                <div style={sx("font:700 17px/1.3 Montserrat;color:#fff;margin-top:10px;")}><Loc mn={e.title} en={e.titleEn} /></div>
                 <div style={sx("margin-top:auto;padding-top:12px;border-top:1px solid #1c1c1f;display:flex;flex-direction:column;gap:7px;")}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                     <span style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.1em;color:#8A8F98;")}><T>ОГНОО</T></span>
@@ -347,7 +347,7 @@ export default async function HomePage() {
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                     <span style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.1em;color:#8A8F98;flex-shrink:0;")}><T>🏆 ШАГНАЛ</T></span>
-                    <span style={sx("font:700 12px Montserrat;color:#E10613;text-align:right;")}>{e.prize}</span>
+                    <span style={sx("font:700 12px Montserrat;color:#E10613;text-align:right;")}><Loc mn={e.prize} en={e.prizeEn} /></span>
                   </div>
                 </div>
               </div>

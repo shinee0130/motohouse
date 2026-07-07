@@ -54,7 +54,7 @@ export function GearDetail({
   baseLabel?: string;
 }) {
   const { user } = useAuth();
-  const { t } = useI18n();
+  const { t, loc } = useI18n();
   const router = useRouter();
   const [color, setColor] = useState(item.colors?.[0] ?? "");
   const [size, setSize] = useState("");
@@ -93,7 +93,7 @@ export function GearDetail({
         <span style={{ margin: "0 8px", color: "#3a3a3f" }}>/</span>
         <span>{item.category}</span>
         <span style={{ margin: "0 8px", color: "#3a3a3f" }}>/</span>
-        <span style={{ color: "#C8C8C8" }}>{item.name}</span>
+        <span style={{ color: "#C8C8C8" }}>{loc(item.name, item.nameEn)}</span>
       </div>
 
       <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:clamp(24px,4vw,48px);align-items:start;")}>
@@ -144,7 +144,7 @@ export function GearDetail({
             </span>
           )}
 
-          <h1 style={sx("font:800 clamp(26px,3.5vw,38px) Montserrat;color:#fff;margin-top:14px;")}>{item.name}</h1>
+          <h1 style={sx("font:800 clamp(26px,3.5vw,38px) Montserrat;color:#fff;margin-top:14px;")}>{loc(item.name, item.nameEn)}</h1>
           <div style={sx("font:500 14px Roboto;color:#8A8F98;margin-top:4px;")}>{item.brand} · {item.category}</div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
@@ -259,11 +259,11 @@ export function GearDetail({
           {/* accordions */}
           <div style={{ marginTop: 28 }}>
             <Accordion title={t("Тайлбар")} open>
-              <p style={sx("font:400 14px/1.7 Roboto;color:#A3A3A3;")}>{item.desc}</p>
+              <p style={sx("font:400 14px/1.7 Roboto;color:#A3A3A3;")}>{loc(item.desc, item.descEn)}</p>
             </Accordion>
             <Accordion title={t("Онцлог")}>
               <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-                {item.features.map((f) => (
+                {loc(item.features, item.featuresEn).map((f) => (
                   <div key={f} style={{ display: "flex", alignItems: "center", gap: 11 }}>
                     <span style={sx("width:6px;height:6px;border-radius:50%;background:#E10613;flex-shrink:0;")} />
                     <span style={sx("font:500 14px Roboto;color:#C8C8C8;")}>{f}</span>
@@ -311,7 +311,7 @@ export function GearDetail({
 }
 
 function GearMini({ g, baseHref }: { g: GearItem; baseHref: "/gear" | "/parts" }) {
-  const { t } = useI18n();
+  const { t, loc } = useI18n();
   return (
     <Link
       href={`${baseHref}/${g.id}`}
@@ -328,7 +328,7 @@ function GearMini({ g, baseHref }: { g: GearItem; baseHref: "/gear" | "/parts" }
       </div>
       <div style={{ padding: "13px 15px" }}>
         <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>{g.brand.toUpperCase()}</div>
-        <div style={sx("font:700 14px Montserrat;color:#fff;margin-top:3px;")}>{g.name}</div>
+        <div style={sx("font:700 14px Montserrat;color:#fff;margin-top:3px;")}>{loc(g.name, g.nameEn)}</div>
         <div style={sx("font:800 14px Montserrat;color:#fff;margin-top:8px;")}><Price amount={g.price} /></div>
       </div>
     </Link>

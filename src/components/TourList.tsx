@@ -15,7 +15,7 @@ function tourBadge(status: string): string {
 }
 
 export function TourList({ tours }: { tours: Tour[] }) {
-  const { t } = useI18n();
+  const { t, loc } = useI18n();
   return (
     <div style={sx("max-width:1280px;margin:0 auto;padding:0 clamp(20px,4vw,40px) clamp(32px,5vw,56px);")}>
       <div style={{ animation: "mhfade .5s both" }}>
@@ -49,8 +49,8 @@ export function TourList({ tours }: { tours: Tour[] }) {
                   </span>
                 </div>
                 <div style={{ padding: "16px 18px 18px", display: "flex", flexDirection: "column", flex: 1 }}>
-                  {tour.region && <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#E10613;")}>{tour.region}</div>}
-                  <div style={sx("font:700 18px/1.3 Montserrat;color:#fff;margin-top:6px;")}>{tour.title}</div>
+                  {tour.region && <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#E10613;")}>{loc(tour.region, tour.regionEn)}</div>}
+                  <div style={sx("font:700 18px/1.3 Montserrat;color:#fff;margin-top:6px;")}>{loc(tour.title, tour.titleEn)}</div>
                   <div style={sx("margin-top:auto;padding-top:14px;border-top:1px solid #1c1c1f;display:flex;flex-direction:column;gap:8px;")}>
                     <Row label={t("Огноо")} value={tour.startDate || "—"} />
                     <Row label={t("Хугацаа")} value={`${tour.durationDays} ${t("хоног")}`} />

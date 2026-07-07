@@ -12,6 +12,7 @@ function mapMoto(r: any): Moto {
     hp: r.hp, nm: r.nm, top: r.top_speed, weight: r.weight, cyl: r.cyl, gearbox: r.gearbox ?? "—",
     desc: r.description ?? "", extras: r.extras ?? [], images: r.images ?? [],
     video: r.video ?? undefined, featured: r.featured,
+    descEn: r.description_en ?? undefined, extrasEn: r.extras_en ?? undefined,
   };
 }
 function mapGear(r: any): GearItem {
@@ -23,12 +24,15 @@ function mapGear(r: any): GearItem {
     colors: r.colors?.length ? r.colors : undefined,
     images: r.images ?? [],
     bestSeller: r.best_seller,
+    nameEn: r.name_en ?? undefined, descEn: r.description_en ?? undefined,
+    metaEn: r.meta_en ?? undefined, featuresEn: r.features_en ?? undefined,
   };
 }
 function mapEvent(r: any): EventItem {
   return {
     id: r.id, type: r.type, title: r.title, status: r.status, date: r.event_date, prize: r.prize,
     image: r.image ?? undefined, description: r.description ?? "", winner: r.winner ?? undefined,
+    titleEn: r.title_en ?? undefined, descriptionEn: r.description_en ?? undefined, prizeEn: r.prize_en ?? undefined,
   };
 }
 function mapOrder(r: any): Order {
@@ -145,6 +149,7 @@ export interface Tour {
   id: number; title: string; description?: string; region?: string; image?: string;
   durationDays: number; startDate?: string; price: number; maxCapacity: number; booked: number;
   rentalAvailable: boolean; rentalMoto?: string; status: string; featured?: boolean;
+  titleEn?: string; descriptionEn?: string; regionEn?: string;
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapTour(r: any): Tour {
@@ -154,6 +159,7 @@ function mapTour(r: any): Tour {
     price: r.price, maxCapacity: r.max_capacity, booked: r.booked ?? 0,
     rentalAvailable: r.rental_available, rentalMoto: r.rental_moto ?? undefined,
     status: r.status, featured: r.featured ?? false,
+    titleEn: r.title_en ?? undefined, descriptionEn: r.description_en ?? undefined, regionEn: r.region_en ?? undefined,
   };
 }
 export async function getTours(): Promise<Tour[]> {

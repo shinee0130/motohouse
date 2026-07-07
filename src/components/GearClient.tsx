@@ -29,7 +29,7 @@ export function GearClient({
   desc?: string;
   baseHref?: "/gear" | "/parts";
 }) {
-  const { t } = useI18n();
+  const { t, loc } = useI18n();
   const [cat, setCat] = useState("All");
   const cats = useMemo(() => ["All", ...Array.from(new Set(gear.map((g) => g.category)))], [gear]);
   const list = cat === "All" ? gear : gear.filter((g) => g.category === cat);
@@ -79,7 +79,7 @@ export function GearClient({
                   <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;margin-top:6px;")}>
                     {g.brand.toUpperCase()} · {g.category}
                   </div>
-                  <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:3px;")}>{g.name}</div>
+                  <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:3px;")}>{loc(g.name, g.nameEn)}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 11 }}>
                     {g.oldPrice > g.price && (
                       <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={g.oldPrice} /></span>

@@ -16,16 +16,19 @@ type Form = {
   title: string; description: string; region: string; image: string;
   durationDays: number; startDate: string; price: number; maxCapacity: number;
   rentalAvailable: boolean; rentalMoto: string; status: string; featured: boolean;
+  titleEn: string; descriptionEn: string; regionEn: string;
 };
 const empty: Form = {
   title: "", description: "", region: "", image: "", durationDays: 1, startDate: "",
   price: 0, maxCapacity: 10, rentalAvailable: true, rentalMoto: "", status: "Нээлттэй", featured: false,
+  titleEn: "", descriptionEn: "", regionEn: "",
 };
 function toForm(t: Tour): Form {
   return {
     title: t.title, description: t.description ?? "", region: t.region ?? "", image: t.image ?? "",
     durationDays: t.durationDays, startDate: t.startDate ?? "", price: t.price, maxCapacity: t.maxCapacity,
     rentalAvailable: t.rentalAvailable, rentalMoto: t.rentalMoto ?? "", status: t.status, featured: !!t.featured,
+    titleEn: t.titleEn ?? "", descriptionEn: t.descriptionEn ?? "", regionEn: t.regionEn ?? "",
   };
 }
 
@@ -36,6 +39,16 @@ export default function AdminTours() {
   const [f, setF] = useState<Form>(empty);
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [flang, setFlang] = useState<"mn" | "en">("mn");
+
+  const EN_KEY = { title: "titleEn", description: "descriptionEn", region: "regionEn" } as const;
+  function bind(field: "title" | "description" | "region") {
+    const key = (flang === "en" ? EN_KEY[field] : field) as keyof Form;
+    return {
+      value: f[key] as string,
+      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setF({ ...f, [key]: e.target.value }),
+    };
+  }
 
   async function refresh() {
     setList(await getTours());
@@ -53,6 +66,7 @@ export default function AdminTours() {
         durationDays: Number(f.durationDays) || 1, startDate: f.startDate, price: Number(f.price) || 0,
         maxCapacity: Number(f.maxCapacity) || 1, rentalAvailable: f.rentalAvailable,
         rentalMoto: f.rentalMoto, status: f.status, featured: f.featured,
+        titleEn: f.titleEn.trim(), descriptionEn: f.descriptionEn.trim(), regionEn: f.regionEn.trim(),
       };
       if (editing === "new") await createTour(payload);
       else if (typeof editing === "number") await updateTour(editing, payload);
@@ -87,6 +101,18 @@ export default function AdminTours() {
 
       {editing !== null && (
         <form onSubmit={save} style={sx("background:#0e0e10;border:1px solid #262626;border-radius:14px;padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;align-items:end;")}>
+          <div style={{ gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <div style={sx("font:700 15px Montserrat;color:#fff;")}>{editing === "new" ? "Шинэ аялал" : "Засах"}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              {(["mn", "en"] as const).map((l) => (
+                <button type="button" key={l} onClick={() => setFlang(l)}
+                  style={sx(`cursor:pointer;font:800 11px Montserrat;padding:6px 12px;border-radius:8px;${flang === l ? "background:#E10613;border:1px solid #E10613;color:#fff;" : "background:#050505;border:1px solid #333;color:#8A8F98;"}`)}>
+                  {l.toUpperCase()}
+                </button>
+              ))}
+              <span style={sx("font:400 11px Roboto;color:#6b7280;")}>{flang === "en" ? "Англи (хоосон бол монголоор)" : "Монгол"}</span>
+            </div>
+          </div>
           <div style={{ gridColumn: "1 / -1", display: "flex", gap: 16, alignItems: "flex-start", flexWrap: "wrap" }}>
             <div style={sx("position:relative;width:150px;height:100px;border-radius:10px;overflow:hidden;border:1px solid #262626;background:#050505;flex:none;")}>
               {f.image ? (
@@ -104,8 +130,8 @@ export default function AdminTours() {
             </div>
           </div>
 
-          <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Гарчиг *</label><input value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} style={sx(INPUT)} /></div>
-          <div><label style={sx(LABEL)}>Бүс / чиглэл</label><input value={f.region} onChange={(e) => setF({ ...f, region: e.target.value })} placeholder="Дундговь" style={sx(INPUT)} /></div>
+          <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Гарчиг * {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><input {...bind("title")} style={sx(INPUT)} /></div>
+          <div><label style={sx(LABEL)}>Бүс / чиглэл {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><input {...bind("region")} placeholder="Дундговь" style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Эхлэх огноо</label><input value={f.startDate} onChange={(e) => setF({ ...f, startDate: e.target.value })} placeholder="2026.08.15" style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Хугацаа (хоног)</label><input type="number" min={1} value={f.durationDays} onChange={(e) => setF({ ...f, durationDays: +e.target.value })} style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>1 хүний үнэ (₮)</label><input type="number" min={0} value={f.price} onChange={(e) => setF({ ...f, price: +e.target.value })} style={sx(INPUT)} /></div>
@@ -123,7 +149,7 @@ export default function AdminTours() {
             <input id="feat" type="checkbox" checked={f.featured} onChange={(e) => setF({ ...f, featured: e.target.checked })} style={{ width: 18, height: 18, accentColor: "#E10613" }} />
             <label htmlFor="feat" style={sx("font:500 13px Roboto;color:#C8C8C8;cursor:pointer;")}>Онцлох</label>
           </div>
-          <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Дэлгэрэнгүй</label><textarea value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} rows={4} style={sx(INPUT + "resize:vertical;")} /></div>
+          <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Дэлгэрэнгүй {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><textarea {...bind("description")} rows={4} style={sx(INPUT + "resize:vertical;")} /></div>
           <div style={{ display: "flex", gap: 10 }}>
             <button type="submit" disabled={busy} style={sx(BTN + (busy ? "opacity:.6;" : ""))}>{busy ? "…" : "Хадгалах"}</button>
             <button type="button" onClick={() => setEditing(null)} style={sx("background:none;border:1px solid #333;color:#A3A3A3;font:600 13px Montserrat;padding:11px 18px;border-radius:9px;cursor:pointer;")}>Болих</button>

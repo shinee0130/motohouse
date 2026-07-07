@@ -25,11 +25,13 @@ type Form = {
   status: MotoStatus; country: string; customs: string; hp: string; nm: string;
   top: string; weight: string; cyl: string; gearbox: string; featured: boolean; desc: string;
   extras: string; images: string[]; video: string;
+  descEn: string; extrasEn: string;
 };
 const empty: Form = {
   brand: "Kawasaki", model: "", year: "", cc: "", odo: "", price: "", salePrice: "", status: "Available",
   country: "Япон", customs: "Гаальтай", hp: "", nm: "", top: "", weight: "", cyl: "", gearbox: "6 шат · Шингэн",
   featured: false, desc: "", extras: "", images: [], video: "",
+  descEn: "", extrasEn: "",
 };
 function toForm(m: Moto): Form {
   return {
@@ -39,6 +41,7 @@ function toForm(m: Moto): Form {
     hp: String(m.hp), nm: String(m.nm), top: String(m.top), weight: String(m.weight),
     cyl: m.cyl, gearbox: m.gearbox ?? "", featured: !!m.featured, desc: m.desc,
     extras: (m.extras ?? []).join("\n"), images: m.images ?? [], video: m.video ?? "",
+    descEn: m.descEn ?? "", extrasEn: (m.extrasEn ?? []).join("\n"),
   };
 }
 function fromForm(f: Form): Partial<Moto> {
@@ -51,6 +54,7 @@ function fromForm(f: Form): Partial<Moto> {
     nm: Number(f.nm) || 0, top: Number(f.top) || 0, weight: Number(f.weight) || 0,
     cyl: f.cyl || "—", gearbox: f.gearbox || "—", featured: f.featured, desc: f.desc, extras: lines(f.extras),
     images: f.images, video: f.video || undefined,
+    descEn: f.descEn.trim(), extrasEn: lines(f.extrasEn),
   };
 }
 
@@ -62,6 +66,16 @@ export default function AdminMotorcycles() {
   const [uploading, setUploading] = useState<"" | "img" | "video">("");
   const [customBrand, setCustomBrand] = useState(false);
   const [customCountry, setCustomCountry] = useState(false);
+  const [flang, setFlang] = useState<"mn" | "en">("mn");
+
+  const EN_KEY = { desc: "descEn", extras: "extrasEn" } as const;
+  function bind(field: "desc" | "extras") {
+    const key = (flang === "en" ? EN_KEY[field] : field) as keyof Form;
+    return {
+      value: f[key] as string,
+      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setF({ ...f, [key]: e.target.value }),
+    };
+  }
 
   async function refresh() { setList(await getMotos()); }
   useEffect(() => { refresh(); }, []);
@@ -163,8 +177,17 @@ export default function AdminMotorcycles() {
             <div><label style={sx(LABEL)}>Хөдөлгүүр</label><input value={f.cyl} onChange={(e) => setF({ ...f, cyl: e.target.value })} placeholder="Inline-4" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Хурдны хайрцаг</label><input value={f.gearbox} onChange={(e) => setF({ ...f, gearbox: e.target.value })} placeholder="6 шат · Шингэн" style={sx(INPUT)} /></div>
           </div>
-          <div><label style={sx(LABEL)}>Тайлбар</label><textarea value={f.desc} onChange={(e) => setF({ ...f, desc: e.target.value })} rows={2} style={sx(INPUT + "resize:vertical;")} /></div>
-          <div><label style={sx(LABEL)}>Нэмэлт тоног (мөр тус бүр)</label><textarea value={f.extras} onChange={(e) => setF({ ...f, extras: e.target.value })} rows={3} style={sx(INPUT + "resize:vertical;")} /></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            {(["mn", "en"] as const).map((l) => (
+              <button type="button" key={l} onClick={() => setFlang(l)}
+                style={sx(`cursor:pointer;font:800 11px Montserrat;padding:6px 12px;border-radius:8px;${flang === l ? "background:#E10613;border:1px solid #E10613;color:#fff;" : "background:#050505;border:1px solid #333;color:#8A8F98;"}`)}>
+                {l.toUpperCase()}
+              </button>
+            ))}
+            <span style={sx("font:400 11px Roboto;color:#6b7280;")}>{flang === "en" ? "Тайлбар/тоногийн англи (хоосон бол монголоор)" : "Тайлбар/тоног — монгол"}</span>
+          </div>
+          <div><label style={sx(LABEL)}>Тайлбар {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><textarea {...bind("desc")} rows={2} style={sx(INPUT + "resize:vertical;")} /></div>
+          <div><label style={sx(LABEL)}>Нэмэлт тоног (мөр тус бүр) {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><textarea {...bind("extras")} rows={3} style={sx(INPUT + "resize:vertical;")} /></div>
 
           {/* ===== Зураг upload ===== */}
           <div>

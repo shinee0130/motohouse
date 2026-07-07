@@ -13,7 +13,16 @@ type I18nContextValue = {
   setLang: (lang: Lang) => void;
   toggleLang: () => void;
   t: (text: string) => string;
+  // DB контентын хэл сонголт: EN горимд en байвал түүнийг, үгүй бол mn (fallback)
+  loc: <T>(mn: T, en?: T | null) => T;
 };
+
+function localize<T>(mn: T, en: T | null | undefined, lang: Lang): T {
+  if (lang !== "en" || en == null) return mn;
+  if (typeof en === "string") return (en.trim() ? en : mn) as T;
+  if (Array.isArray(en)) return (en.length ? en : mn) as T;
+  return en;
+}
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
@@ -60,6 +69,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       setLang,
       toggleLang: () => setLangState((current) => (current === "mn" ? "en" : "mn")),
       t: tFor(lang),
+      loc: <T,>(mn: T, en?: T | null) => localize(mn, en, lang),
     };
   }, [lang]);
 
@@ -75,6 +85,12 @@ export function useI18n() {
 export function T({ children }: { children: string | string[] }) {
   const { t } = useI18n();
   return <>{t(Array.isArray(children) ? children.join("") : children)}</>;
+}
+
+// Server component дотор DB контентыг хэлээр сонгож харуулах (EN байвал en, үгүй бол mn)
+export function Loc({ mn, en }: { mn: string; en?: string | null }) {
+  const { loc } = useI18n();
+  return <>{loc(mn, en)}</>;
 }
 
 export function LanguageToggle({ compact = false }: { compact?: boolean }) {

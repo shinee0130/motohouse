@@ -12,17 +12,18 @@ const BTN = "background:#E10613;color:#fff;font:700 13px Montserrat;padding:11px
 
 const isGiveaway = (t: string) => t.toUpperCase().includes("GIVEAWAY");
 
-type Form = { type: string; title: string; status: string; date: string; prize: string; image: string; description: string; winner: string };
+type Form = { type: string; title: string; status: string; date: string; prize: string; image: string; description: string; winner: string; titleEn: string; descriptionEn: string; prizeEn: string };
 function toForm(e: EventItem): Form {
-  return { type: e.type, title: e.title, status: e.status, date: e.date, prize: e.prize, image: e.image ?? "", description: e.description ?? "", winner: e.winner ?? "" };
+  return { type: e.type, title: e.title, status: e.status, date: e.date, prize: e.prize, image: e.image ?? "", description: e.description ?? "", winner: e.winner ?? "", titleEn: e.titleEn ?? "", descriptionEn: e.descriptionEn ?? "", prizeEn: e.prizeEn ?? "" };
 }
 
 export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
   const gv = mode === "giveaway";
   const heading = gv ? "Giveaway" : "Events";
   const newLabel = gv ? "+ Шинэ Giveaway" : "+ Шинэ Event";
-  const empty: Form = { type: gv ? "GIVEAWAY" : "RACE", title: "", status: "Upcoming", date: "", prize: "", image: "", description: "", winner: "" };
+  const empty: Form = { type: gv ? "GIVEAWAY" : "RACE", title: "", status: "Upcoming", date: "", prize: "", image: "", description: "", winner: "", titleEn: "", descriptionEn: "", prizeEn: "" };
 
+  const [flang, setFlang] = useState<"mn" | "en">("mn");
   const [list, setList] = useState<EventItem[]>([]);
   const [editing, setEditing] = useState<number | null | "new">(null);
   const [f, setF] = useState<Form>(empty);
@@ -30,6 +31,15 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
   const [uploading, setUploading] = useState(false);
   const [viewing, setViewing] = useState<EventItem | null>(null);
   const [parts, setParts] = useState<Participant[]>([]);
+
+  const EN_KEY = { title: "titleEn", description: "descriptionEn", prize: "prizeEn" } as const;
+  function bind(field: "title" | "description" | "prize") {
+    const key = (flang === "en" ? EN_KEY[field] : field) as keyof Form;
+    return {
+      value: f[key] as string,
+      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setF({ ...f, [key]: e.target.value }),
+    };
+  }
 
   async function refresh() {
     const all = await getEvents();
@@ -73,6 +83,18 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
 
       {editing !== null && (
         <form onSubmit={save} style={sx("background:#0e0e10;border:1px solid #262626;border-radius:14px;padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;align-items:end;")}>
+          <div style={{ gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <div style={sx("font:700 15px Montserrat;color:#fff;")}>{editing === "new" ? newLabel.replace("+ ", "") : "Засах"}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              {(["mn", "en"] as const).map((l) => (
+                <button type="button" key={l} onClick={() => setFlang(l)}
+                  style={sx(`cursor:pointer;font:800 11px Montserrat;padding:6px 12px;border-radius:8px;${flang === l ? "background:#E10613;border:1px solid #E10613;color:#fff;" : "background:#050505;border:1px solid #333;color:#8A8F98;"}`)}>
+                  {l.toUpperCase()}
+                </button>
+              ))}
+              <span style={sx("font:400 11px Roboto;color:#6b7280;")}>{flang === "en" ? "Англи (хоосон бол монголоор)" : "Монгол"}</span>
+            </div>
+          </div>
           <div style={{ gridColumn: "1 / -1", display: "flex", gap: 16, alignItems: "flex-start", flexWrap: "wrap" }}>
             <div style={sx("position:relative;width:160px;height:100px;border-radius:10px;overflow:hidden;border:1px solid #262626;background:#050505;flex:none;")}>
               {f.image ? (
@@ -94,15 +116,15 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
           </div>
 
           <div><label style={sx(LABEL)}>Төрөл</label><input value={f.type} onChange={(e) => setF({ ...f, type: e.target.value })} placeholder={gv ? "GIVEAWAY" : "RACE / RIDE / АЯЛАЛ"} style={sx(INPUT)} /></div>
-          <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Гарчиг *</label><input value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} style={sx(INPUT)} /></div>
+          <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Гарчиг * {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><input {...bind("title")} style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Төлөв</label>
             <select value={f.status} onChange={(e) => setF({ ...f, status: e.target.value })} style={sx(INPUT + "cursor:pointer;")}>
               {["Ongoing", "Upcoming", "Winner"].map((s) => <option key={s}>{s}</option>)}
             </select></div>
           <div><label style={sx(LABEL)}>Огноо</label><input value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} placeholder="2026.07.15" style={sx(INPUT)} /></div>
-          <div><label style={sx(LABEL)}>Шагнал</label><input value={f.prize} onChange={(e) => setF({ ...f, prize: e.target.value })} style={sx(INPUT)} /></div>
+          <div><label style={sx(LABEL)}>Шагнал {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><input {...bind("prize")} style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Ялагч (Winner үед)</label><input value={f.winner} onChange={(e) => setF({ ...f, winner: e.target.value })} placeholder="@username" style={sx(INPUT)} /></div>
-          <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Дэлгэрэнгүй</label><textarea value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} rows={4} style={sx(INPUT + "resize:vertical;font:400 14px Roboto;")} /></div>
+          <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Дэлгэрэнгүй {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><textarea {...bind("description")} rows={4} style={sx(INPUT + "resize:vertical;font:400 14px Roboto;")} /></div>
           <div style={{ display: "flex", gap: 10 }}>
             <button type="submit" disabled={busy} style={sx(BTN + (busy ? "opacity:.6;" : ""))}>{busy ? "…" : "Хадгалах"}</button>
             <button type="button" onClick={() => setEditing(null)} style={sx("background:none;border:1px solid #333;color:#A3A3A3;font:600 13px Montserrat;padding:11px 18px;border-radius:9px;cursor:pointer;")}>Болих</button>

@@ -7,7 +7,8 @@ import { MotoActions } from "@/components/MotoActions";
 import { statusLabel } from "@/lib/data";
 import { Price } from "@/lib/currency";
 import { getMotos, similarOf } from "@/lib/queries";
-import { T } from "@/lib/i18n";
+import { T, Loc } from "@/lib/i18n";
+import { MotoExtras } from "@/components/MotoExtras";
 
 // Admin засвар шууд харагдахаар — DB-ээс амьд уншина
 export const dynamic = "force-dynamic";
@@ -79,7 +80,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
               ))}
             </div>
 
-            <p style={sx("font:400 15px/1.6 Roboto;color:#A3A3A3;margin-top:18px;")}>{m.desc}</p>
+            <p style={sx("font:400 15px/1.6 Roboto;color:#A3A3A3;margin-top:18px;")}><Loc mn={m.desc} en={m.descEn} /></p>
 
             <MotoActions id={m.id} name={`${m.brand} ${m.model}`} price={m.price} />
           </div>
@@ -125,17 +126,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
             <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.22em;color:#E10613;")}>EXTRAS</div>
             <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;margin-top:4px;")}><T>Нэмэлт тоног</T></h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 16 }}>
-              {m.extras.map((x) => (
-                <div
-                  key={x}
-                  style={sx(
-                    "display:flex;align-items:center;gap:13px;background:#111113;border:1px solid #262626;border-radius:11px;padding:13px 16px;",
-                  )}
-                >
-                  <span style={sx("width:7px;height:7px;border-radius:50%;background:#E10613;flex-shrink:0;")} />
-                  <span style={sx("font:500 15px Roboto;color:#fff;")}>{x}</span>
-                </div>
-              ))}
+              <MotoExtras extras={m.extras} extrasEn={m.extrasEn} />
             </div>
           </div>
         </div>

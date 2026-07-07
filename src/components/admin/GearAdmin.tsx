@@ -25,6 +25,7 @@ type Form = {
   name: string; brand: string; category: string; meta: string; price: string; oldPrice: string;
   rating: string; reviews: string; sku: string; bestSeller: boolean; desc: string;
   features: string; sizes: string[]; colors: string[]; images: string[];
+  nameEn: string; descEn: string; metaEn: string; featuresEn: string;
 };
 function toForm(g: GearItem): Form {
   return {
@@ -33,6 +34,7 @@ function toForm(g: GearItem): Form {
     reviews: String(g.reviews), sku: g.sku, bestSeller: !!g.bestSeller, desc: g.desc,
     features: (g.features ?? []).join("\n"), sizes: g.sizes ?? [], colors: g.colors ?? [],
     images: g.images ?? [],
+    nameEn: g.nameEn ?? "", descEn: g.descEn ?? "", metaEn: g.metaEn ?? "", featuresEn: (g.featuresEn ?? []).join("\n"),
   };
 }
 function fromForm(f: Form): Partial<GearItem> {
@@ -44,6 +46,7 @@ function fromForm(f: Form): Partial<GearItem> {
     reviews: Number(f.reviews) || 0, sku: f.sku || "—", bestSeller: f.bestSeller,
     desc: f.desc, features: lines(f.features), sizes: f.sizes, colors: f.colors,
     images: f.images,
+    nameEn: f.nameEn.trim(), descEn: f.descEn.trim(), metaEn: f.metaEn.trim(), featuresEn: lines(f.featuresEn),
   };
 }
 
@@ -54,8 +57,10 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
   const empty: Form = {
     name: "", brand: "", category: cats[0], meta: "", price: "", oldPrice: "",
     rating: "5", reviews: "0", sku: "", bestSeller: false, desc: "", features: "", sizes: [], colors: [], images: [],
+    nameEn: "", descEn: "", metaEn: "", featuresEn: "",
   };
 
+  const [flang, setFlang] = useState<"mn" | "en">("mn");
   const [list, setList] = useState<GearItem[]>([]);
   const [editing, setEditing] = useState<number | null | "new">(null);
   const [f, setF] = useState<Form>(empty);
@@ -67,6 +72,15 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
     if (!v) return;
     setF((c) => ({ ...c, colors: c.colors.includes(v) ? c.colors : [...c.colors, v] }));
     setColorInput("");
+  }
+
+  const EN_KEY = { name: "nameEn", desc: "descEn", meta: "metaEn", features: "featuresEn" } as const;
+  function bind(field: "name" | "desc" | "meta" | "features") {
+    const key = (flang === "en" ? EN_KEY[field] : field) as keyof Form;
+    return {
+      value: f[key] as string,
+      onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setF({ ...f, [key]: e.target.value }),
+    };
   }
 
   async function refresh() {
@@ -111,9 +125,20 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
 
       {editing !== null && (
         <form onSubmit={save} style={sx("background:#0e0e10;border:1px solid #262626;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px;")}>
-          <div style={sx("font:700 15px Montserrat;color:#fff;")}>{editing === "new" ? newLabel.replace("+ ", "") : "Засах"}</div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <div style={sx("font:700 15px Montserrat;color:#fff;")}>{editing === "new" ? newLabel.replace("+ ", "") : "Засах"}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              {(["mn", "en"] as const).map((l) => (
+                <button type="button" key={l} onClick={() => setFlang(l)}
+                  style={sx(`cursor:pointer;font:800 11px Montserrat;padding:6px 12px;border-radius:8px;${flang === l ? "background:#E10613;border:1px solid #E10613;color:#fff;" : "background:#050505;border:1px solid #333;color:#8A8F98;"}`)}>
+                  {l.toUpperCase()}
+                </button>
+              ))}
+              <span style={sx("font:400 11px Roboto;color:#6b7280;")}>{flang === "en" ? "Англи (хоосон бол монголоор)" : "Монгол"}</span>
+            </div>
+          </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 14 }}>
-            <div><label style={sx(LABEL)}>Нэр *</label><input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} style={sx(INPUT)} /></div>
+            <div><label style={sx(LABEL)}>Нэр * {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><input {...bind("name")} style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Брэнд</label><input value={f.brand} onChange={(e) => setF({ ...f, brand: e.target.value })} style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Ангилал</label>
               <select value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })} style={sx(INPUT + "cursor:pointer;")}>
@@ -125,10 +150,10 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
             <div><label style={sx(LABEL)}>Rating (1-5)</label><input value={f.rating} onChange={(e) => setF({ ...f, rating: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Сэтгэгдэл тоо</label><input value={f.reviews} onChange={(e) => setF({ ...f, reviews: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>SKU</label><input value={f.sku} onChange={(e) => setF({ ...f, sku: e.target.value })} style={sx(INPUT)} /></div>
-            <div><label style={sx(LABEL)}>Meta</label><input value={f.meta} onChange={(e) => setF({ ...f, meta: e.target.value })} placeholder="ECE 22.06 · Carbon" style={sx(INPUT)} /></div>
+            <div><label style={sx(LABEL)}>Meta {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><input {...bind("meta")} placeholder="ECE 22.06 · Carbon" style={sx(INPUT)} /></div>
           </div>
-          <div><label style={sx(LABEL)}>Тайлбар</label><textarea value={f.desc} onChange={(e) => setF({ ...f, desc: e.target.value })} rows={2} style={sx(INPUT + "resize:vertical;")} /></div>
-          <div><label style={sx(LABEL)}>Онцлог (мөр тус бүр)</label><textarea value={f.features} onChange={(e) => setF({ ...f, features: e.target.value })} rows={3} style={sx(INPUT + "resize:vertical;")} /></div>
+          <div><label style={sx(LABEL)}>Тайлбар {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><textarea {...bind("desc")} rows={2} style={sx(INPUT + "resize:vertical;")} /></div>
+          <div><label style={sx(LABEL)}>Онцлог (мөр тус бүр) {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><textarea {...bind("features")} rows={3} style={sx(INPUT + "resize:vertical;")} /></div>
           <div>
             <label style={sx(LABEL)}>Хэмжээ <span style={sx("color:#6b7280;")}>(сонгох)</span></label>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>

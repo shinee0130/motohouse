@@ -35,6 +35,8 @@ export interface Moto {
   images?: string[]; // бодит зураг (байвал placeholder-ийн оронд)
   video?: string; // видео URL
   featured?: boolean;
+  descEn?: string; // англи хувилбар (хоосон бол desc)
+  extrasEn?: string[];
 }
 
 export interface GearItem {
@@ -54,6 +56,10 @@ export interface GearItem {
   colors?: string[];
   images?: string[];
   bestSeller?: boolean;
+  nameEn?: string; // англи хувилбарууд (хоосон бол монголоор)
+  descEn?: string;
+  metaEn?: string;
+  featuresEn?: string[];
 }
 
 export const SERVICES: string[] = [
@@ -75,6 +81,9 @@ export interface EventItem {
   image?: string;
   description?: string;
   winner?: string;
+  titleEn?: string; // англи хувилбарууд
+  descriptionEn?: string;
+  prizeEn?: string;
 }
 
 // ---- helpers ----

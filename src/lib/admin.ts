@@ -15,6 +15,7 @@ function motoRow(m: Partial<Moto>): any {
     top_speed: m.top, weight: m.weight, cyl: m.cyl, gearbox: m.gearbox ?? null, description: m.desc,
     extras: m.extras ?? [], images: m.images ?? [], video: m.video ?? null,
     featured: m.featured ?? false,
+    description_en: m.descEn || null, extras_en: m.extrasEn ?? null,
   };
 }
 export async function createMoto(m: Partial<Moto>) {
@@ -38,6 +39,8 @@ function gearRow(g: Partial<GearItem>): any {
     sku: g.sku, description: g.desc, features: g.features ?? [],
     sizes: g.sizes ?? [], colors: g.colors ?? [], images: g.images ?? [],
     best_seller: g.bestSeller ?? false,
+    name_en: g.nameEn || null, description_en: g.descEn || null,
+    meta_en: g.metaEn || null, features_en: g.featuresEn ?? null,
   };
 }
 export async function createGear(g: Partial<GearItem>) {
@@ -58,6 +61,7 @@ function eventRow(e: Partial<EventItem>): any {
   return {
     type: e.type, title: e.title, status: e.status, event_date: e.date, prize: e.prize,
     image: e.image ?? null, description: e.description ?? "", winner: e.winner ?? null,
+    title_en: e.titleEn || null, description_en: e.descriptionEn || null, prize_en: e.prizeEn || null,
   };
 }
 export function uploadEvent(file: File): Promise<string> {
@@ -134,6 +138,7 @@ function tourRow(t: Partial<Tour>): any {
     duration_days: t.durationDays ?? 1, start_date: t.startDate ?? null, price: t.price ?? 0,
     max_capacity: t.maxCapacity ?? 10, rental_available: t.rentalAvailable ?? true,
     rental_moto: t.rentalMoto ?? null, status: t.status ?? "Нээлттэй", featured: t.featured ?? false,
+    title_en: t.titleEn || null, description_en: t.descriptionEn || null, region_en: t.regionEn || null,
   };
 }
 export async function createTour(t: Partial<Tour>) {

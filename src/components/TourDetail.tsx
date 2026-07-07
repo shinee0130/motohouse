@@ -16,7 +16,7 @@ const INPUT = "background:#050505;border:1px solid #262626;border-radius:10px;pa
 
 export function TourDetail({ tour }: { tour: Tour }) {
   const { user } = useAuth();
-  const { t } = useI18n();
+  const { t, loc } = useI18n();
   const router = useRouter();
 
   const left = Math.max(0, tour.maxCapacity - tour.booked);
@@ -74,8 +74,8 @@ export function TourDetail({ tour }: { tour: Tour }) {
         )}
         <div style={sx("position:absolute;inset:0;background:linear-gradient(to top,rgba(5,5,5,.9),rgba(5,5,5,.1));")} />
         <div style={{ position: "absolute", left: "clamp(16px,3vw,26px)", bottom: "clamp(16px,3vw,26px)", right: 20 }}>
-          {tour.region && <div style={sx("font:600 11px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;")}>{tour.region}</div>}
-          <h1 style={sx("font:800 clamp(24px,4vw,40px) Montserrat;color:#fff;margin-top:4px;text-transform:uppercase;")}>{tour.title}</h1>
+          {tour.region && <div style={sx("font:600 11px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;")}>{loc(tour.region, tour.regionEn)}</div>}
+          <h1 style={sx("font:800 clamp(24px,4vw,40px) Montserrat;color:#fff;margin-top:4px;text-transform:uppercase;")}>{loc(tour.title, tour.titleEn)}</h1>
         </div>
       </div>
 
@@ -89,7 +89,7 @@ export function TourDetail({ tour }: { tour: Tour }) {
             <Metric label={t("1 хүний үнэ")} value={<Price amount={tour.price} />} />
           </div>
           {tour.description && (
-            <p style={sx("font:400 15px/1.7 Roboto;color:#A3A3A3;margin-top:18px;white-space:pre-wrap;")}>{tour.description}</p>
+            <p style={sx("font:400 15px/1.7 Roboto;color:#A3A3A3;margin-top:18px;white-space:pre-wrap;")}>{loc(tour.description || "", tour.descriptionEn)}</p>
           )}
           <div style={sx("margin-top:16px;background:#0B0B0D;border:1px solid #262626;border-radius:12px;padding:14px 16px;")}>
             <div style={sx("font:700 11px Montserrat;letter-spacing:.05em;color:#fff;")}>🏍 {t("Мотоцикл")}</div>

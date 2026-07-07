@@ -18,7 +18,7 @@ export function EventsGrid({
   events: EventItem[];
   emptyText?: string;
 }) {
-  const { t } = useI18n();
+  const { t, loc } = useI18n();
 
   return (
     <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(32px,5vw,56px) clamp(20px,4vw,40px);")}>
@@ -59,7 +59,7 @@ export function EventsGrid({
               </div>
               <div style={{ padding: "16px 18px 18px", display: "flex", flexDirection: "column", flex: 1 }}>
                 <span style={sx("display:inline-block;align-self:flex-start;font:600 10px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;background:rgba(225,6,19,.1);border:1px solid rgba(225,6,19,.3);padding:4px 9px;border-radius:6px;")}>{e.type}</span>
-                <div style={sx("font:700 18px/1.3 Montserrat;color:#fff;margin-top:10px;")}>{e.title}</div>
+                <div style={sx("font:700 18px/1.3 Montserrat;color:#fff;margin-top:10px;")}>{loc(e.title, e.titleEn)}</div>
                 <div style={sx("margin-top:auto;padding-top:14px;border-top:1px solid #1c1c1f;display:flex;flex-direction:column;gap:8px;")}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
                     <span style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.1em;color:#8A8F98;")}>{t("ОГНОО")}</span>
@@ -67,7 +67,7 @@ export function EventsGrid({
                   </div>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
                     <span style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.1em;color:#8A8F98;flex-shrink:0;")}>{t("🏆 ШАГНАЛ")}</span>
-                    <span style={sx("font:700 13px Montserrat;color:#E10613;text-align:right;")}>{e.prize}</span>
+                    <span style={sx("font:700 13px Montserrat;color:#E10613;text-align:right;")}>{loc(e.prize, e.prizeEn)}</span>
                   </div>
                 </div>
               </div>
