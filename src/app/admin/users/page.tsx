@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { sx } from "@/lib/sx";
+import { Select } from "@/components/Select";
 import { fmt } from "@/lib/data";
 import { getProfiles, setUserRole, type Profile } from "@/lib/admin";
 
@@ -59,9 +60,7 @@ export default function AdminUsers() {
                   <div style={sx("font:600 9px 'JetBrains Mono';letter-spacing:.1em;color:#8A8F98;")}>ХУДАЛДАН АВАЛТ</div>
                   <div style={sx("font:700 14px Montserrat;color:#fff;margin-top:2px;")}>{fmt(u.spent ?? 0)}</div>
                 </div>
-                <select value={u.role} onChange={(e) => changeRole(u.id, e.target.value)} style={sx(SELECT)}>
-                  {ROLES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
-                </select>
+                <Select value={u.role} onChange={(v) => changeRole(u.id, v)} full bg="#050505" options={ROLES} />
               </div>
             </div>
           );

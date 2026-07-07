@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { sx } from "@/lib/sx";
+import { Select } from "@/components/Select";
 import { fmt } from "@/lib/data";
 import { getTours, getTourBookings, type Tour, type TourBooking } from "@/lib/queries";
 import { createTour, updateTour, deleteTour, uploadTourImage, updateTourBookingStatus } from "@/lib/admin";
@@ -137,9 +138,7 @@ export default function AdminTours() {
           <div><label style={sx(LABEL)}>1 хүний үнэ (₮)</label><input type="number" min={0} value={f.price} onChange={(e) => setF({ ...f, price: +e.target.value })} style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Дээд хүний тоо</label><input type="number" min={1} value={f.maxCapacity} onChange={(e) => setF({ ...f, maxCapacity: +e.target.value })} style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Төлөв</label>
-            <select value={f.status} onChange={(e) => setF({ ...f, status: e.target.value })} style={sx(INPUT + "cursor:pointer;")}>
-              {STATUSES.map((s) => <option key={s}>{s}</option>)}
-            </select></div>
+            <Select value={f.status} onChange={(v) => setF({ ...f, status: v })} full bg="#050505" options={STATUSES.map((s) => ({ value: s, label: s }))} /></div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, paddingBottom: 10 }}>
             <input id="rental" type="checkbox" checked={f.rentalAvailable} onChange={(e) => setF({ ...f, rentalAvailable: e.target.checked })} style={{ width: 18, height: 18, accentColor: "#E10613" }} />
             <label htmlFor="rental" style={sx("font:500 13px Roboto;color:#C8C8C8;cursor:pointer;")}>Түрээсийн мото санал болгох</label>
@@ -197,10 +196,7 @@ export default function AdminTours() {
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
               <span style={sx("font:800 15px Montserrat;color:#fff;")}>{fmt(b.total)}</span>
-              <select value={b.status} onChange={(e) => setBkStatus(b.id, e.target.value)}
-                style={sx("background:#050505;border:1px solid #262626;border-radius:8px;padding:8px 10px;color:#fff;font:500 12px Roboto;cursor:pointer;outline:none;")}>
-                {BK_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <Select value={b.status} onChange={(v) => setBkStatus(b.id, v)} full bg="#050505" options={BK_STATUSES.map((s) => ({ value: s, label: s }))} />
             </div>
           </div>
         ))}

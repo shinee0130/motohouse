@@ -10,6 +10,7 @@ import { cartCount, CART_EVENT } from "@/lib/cart";
 import { LanguageToggle, useI18n } from "@/lib/i18n";
 import { CurrencySwitch } from "@/lib/currency";
 import { useAuthModal } from "@/lib/authModal";
+import { useCartModal } from "@/lib/cartModal";
 import { IconHome, IconBike, IconHelmet, IconCog, IconWrench, IconRoute, IconCalendar, IconTicket, IconCart, IconPackage, IconRequest } from "./icons";
 
 const NAV = [
@@ -43,6 +44,7 @@ export function Nav() {
   const { user, ready, logout } = useAuth();
   const { t } = useI18n();
   const authModal = useAuthModal();
+  const cartModal = useCartModal();
   const [open, setOpen] = useState(false); // sidebar
   const [acctOpen, setAcctOpen] = useState(false); // avatar dropdown
   const [cart, setCart] = useState(0); // сагсны тоо
@@ -102,14 +104,14 @@ export function Nav() {
             <CurrencySwitch compact />
           </div>
 
-          <Link href="/cart" aria-label={t("Миний сагс")} style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 10, border: "1px solid #262626", color: "#fff", flexShrink: 0 }}>
+          <button onClick={() => cartModal.open()} aria-label={t("Миний сагс")} style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 10, border: "1px solid #262626", background: "none", color: "#fff", flexShrink: 0, cursor: "pointer" }}>
             <IconCart style={{ width: 21, height: 21 }} />
             {cart > 0 && (
               <span style={sx("position:absolute;top:-6px;right:-6px;background:#E10613;color:#fff;font:800 10px Montserrat;min-width:18px;height:18px;padding:0 5px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;")}>
                 {cart}
               </span>
             )}
-          </Link>
+          </button>
 
           {loggedIn ? (
             <div style={{ position: "relative" }}>
@@ -203,25 +205,30 @@ export function Nav() {
         <nav style={{ display: "flex", flexDirection: "column", gap: 2, padding: "14px 12px", overflowY: "auto", flex: 1 }}>
           {NAV.map((item) => {
             const on = isActive(pathname, item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                style={sx(
-                  `display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:11px;cursor:pointer;font:600 15px Montserrat;letter-spacing:.01em;` +
-                  (on
-                    ? "color:#fff;background:#E10613;"
-                    : "color:#A3A3A3;background:transparent;"),
-                )}
-              >
+            const isCart = item.href === "/cart";
+            const rowStyle = sx(
+              `display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:11px;cursor:pointer;font:600 15px Montserrat;letter-spacing:.01em;width:100%;text-align:left;border:none;` +
+              (on ? "color:#fff;background:#E10613;" : "color:#A3A3A3;background:transparent;"),
+            );
+            const inner = (
+              <>
                 <item.Icon style={{ width: 20, height: 20, flexShrink: 0, opacity: on ? 1 : 0.75 }} />
                 {t(item.label)}
-                {item.href === "/cart" && cart > 0 && (
+                {isCart && cart > 0 && (
                   <span style={sx(`margin-left:auto;font:800 11px Montserrat;min-width:22px;height:22px;padding:0 6px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;${on ? "background:#fff;color:#E10613;" : "background:#E10613;color:#fff;"}`)}>
                     {cart}
                   </span>
                 )}
+              </>
+            );
+            // Сагс — modal нээнэ, бусад нь хуудас руу шилжинэ
+            return isCart ? (
+              <button key={item.href} onClick={() => { setOpen(false); cartModal.open(); }} style={rowStyle}>
+                {inner}
+              </button>
+            ) : (
+              <Link key={item.href} href={item.href} onClick={() => setOpen(false)} style={rowStyle}>
+                {inner}
               </Link>
             );
           })}

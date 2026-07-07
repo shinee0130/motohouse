@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { sx } from "@/lib/sx";
+import { Select } from "@/components/Select";
 import { fmt } from "@/lib/data";
 import { orderBadge, type Order } from "@/lib/account";
 import { getOrders } from "@/lib/queries";
@@ -88,13 +89,7 @@ export default function AdminOrders() {
                   <button onClick={() => markDelivered(o.id)} style={sx("background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.4);color:#22c55e;font:700 12px Montserrat;padding:7px 12px;border-radius:8px;cursor:pointer;")}>Хүргэсэн ✓</button>
                 )}
                 <span style={sx(orderBadge(o.status))}>{o.status}</span>
-                <select
-                  value={o.status}
-                  onChange={(e) => changeStatus(o.id, e.target.value as Order["status"])}
-                  style={sx("background:#050505;border:1px solid #262626;border-radius:8px;padding:8px 10px;color:#fff;font:500 12px Roboto;cursor:pointer;outline:none;")}
-                >
-                  {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
+                <Select value={o.status} onChange={(v) => changeStatus(o.id, v as Order["status"])} full bg="#050505" options={STATUSES.map((s) => ({ value: s, label: s }))} />
               </div>
             </div>
           );

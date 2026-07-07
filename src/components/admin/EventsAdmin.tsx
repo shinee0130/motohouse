@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { sx } from "@/lib/sx";
+import { Select } from "@/components/Select";
 import { type EventItem } from "@/lib/data";
 import { getEvents, getParticipants, type Participant } from "@/lib/queries";
 import { createEvent, updateEvent, deleteEvent, uploadEvent } from "@/lib/admin";
@@ -118,9 +119,7 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
           <div><label style={sx(LABEL)}>Төрөл</label><input value={f.type} onChange={(e) => setF({ ...f, type: e.target.value })} placeholder={gv ? "GIVEAWAY" : "RACE / RIDE / АЯЛАЛ"} style={sx(INPUT)} /></div>
           <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Гарчиг * {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><input {...bind("title")} style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Төлөв</label>
-            <select value={f.status} onChange={(e) => setF({ ...f, status: e.target.value })} style={sx(INPUT + "cursor:pointer;")}>
-              {["Ongoing", "Upcoming", "Winner"].map((s) => <option key={s}>{s}</option>)}
-            </select></div>
+            <Select value={f.status} onChange={(v) => setF({ ...f, status: v })} full bg="#050505" options={["Ongoing", "Upcoming", "Winner"].map((s) => ({ value: s, label: s }))} /></div>
           <div><label style={sx(LABEL)}>Огноо</label><input value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} placeholder="2026.07.15" style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Шагнал {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><input {...bind("prize")} style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Ялагч (Winner үед)</label><input value={f.winner} onChange={(e) => setF({ ...f, winner: e.target.value })} placeholder="@username" style={sx(INPUT)} /></div>

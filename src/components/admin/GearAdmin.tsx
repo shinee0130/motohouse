@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { sx } from "@/lib/sx";
+import { Select } from "@/components/Select";
 import { fmt, isPart, PARTS_CATS, GENDERS, type GearItem } from "@/lib/data";
 import { getGearAll } from "@/lib/queries";
 import { createGear, updateGear, deleteGear, uploadGear } from "@/lib/admin";
@@ -142,14 +143,9 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
             <div><label style={sx(LABEL)}>Нэр * {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><input {...bind("name")} style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Брэнд</label><input value={f.brand} onChange={(e) => setF({ ...f, brand: e.target.value })} style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Ангилал</label>
-              <select value={f.category} onChange={(e) => setF({ ...f, category: e.target.value })} style={sx(INPUT + "cursor:pointer;")}>
-                {cats.map((c) => <option key={c}>{c}</option>)}
-                {!cats.includes(f.category) && <option value={f.category}>{f.category}</option>}
-              </select></div>
+              <Select value={f.category} onChange={(v) => setF({ ...f, category: v })} full bg="#050505" options={[...cats.map((c) => ({ value: c, label: c })), ...(!cats.includes(f.category) ? [{ value: f.category, label: f.category }] : [])]} /></div>
             <div><label style={sx(LABEL)}>Хэнд зориулсан</label>
-              <select value={f.gender} onChange={(e) => setF({ ...f, gender: e.target.value })} style={sx(INPUT + "cursor:pointer;")}>
-                {GENDERS.map((g) => <option key={g.v} value={g.v}>{g.mn}</option>)}
-              </select></div>
+              <Select value={f.gender} onChange={(v) => setF({ ...f, gender: v })} full bg="#050505" options={GENDERS.map((g) => ({ value: g.v, label: g.mn }))} /></div>
             <div><label style={sx(LABEL)}>Үнэ (₮)</label><input value={f.price} onChange={(e) => setF({ ...f, price: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Хуучин үнэ (₮)</label><input value={f.oldPrice} onChange={(e) => setF({ ...f, oldPrice: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Rating (1-5)</label><input value={f.rating} onChange={(e) => setF({ ...f, rating: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>

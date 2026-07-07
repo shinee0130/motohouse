@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { sx } from "@/lib/sx";
+import { Select } from "@/components/Select";
 import { getOrderRequests, type OrderRequest } from "@/lib/queries";
 import { updateOrderRequest } from "@/lib/admin";
 
@@ -90,10 +91,7 @@ export default function AdminRequests() {
                   {r.name || "Зочин"}{r.phone ? ` · ${r.phone}` : ""} <span style={sx("color:#6b7280;")}>· {r.id} · {r.date}</span>
                 </div>
               </div>
-              <select value={r.status} onChange={(e) => changeStatus(r.id, e.target.value)}
-                style={sx("background:#050505;border:1px solid #262626;border-radius:8px;padding:8px 10px;color:#fff;font:500 12px Roboto;cursor:pointer;outline:none;height:fit-content;")}>
-                {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <Select value={r.status} onChange={(v) => changeStatus(r.id, v)} full bg="#050505" options={STATUSES.map((s) => ({ value: s, label: s }))} />
             </div>
 
             {/* үнийн санал */}

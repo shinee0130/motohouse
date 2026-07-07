@@ -7,6 +7,7 @@ import { sx } from "@/lib/sx";
 import { useAuth } from "@/lib/auth";
 import { useI18n } from "@/lib/i18n";
 import { createOrderRequest, uploadRequestImage } from "@/lib/admin";
+import { Select } from "@/components/Select";
 
 const CATEGORIES = ["Мотоцикл сэлбэг", "Дагалдах хэрэгсэл (каск, хувцас)", "Мотоцикл", "Бусад"];
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:10px;padding:12px 14px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
@@ -88,10 +89,15 @@ export default function RequestPage() {
         <form onSubmit={submit} style={sx("background:#111113;border:1px solid #262626;border-radius:18px;padding:clamp(20px,3vw,28px);margin-top:26px;display:flex;flex-direction:column;gap:16px;")}>
           <div>
             <label style={sx(LABEL)}>{t("Ангилал")}</label>
-            <select value={category} onChange={(e) => setCategory(e.target.value)} style={sx(INPUT + "cursor:pointer;")}>
-              <option value="">{t("Ангилал сонгох…")}</option>
-              {CATEGORIES.map((c) => <option key={c} value={c}>{t(c)}</option>)}
-            </select>
+            <Select
+              value={category}
+              onChange={setCategory}
+              placeholder={t("Ангилал сонгох…")}
+              ariaLabel={t("Ангилал")}
+              full
+              bg="#050505"
+              options={CATEGORIES.map((c) => ({ value: c, label: t(c) }))}
+            />
           </div>
           <div>
             <label style={sx(LABEL)}>{t("Юу захиалах вэ? (дэлгэрэнгүй)")}</label>

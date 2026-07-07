@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { sx } from "@/lib/sx";
 import { MotoCard } from "@/components/MotoCard";
+import { Select } from "@/components/Select";
 import { statusLabel, type Moto, type MotoStatus } from "@/lib/data";
 import { useI18n } from "@/lib/i18n";
 
@@ -59,15 +60,19 @@ export function MotorcyclesClient({ motos }: { motos: Moto[] }) {
               className="mh-input"
               style={sx("background:#111113;border:1px solid #262626;border-radius:9px;padding:11px 15px;color:#fff;font:400 14px Roboto;width:180px;outline:none;")}
             />
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value as SortKey)}
-              style={sx("background:#111113;border:1px solid #262626;border-radius:9px;padding:11px 14px;color:#fff;font:500 13px Roboto;outline:none;cursor:pointer;")}
-            >
-              <option value="featured">Featured</option>
-              <option value="priceAsc">{t("Үнэ ↑")}</option>
-              <option value="priceDesc">{t("Үнэ ↓")}</option>
-            </select>
+            <div style={{ minWidth: 150 }}>
+              <Select
+                value={sort}
+                onChange={(v) => setSort(v as SortKey)}
+                ariaLabel={t("Эрэмбэлэх")}
+                full
+                options={[
+                  { value: "featured", label: "Featured" },
+                  { value: "priceAsc", label: t("Үнэ ↑") },
+                  { value: "priceDesc", label: t("Үнэ ↓") },
+                ]}
+              />
+            </div>
           </div>
         </div>
 

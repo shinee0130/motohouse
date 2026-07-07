@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { sx } from "@/lib/sx";
+import { Select } from "@/components/Select";
 import { fmt, statusLabel, MOTO_STATUS_LABEL, type Moto, type MotoStatus } from "@/lib/data";
 import { getMotos } from "@/lib/queries";
 import { createMoto, updateMoto, deleteMoto, uploadMoto } from "@/lib/admin";
@@ -135,14 +136,12 @@ export default function AdminMotorcycles() {
           <div style={sx("font:700 15px Montserrat;color:#fff;")}>{editing === "new" ? "Шинэ мотоцикл" : "Засах"}</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 14 }}>
             <div><label style={sx(LABEL)}>Брэнд</label>
-              <select
+              <Select
                 value={customBrand ? CUSTOM : f.brand}
-                onChange={(e) => { if (e.target.value === CUSTOM) { setCustomBrand(true); setF({ ...f, brand: "" }); } else { setCustomBrand(false); setF({ ...f, brand: e.target.value }); } }}
-                style={sx(INPUT + "cursor:pointer;")}
-              >
-                {BRANDS.map((b) => <option key={b}>{b}</option>)}
-                <option value={CUSTOM}>＋ Шинэ брэнд…</option>
-              </select>
+                onChange={(v) => { if (v === CUSTOM) { setCustomBrand(true); setF({ ...f, brand: "" }); } else { setCustomBrand(false); setF({ ...f, brand: v }); } }}
+                full bg="#050505"
+                options={[...BRANDS.map((b) => ({ value: b, label: b })), { value: CUSTOM, label: "＋ Шинэ брэнд…" }]}
+              />
               {customBrand && <input value={f.brand} onChange={(e) => setF({ ...f, brand: e.target.value })} placeholder="Брэндийн нэр" style={sx(INPUT + "margin-top:8px;")} autoFocus />}
             </div>
             <div><label style={sx(LABEL)}>Модель *</label><input value={f.model} onChange={(e) => setF({ ...f, model: e.target.value })} style={sx(INPUT)} /></div>
@@ -152,24 +151,18 @@ export default function AdminMotorcycles() {
             <div><label style={sx(LABEL)}>Үнэ (₮)</label><input value={f.price} onChange={(e) => setF({ ...f, price: sep(e.target.value) })} inputMode="numeric" placeholder="1,000,000" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Хямдарсан үнэ (₮)</label><input value={f.salePrice} onChange={(e) => setF({ ...f, salePrice: sep(e.target.value) })} inputMode="numeric" placeholder="хоосон = хямдралгүй" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Төлөв</label>
-              <select value={f.status} onChange={(e) => setF({ ...f, status: e.target.value as MotoStatus })} style={sx(INPUT + "cursor:pointer;")}>
-                {STATUSES.map((s) => <option key={s} value={s}>{MOTO_STATUS_LABEL[s]}</option>)}
-              </select></div>
+              <Select value={f.status} onChange={(v) => setF({ ...f, status: v as MotoStatus })} full bg="#050505" options={STATUSES.map((s) => ({ value: s, label: MOTO_STATUS_LABEL[s] }))} /></div>
             <div><label style={sx(LABEL)}>Улс</label>
-              <select
+              <Select
                 value={customCountry ? CUSTOM : f.country}
-                onChange={(e) => { if (e.target.value === CUSTOM) { setCustomCountry(true); setF({ ...f, country: "" }); } else { setCustomCountry(false); setF({ ...f, country: e.target.value }); } }}
-                style={sx(INPUT + "cursor:pointer;")}
-              >
-                {COUNTRIES.map((c) => <option key={c}>{c}</option>)}
-                <option value={CUSTOM}>＋ Бусад улс…</option>
-              </select>
+                onChange={(v) => { if (v === CUSTOM) { setCustomCountry(true); setF({ ...f, country: "" }); } else { setCustomCountry(false); setF({ ...f, country: v }); } }}
+                full bg="#050505"
+                options={[...COUNTRIES.map((c) => ({ value: c, label: c })), { value: CUSTOM, label: "＋ Бусад улс…" }]}
+              />
               {customCountry && <input value={f.country} onChange={(e) => setF({ ...f, country: e.target.value })} placeholder="Улсын нэр" style={sx(INPUT + "margin-top:8px;")} autoFocus />}
             </div>
             <div><label style={sx(LABEL)}>Гааль</label>
-              <select value={f.customs} onChange={(e) => setF({ ...f, customs: e.target.value })} style={sx(INPUT + "cursor:pointer;")}>
-                {CUSTOMS.map((c) => <option key={c}>{c}</option>)}
-              </select></div>
+              <Select value={f.customs} onChange={(v) => setF({ ...f, customs: v })} full bg="#050505" options={CUSTOMS.map((c) => ({ value: c, label: c }))} /></div>
             <div><label style={sx(LABEL)}>HP</label><input value={f.hp} onChange={(e) => setF({ ...f, hp: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Nm</label><input value={f.nm} onChange={(e) => setF({ ...f, nm: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Дээд хурд</label><input value={f.top} onChange={(e) => setF({ ...f, top: e.target.value })} inputMode="numeric" style={sx(INPUT)} /></div>

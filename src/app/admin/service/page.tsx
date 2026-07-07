@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { sx } from "@/lib/sx";
+import { Select } from "@/components/Select";
 import { getBookings, updateBookingStatus, type Booking } from "@/lib/admin";
 
 const STATUSES = ["Шинэ", "Баталгаажсан", "Дууссан", "Цуцлагдсан"];
@@ -112,13 +113,7 @@ export default function AdminService() {
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
               <span style={sx(badge(b.status))}>{b.status}</span>
-              <select
-                value={b.status}
-                onChange={(e) => changeStatus(b.id, e.target.value)}
-                style={sx("background:#050505;border:1px solid #262626;border-radius:8px;padding:8px 10px;color:#fff;font:500 12px Roboto;cursor:pointer;outline:none;")}
-              >
-                {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <Select value={b.status} onChange={(v) => changeStatus(b.id, v)} full bg="#050505" options={STATUSES.map((s) => ({ value: s, label: s }))} />
             </div>
           </div>
         ))}
