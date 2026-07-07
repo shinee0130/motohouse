@@ -26,13 +26,22 @@ export function Footer() {
             PAGES
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-            <Link href="/motorcycles" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Мотоцикл")}</Link>
-            <Link href="/gear" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Дагалдах хэрэгсэл")}</Link>
-            <Link href="/parts" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Сэлбэг")}</Link>
-            <Link href="/service" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Засвар")}</Link>
-            <Link href="/travel" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Аялал")}</Link>
-            <Link href="/events" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Event")}</Link>
-            <Link href="/giveaway" style={sx("font:500 14px Roboto;color:#C8C8C8;cursor:pointer;")}>{t("Giveaway")}</Link>
+            {[
+              { href: "/motorcycles", label: "Мотоцикл" },
+              { href: "/gear", label: "Дагалдах хэрэгсэл" },
+              { href: "/parts", label: "Сэлбэг" },
+              { href: "/service", label: "Засвар" },
+              { href: "/travel", label: "Аялал" },
+              { href: "/events", label: "Event" },
+              { href: "/giveaway", label: "Giveaway" },
+            ].map((p) => (
+              <Link key={p.href} href={p.href} style={sx("display:flex;align-items:center;gap:8px;font:500 14px Roboto;color:#C8C8C8;cursor:pointer;text-decoration:none;")}>
+                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" style={{ flexShrink: 0 }}>
+                  <path d="M1.5 1l4 4-4 4" stroke="#E10613" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                {t(p.label)}
+              </Link>
+            ))}
           </div>
         </div>
         <div>
@@ -40,7 +49,12 @@ export function Footer() {
             CONTACT
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12, font: "500 14px Roboto", color: "#C8C8C8" }}>
-            <a href="tel:+97690117748" style={sx("color:#C8C8C8;")}>+976 9011-7748</a>
+            <a href="tel:+97690117748" style={sx("display:flex;align-items:center;gap:9px;color:#C8C8C8;text-decoration:none;")}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E10613" strokeWidth="2" style={{ flexShrink: 0 }}>
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0122 16.92z" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              +976 9011-7748
+            </a>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
               <a href="https://www.facebook.com/profile.php?id=61557148658508" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ display: "block" }}>
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="#1877F2" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
@@ -58,10 +72,16 @@ export function Footer() {
           <div style={sx("font:600 11px 'JetBrains Mono';letter-spacing:.2em;color:#8A8F98;margin-bottom:12px;")}>
             HOURS
           </div>
-          <div style={sx("font:500 14px Roboto;color:#C8C8C8;")}>
-            {t("Даваа–Ням")}
-            <br />
-            10:00 – 21:00
+          <div style={sx("display:flex;align-items:flex-start;gap:8px;font:500 14px Roboto;color:#C8C8C8;")}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E10613" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}>
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>
+              {t("Даваа–Ням")}
+              <br />
+              10:00 – 21:00
+            </span>
           </div>
           <div style={sx("font:600 11px 'JetBrains Mono';letter-spacing:.2em;color:#8A8F98;margin:20px 0 12px;")}>
             {t("ХАЯГ")}
