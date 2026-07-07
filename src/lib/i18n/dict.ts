@@ -128,6 +128,7 @@ export const EN: Record<string, string> = {
     "Uniqcenter, unit 00, Ikh Mongol Ulsyn Street, 18th khoroo, Khan-Uul District, Ulaanbaatar, 17013, Mongolia",
   "Даваа–Бямба": "Monday-Saturday",
   "Даваа–Ням": "Monday-Sunday",
+  "ХАЯГ": "ADDRESS",
   "MOTO HOUSE байршил": "MOTO HOUSE location",
 
   // ===== Catalog / cards =====

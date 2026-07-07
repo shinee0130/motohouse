@@ -52,18 +52,6 @@ export function Footer() {
                 </svg>
               </a>
             </div>
-            <a
-              href="https://www.google.com/maps/search/?api=1&query=47.8993424,106.9309956"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={sx("display:flex;align-items:flex-start;gap:8px;color:#C8C8C8;font:500 13px/1.6 Roboto;text-decoration:none;max-width:270px;")}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E10613" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}>
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              <span>{t("Улаанбаатар хот, Хан-Уул дүүрэг, 18-р хороо, Их Монгол Улсын гудамж, Uniqcenter, 00 тоот, 17013")}</span>
-            </a>
           </div>
         </div>
         <div>
@@ -75,6 +63,21 @@ export function Footer() {
             <br />
             10:00 – 21:00
           </div>
+          <div style={sx("font:600 11px 'JetBrains Mono';letter-spacing:.2em;color:#8A8F98;margin:20px 0 12px;")}>
+            {t("ХАЯГ")}
+          </div>
+          <a
+            href="https://www.google.com/maps/search/?api=1&query=47.8993424,106.9309956"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={sx("display:flex;align-items:flex-start;gap:8px;color:#C8C8C8;font:500 13px/1.6 Roboto;text-decoration:none;max-width:270px;")}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E10613" strokeWidth="2" style={{ flexShrink: 0, marginTop: 2 }}>
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            <span>{t("Улаанбаатар хот, Хан-Уул дүүрэг, 18-р хороо, Их Монгол Улсын гудамж, Uniqcenter, 00 тоот, 17013")}</span>
+          </a>
         </div>
       </div>
       <div style={sx("max-width:1280px;margin:0 auto;padding:0 clamp(20px,4vw,40px) clamp(28px,4vw,44px);")}>
