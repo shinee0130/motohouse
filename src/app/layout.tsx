@@ -13,7 +13,7 @@ const SITE_DESC =
   "Монголд суурилсан мотоцикл, riding gear, сэлбэг, засвар үйлчилгээ болон олон улсын захиалга нийлүүлэлтийн платформ.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://motohouse.mn"),
+  metadataBase: new URL("https://www.motohouse.mn"),
   title: {
     default: "MOTO HOUSE — RIDE. POWER. LIVE.",
     template: "%s · MOTO HOUSE",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     siteName: "MOTO HOUSE",
     title: "MOTO HOUSE — RIDE. POWER. LIVE.",
     description: SITE_DESC,
-    url: "https://motohouse.mn",
+    url: "https://www.motohouse.mn",
     locale: "mn_MN",
   },
   twitter: {
