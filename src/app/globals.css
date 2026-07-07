@@ -134,3 +134,21 @@ a {
     display: none !important;
   }
 }
+
+/* Нүүрний категори — hover дээр өнгө тодорч, cursor холдоход бүдэг (зөвхөн hover-тэй төхөөрөмжид) */
+@media (hover: hover) {
+  .mh-cat img {
+    filter: grayscale(1) brightness(0.55);
+    transition: filter .35s ease, transform .5s ease;
+  }
+  .mh-cat:hover img {
+    filter: grayscale(0) brightness(1);
+    transform: scale(1.05);
+  }
+  .mh-cat {
+    transition: border-color .25s ease;
+  }
+  .mh-cat:hover {
+    border-color: #E10613 !important;
+  }
+}

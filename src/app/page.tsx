@@ -40,10 +40,10 @@ const TRUST = [
 ];
 
 const CATS = [
-  { title: "Мотоцикл", desc: "Sport, naked, adventure төрлийн сонголтууд", href: "/motorcycles", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_moto.webp", setKey: "cat_moto" },
-  { title: "Дагалдах хэрэгсэл", desc: "Монгол болон гадаад захиалгад нийлүүлэх riding gear", href: "/gear", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_gear.webp", setKey: "cat_gear" },
-  { title: "Сэлбэг", desc: "Экспортод бэлтгэх боломжтой сэлбэг, consumables", href: "/parts", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_parts.webp", setKey: "cat_parts" },
-  { title: "Засвар", desc: "Оношилгоо, үйлчилгээ, суурилуулалт", href: "/service", img: "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/cat_service.webp", setKey: "cat_service" },
+  { title: "Мотоцикл", desc: "Sport, naked, adventure төрлийн сонголтууд", href: "/motorcycles", img: "/assets/home/cat_moto.webp", setKey: "cat_moto" },
+  { title: "Дагалдах хэрэгсэл", desc: "Монгол болон гадаад захиалгад нийлүүлэх riding gear", href: "/gear", img: "/assets/home/cat_gear.avif", setKey: "cat_gear" },
+  { title: "Сэлбэг", desc: "Экспортод бэлтгэх боломжтой сэлбэг, consumables", href: "/parts", img: "/assets/home/cat_parts.jpg", setKey: "cat_parts" },
+  { title: "Засвар", desc: "Оношилгоо, үйлчилгээ, суурилуулалт", href: "/service", img: "/assets/home/cat_service.jpg", setKey: "cat_service" },
 ];
 
 export const dynamic = "force-dynamic";
@@ -164,7 +164,7 @@ export default async function HomePage() {
             <Link
               key={title}
               href={href}
-              className="mh-card"
+              className="mh-card mh-cat"
               style={sx("position:relative;overflow:hidden;cursor:pointer;background:#0d0d0f;border:1px solid #262626;border-radius:18px;padding:26px;min-height:280px;display:flex;flex-direction:column;justify-content:flex-end;")}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
