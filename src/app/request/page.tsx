@@ -77,7 +77,9 @@ export default function RequestPage() {
             {t("Миний хүсэлтүүд")}
           </Link>
         </div>
-      ) : ready && !user ? (
+      ) : !ready ? (
+        <div style={sx("padding:44px 24px;margin-top:26px;text-align:center;font:400 14px Roboto;color:#8A8F98;")}>{t("Ачаалж байна…")}</div>
+      ) : !user ? (
         <div style={sx("background:#111113;border:1px solid #262626;border-radius:18px;padding:44px 24px;margin-top:26px;text-align:center;")}>
           <div style={sx("font:600 16px Montserrat;color:#C8C8C8;")}>{t("Хүсэлт илгээхийн тулд нэвтэрнэ үү.")}</div>
           <Link href="/login" style={sx("display:inline-block;margin-top:18px;background:#E10613;color:#fff;font:700 13px Montserrat;padding:12px 24px;border-radius:10px;cursor:pointer;")}>{t("Нэвтрэх")}</Link>
