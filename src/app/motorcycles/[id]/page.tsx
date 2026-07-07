@@ -6,6 +6,7 @@ import { MotoGallery } from "@/components/MotoGallery";
 import { MotoActions } from "@/components/MotoActions";
 import { fmt, statusLabel } from "@/lib/data";
 import { getMotos, similarOf } from "@/lib/queries";
+import { T } from "@/lib/i18n";
 
 // Admin засвар шууд харагдахаар — DB-ээс амьд уншина
 export const dynamic = "force-dynamic";
@@ -31,7 +32,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
     >
       <div style={{ animation: "mhfade .5s both" }}>
         <Link href="/motorcycles" style={sx("font:600 13px Montserrat;color:#8A8F98;cursor:pointer;")}>
-          ← Жагсаалт руу
+          ← <T>Жагсаалт руу</T>
         </Link>
 
         <div
@@ -51,7 +52,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
               <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap", marginTop: 10 }}>
                 <span style={sx("font:600 18px Montserrat;color:#6b7280;text-decoration:line-through;")}>{fmt(m.price)}</span>
                 <span style={sx("font:800 30px Montserrat;color:#E10613;")}>{fmt(m.salePrice)}</span>
-                <span style={sx("font:700 11px Montserrat;letter-spacing:.05em;color:#fff;background:#E10613;padding:5px 10px;border-radius:6px;")}>ХЯМДРАЛ</span>
+                <span style={sx("font:700 11px Montserrat;letter-spacing:.05em;color:#fff;background:#E10613;padding:5px 10px;border-radius:6px;")}><T>ХЯМДРАЛ</T></span>
               </div>
             ) : (
               <div style={sx("font:800 30px Montserrat;color:#E10613;margin-top:10px;")}>{fmt(m.price)}</div>
@@ -62,14 +63,14 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
                 "background:#111113;border:1px solid #262626;border-radius:16px;padding:22px 24px;margin-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:16px;",
               )}
             >
-              {[
+              {([
                 ["YEAR", m.year],
                 ["ENGINE", `${m.cc}cc`],
                 ["ODO", `${m.odo.toLocaleString("en-US")} km`],
                 ["CUSTOMS", m.customs],
                 ["COUNTRY", m.country],
-                ["STATUS", statusLabel(m.status)],
-              ].map(([lbl, val]) => (
+                ["STATUS", <T key="st">{statusLabel(m.status)}</T>],
+              ] as [string, React.ReactNode][]).map(([lbl, val]) => (
                 <div key={lbl}>
                   <div style={sx(SPEC_LBL)}>{lbl}</div>
                   <div style={sx(SPEC_VAL)}>{val}</div>
@@ -94,34 +95,34 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
             <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;margin-top:4px;")}>Performance</h2>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: 16 }}>
               <div style={sx(STAT)}>
-                <div style={sx(STAT_LBL)}>МОРИНЫ ХҮЧ</div>
+                <div style={sx(STAT_LBL)}><T>МОРИНЫ ХҮЧ</T></div>
                 <div style={sx(STAT_BIG)}>{m.hp}<span style={sx(STAT_UNIT)}> HP</span></div>
               </div>
               <div style={sx(STAT)}>
-                <div style={sx(STAT_LBL)}>ЭРГЭХ МОМЕНТ</div>
+                <div style={sx(STAT_LBL)}><T>ЭРГЭХ МОМЕНТ</T></div>
                 <div style={sx(STAT_BIG)}>{m.nm}<span style={sx(STAT_UNIT)}> Nm</span></div>
               </div>
               <div style={sx(STAT)}>
-                <div style={sx(STAT_LBL)}>ДЭЭД ХУРД</div>
-                <div style={sx(STAT_BIG)}>{m.top}<span style={sx(STAT_UNIT)}> км/ц</span></div>
+                <div style={sx(STAT_LBL)}><T>ДЭЭД ХУРД</T></div>
+                <div style={sx(STAT_BIG)}>{m.top}<span style={sx(STAT_UNIT)}> <T>км/ц</T></span></div>
               </div>
               <div style={sx(STAT)}>
-                <div style={sx(STAT_LBL)}>ЖИН</div>
-                <div style={sx(STAT_BIG)}>{m.weight}<span style={sx(STAT_UNIT)}> кг</span></div>
+                <div style={sx(STAT_LBL)}><T>ЖИН</T></div>
+                <div style={sx(STAT_BIG)}>{m.weight}<span style={sx(STAT_UNIT)}> <T>кг</T></span></div>
               </div>
               <div style={sx(STAT)}>
-                <div style={sx(STAT_LBL)}>ХӨДӨЛГҮҮР</div>
+                <div style={sx(STAT_LBL)}><T>ХӨДӨЛГҮҮР</T></div>
                 <div style={sx("font:700 16px Montserrat;color:#fff;margin-top:10px;")}>{m.cyl}</div>
               </div>
               <div style={sx(STAT)}>
-                <div style={sx(STAT_LBL)}>ХУРДНЫ ХАЙРЦАГ</div>
+                <div style={sx(STAT_LBL)}><T>ХУРДНЫ ХАЙРЦАГ</T></div>
                 <div style={sx("font:700 16px Montserrat;color:#fff;margin-top:10px;")}>{m.gearbox || "—"}</div>
               </div>
             </div>
           </div>
           <div>
             <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.22em;color:#E10613;")}>EXTRAS</div>
-            <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;margin-top:4px;")}>Нэмэлт тоног</h2>
+            <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;margin-top:4px;")}><T>Нэмэлт тоног</T></h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 16 }}>
               {m.extras.map((x) => (
                 <div
@@ -140,7 +141,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
 
         {/* similar */}
         <div style={{ marginTop: "clamp(36px,5vw,56px)" }}>
-          <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;")}>Төстэй мотоцикл</h2>
+          <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;")}><T>Төстэй мотоцикл</T></h2>
           <div
             style={sx(
               "display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:18px;",
@@ -160,7 +161,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={s.images[0]} alt={`${s.brand} ${s.model}`} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
                   ) : (
-                    <Slot label="Зураг" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                    <Slot label="Image" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                   )}
                 </div>
                 <div style={{ padding: "14px 16px" }}>

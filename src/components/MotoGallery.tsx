@@ -4,8 +4,10 @@ import { useState } from "react";
 import { sx } from "@/lib/sx";
 import { Slot } from "./Slot";
 import { badge, statusLabel } from "@/lib/data";
+import { useI18n } from "@/lib/i18n";
 
 export function MotoGallery({ images, status, video }: { images?: string[]; status: string; video?: string }) {
+  const { t } = useI18n();
   const [active, setActive] = useState(0);
   const has = !!images && images.length > 0;
   const main = has ? images![Math.min(active, images!.length - 1)] : null;
@@ -18,9 +20,9 @@ export function MotoGallery({ images, status, video }: { images?: string[]; stat
           // eslint-disable-next-line @next/next/no-img-element
           <img src={main!} alt="" style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
         ) : (
-          <Slot label="Мотоцикл том зураг" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+          <Slot label={t("Мотоцикл том зураг")} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
         )}
-        <span style={{ position: "absolute", top: 16, left: 16, zIndex: 2, ...sx(badge(status)) }}>{statusLabel(status)}</span>
+        <span style={{ position: "absolute", top: 16, left: 16, zIndex: 2, ...sx(badge(status)) }}>{t(statusLabel(status))}</span>
       </div>
 
       {/* thumbnails */}
@@ -56,7 +58,7 @@ export function MotoGallery({ images, status, video }: { images?: string[]; stat
       {/* video poster — зураг ч, видео ч байхгүй үед */}
       {!has && !video && (
         <div style={sx("position:relative;border-radius:14px;overflow:hidden;border:1px solid #262626;aspect-ratio:16/9;margin-top:12px;")}>
-          <Slot label="Видео poster" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+          <Slot label={t("Видео poster")} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
           <div style={sx("position:absolute;inset:0;background:linear-gradient(transparent,rgba(5,5,5,.5));pointer-events:none;")} />
           <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", pointerEvents: "none" }}>
             <div style={sx("width:62px;height:62px;border-radius:50%;background:rgba(225,6,19,.92);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(225,6,19,.45);")}>

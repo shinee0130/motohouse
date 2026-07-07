@@ -7,9 +7,11 @@ import { sx } from "@/lib/sx";
 import { useAuth } from "@/lib/auth";
 import { getSavedIds } from "@/lib/queries";
 import { createOrder, setSaved } from "@/lib/admin";
+import { useI18n } from "@/lib/i18n";
 
 export function MotoActions({ id, name, price }: { id: number; name: string; price: number }) {
   const { user } = useAuth();
+  const { t } = useI18n();
   const router = useRouter();
   const [saved, setSavedState] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
@@ -42,18 +44,18 @@ export function MotoActions({ id, name, price }: { id: number; name: string; pri
           disabled={busy}
           style={sx(`background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.05em;padding:14px 26px;border:none;border-radius:10px;text-transform:uppercase;cursor:pointer;${busy ? "opacity:.6;" : ""}`)}
         >
-          {busy ? "Илгээж байна…" : user ? "Сонирхож байна" : "Нэвтэрч захиалах"}
+          {busy ? t("Илгээж байна…") : user ? t("Сонирхож байна") : t("Нэвтэрч захиалах")}
         </button>
         <button
           onClick={toggleSave}
           style={sx(`display:flex;align-items:center;gap:8px;font:700 14px Montserrat;letter-spacing:.05em;padding:14px 22px;border-radius:10px;cursor:pointer;background:${saved ? "rgba(225,6,19,.12)" : "transparent"};border:1px solid ${saved ? "#E10613" : "#444"};color:${saved ? "#E10613" : "#fff"};`)}
         >
-          {saved ? "♥ Хадгалсан" : "♡ Хадгалах"}
+          {saved ? `♥ ${t("Хадгалсан")}` : `♡ ${t("Хадгалах")}`}
         </button>
       </div>
       {orderId && (
         <div style={sx("font:500 13px Roboto;color:#22c55e;margin-top:12px;")}>
-          ✓ Захиалга #{orderId} үүслээ. <Link href="/account/orders" style={{ color: "#22c55e", textDecoration: "underline" }}>Миний захиалга</Link>
+          ✓ {t("Захиалга")} #{orderId} {t("үүслээ.")} <Link href="/account/orders" style={{ color: "#22c55e", textDecoration: "underline" }}>{t("Миний захиалга")}</Link>
         </div>
       )}
     </>

@@ -5,6 +5,7 @@ import { Slot } from "@/components/Slot";
 import { fmt, badge, isPart, type GearItem } from "@/lib/data";
 import { getMotos, getGearAll, getEvents, getSettings } from "@/lib/queries";
 import { T } from "@/lib/i18n";
+import { NewsletterInput } from "@/components/NewsletterInput";
 import {
   IconTruck,
   IconCard,
@@ -366,11 +367,7 @@ export default async function HomePage() {
             </div>
           </div>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <input
-              placeholder="И-мэйл хаяг"
-              className="mh-input"
-              style={sx("background:#050505;border:1px solid #262626;border-radius:10px;padding:14px 16px;color:#fff;font:400 14px Roboto;width:240px;outline:none;")}
-            />
+            <NewsletterInput />
             <button style={sx("background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:14px 26px;border:none;border-radius:10px;text-transform:uppercase;cursor:pointer;")}>
               <T>Бүртгүүлэх</T>
             </button>
