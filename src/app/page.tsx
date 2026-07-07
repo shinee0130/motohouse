@@ -53,6 +53,7 @@ export default async function HomePage() {
   const heroImg = settings.hero || "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/hero.webp";
   // hero видеог түр хассан (Free egress хэмнэх) — сэргээхэд доорх <img>-ийг <video>-оор солино
   const homePoster = settings.home_poster; // урт poster зураг (admin-аас)
+  const homePoster2 = settings.home_poster2; // 2 дахь poster (promo ба riding gear хооронд)
 
   const featuredAll = motos.filter((m) => m.featured);
   const featured = (featuredAll.length ? featuredAll : motos).slice(0, 4);
@@ -287,6 +288,14 @@ export default async function HomePage() {
           </Link>
         </div>
       </div>
+
+      {/* ===== POSTER 2 (promo ба riding gear хооронд, full-width) ===== */}
+      {homePoster2 && (
+        <div style={{ marginTop: "clamp(44px,6vw,72px)" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={homePoster2} alt="MOTO HOUSE" style={{ width: "100%", height: "auto", display: "block" }} />
+        </div>
+      )}
 
       {/* ===== GEAR BESTSELLERS ===== */}
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
