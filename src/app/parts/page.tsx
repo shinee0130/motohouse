@@ -4,8 +4,9 @@ import { isPart } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
-export default async function PartsPage() {
+export default async function PartsPage({ searchParams }: { searchParams: Promise<{ brand?: string }> }) {
   const gear = await getGearAll();
+  const initialBrand = (await searchParams).brand || "all";
   return (
     <GearClient
       gear={gear.filter(isPart)}
@@ -13,6 +14,7 @@ export default async function PartsPage() {
       title="Сэлбэг"
       desc="Яндан, дугуй, батерей болон тогтмол солих сэлбэгүүдийг олон улсын захиалгад тохируулан бэлтгэх боломжтой."
       baseHref="/parts"
+      initialBrand={initialBrand}
     />
   );
 }

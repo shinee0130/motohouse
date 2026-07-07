@@ -4,10 +4,11 @@ import { isPart } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
-export default async function GearPage({ searchParams }: { searchParams: Promise<{ for?: string }> }) {
+export default async function GearPage({ searchParams }: { searchParams: Promise<{ for?: string; brand?: string }> }) {
   const gear = await getGearAll();
-  const forParam = (await searchParams).for;
-  const initialGender = forParam === "women" || forParam === "men" ? forParam : "all";
+  const sp = await searchParams;
+  const initialGender = sp.for === "women" || sp.for === "men" ? sp.for : "all";
+  const initialBrand = sp.brand || "all";
   return (
     <GearClient
       gear={gear.filter((g) => !isPart(g))}
@@ -15,6 +16,7 @@ export default async function GearPage({ searchParams }: { searchParams: Promise
       title="Дагалдах хэрэгсэл"
       desc="Каск, бээлий, хамгаалалтын хувцас, intercom болон riding gear-ийг Монголд худалдаалж, гадаад захиалгад бэлтгэнэ."
       initialGender={initialGender}
+      initialBrand={initialBrand}
     />
   );
 }

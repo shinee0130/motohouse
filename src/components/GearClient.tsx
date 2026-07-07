@@ -23,6 +23,7 @@ export function GearClient({
   desc = "Каск, хувцас, хамгаалалт болон сэлбэгийг ангиллаар нь хурдан сонгоорой.",
   baseHref = "/gear",
   initialGender = "all",
+  initialBrand = "all",
 }: {
   gear: GearItem[];
   label?: string;
@@ -30,15 +31,24 @@ export function GearClient({
   desc?: string;
   baseHref?: "/gear" | "/parts";
   initialGender?: string;
+  initialBrand?: string;
 }) {
   const { t, loc } = useI18n();
   const [cat, setCat] = useState("All");
   const [gender, setGender] = useState(initialGender);
+  const [brand, setBrand] = useState(initialBrand);
   const cats = useMemo(() => ["All", ...Array.from(new Set(gear.map((g) => g.category)))], [gear]);
+  // Брэндүүд — өгөгдлөөс + initialBrand (жиш постероос X-Pro) чипээр харагдана
+  const brands = useMemo(() => {
+    const b = Array.from(new Set(gear.map((g) => g.brand).filter(Boolean))).sort();
+    if (initialBrand !== "all" && !b.includes(initialBrand)) b.unshift(initialBrand);
+    return b;
+  }, [gear, initialBrand]);
   // "Хэнд зориулсан" шүүлт нь эмэгтэй/эрэгтэй тэмдэглэсэн бараа байвал л харагдана
   const hasGendered = useMemo(() => gear.some((g) => g.gender === "women" || g.gender === "men"), [gear]);
   const byGender = gender === "all" ? gear : gear.filter((g) => g.gender === gender);
-  const list = cat === "All" ? byGender : byGender.filter((g) => g.category === cat);
+  const byBrand = brand === "all" ? byGender : byGender.filter((g) => g.brand === brand);
+  const list = cat === "All" ? byBrand : byBrand.filter((g) => g.category === cat);
 
   return (
     <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(32px,5vw,56px) clamp(20px,4vw,40px);")}>
@@ -61,10 +71,27 @@ export function GearClient({
           </div>
         )}
 
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
-          {cats.map((c) => (
-            <span key={c} onClick={() => setCat(c)} style={sx(chip(cat === c))}>{t(c)}</span>
-          ))}
+        {/* Брэнд шүүлт */}
+        {brands.length > 1 && (
+          <div style={{ marginTop: 16 }}>
+            <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.14em;color:#6b7280;margin-bottom:8px;")}>{t("Брэнд")}</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <span onClick={() => setBrand("all")} style={sx(chip(brand === "all"))}>{t("Бүх брэнд")}</span>
+              {brands.map((b) => (
+                <span key={b} onClick={() => setBrand(b)} style={sx(chip(brand === b))}>{b}</span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Ангилал шүүлт */}
+        <div style={{ marginTop: 16 }}>
+          <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.14em;color:#6b7280;margin-bottom:8px;")}>{t("Ангилал")}</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {cats.map((c) => (
+              <span key={c} onClick={() => setCat(c)} style={sx(chip(cat === c))}>{t(c)}</span>
+            ))}
+          </div>
         </div>
 
         <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-top:22px;")}>
