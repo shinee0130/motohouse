@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { I18nProvider } from "@/lib/i18n";
 import { CurrencyProvider } from "@/lib/currency";
 import { getRates } from "@/lib/fx";
+import { AuthModalProvider } from "@/lib/authModal";
 
 export const metadata: Metadata = {
   title: "motohouse",
@@ -35,9 +36,11 @@ export default async function RootLayout({
           <I18nProvider>
             <CurrencyProvider rates={rates}>
               <AuthProvider>
-                <Nav />
-                <div style={{ flex: 1 }}>{children}</div>
-                <Footer />
+                <AuthModalProvider>
+                  <Nav />
+                  <div style={{ flex: 1 }}>{children}</div>
+                  <Footer />
+                </AuthModalProvider>
               </AuthProvider>
             </CurrencyProvider>
           </I18nProvider>

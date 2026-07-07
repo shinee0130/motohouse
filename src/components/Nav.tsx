@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth";
 import { cartCount, CART_EVENT } from "@/lib/cart";
 import { LanguageToggle, useI18n } from "@/lib/i18n";
 import { CurrencySwitch } from "@/lib/currency";
+import { useAuthModal } from "@/lib/authModal";
 import { IconHome, IconBike, IconHelmet, IconCog, IconWrench, IconRoute, IconCalendar, IconTicket, IconCart, IconPackage, IconRequest } from "./icons";
 
 const NAV = [
@@ -41,6 +42,7 @@ export function Nav() {
   const router = useRouter();
   const { user, ready, logout } = useAuth();
   const { t } = useI18n();
+  const authModal = useAuthModal();
   const [open, setOpen] = useState(false); // sidebar
   const [acctOpen, setAcctOpen] = useState(false); // avatar dropdown
   const [cart, setCart] = useState(0); // сагсны тоо
@@ -157,12 +159,12 @@ export function Nav() {
               )}
             </div>
           ) : (
-            <Link
-              href="/login"
-              style={sx("background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.06em;padding:11px 20px;border-radius:9px;text-transform:uppercase;cursor:pointer;white-space:nowrap;")}
+            <button
+              onClick={() => authModal.open("login")}
+              style={sx("background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.06em;padding:11px 20px;border:none;border-radius:9px;text-transform:uppercase;cursor:pointer;white-space:nowrap;")}
             >
               {t("Нэвтрэх")}
-            </Link>
+            </button>
           )}
         </div>
       </div>
@@ -190,18 +192,11 @@ export function Nav() {
           boxShadow: open ? "20px 0 60px rgba(0,0,0,.5)" : "none",
         }}
       >
-        {/* дээд хэсэг: лого + хаах */}
-        <div style={sx("display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #1c1c1f;")}>
+        {/* дээд хэсэг: лого (гадуур дарахад автоматаар хаагдана) */}
+        <div style={sx("display:flex;align-items:center;padding:16px 18px;border-bottom:1px solid #1c1c1f;")}>
           <Link href="/" onClick={() => setOpen(false)} style={{ display: "flex", alignItems: "center" }}>
             <Brand height={38} />
           </Link>
-          <button
-            onClick={() => setOpen(false)}
-            aria-label={t("Хаах")}
-            style={sx("background:none;border:1px solid #262626;border-radius:8px;width:36px;height:36px;color:#8A8F98;font:600 16px Montserrat;cursor:pointer;")}
-          >
-            ✕
-          </button>
         </div>
 
         {/* цэс */}
@@ -270,13 +265,12 @@ export function Nav() {
                 </button>
               </>
             ) : (
-              <Link
-                href="/login"
-                onClick={() => setOpen(false)}
-                style={sx("display:block;text-align:center;background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:14px;border-radius:11px;text-transform:uppercase;cursor:pointer;margin:4px 2px;")}
+              <button
+                onClick={() => { setOpen(false); authModal.open("login"); }}
+                style={sx("display:block;width:calc(100% - 4px);text-align:center;background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:14px;border:none;border-radius:11px;text-transform:uppercase;cursor:pointer;margin:4px 2px;")}
               >
                 {t("Нэвтрэх")}
-              </Link>
+              </button>
             )}
           </div>
         </nav>
