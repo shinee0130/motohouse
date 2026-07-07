@@ -124,7 +124,10 @@ export const EN: Record<string, string> = {
   "Мотоцикл худалдаа, premium gear, performance parts болон expert service.":
     "Motorcycles, riding gear, parts, and service in one place.",
   "Улаанбаатар, Монгол": "Ulaanbaatar, Mongolia",
+  "Улаанбаатар хот, Хан-Уул дүүрэг, 18-р хороо, Их Монгол Улсын гудамж, Uniqcenter, 00 тоот, 17013":
+    "Uniqcenter, unit 00, Ikh Mongol Ulsyn Street, 18th khoroo, Khan-Uul District, Ulaanbaatar, 17013, Mongolia",
   "Даваа–Бямба": "Monday-Saturday",
+  "Даваа–Ням": "Monday-Sunday",
   "MOTO HOUSE байршил": "MOTO HOUSE location",
 
   // ===== Catalog / cards =====
