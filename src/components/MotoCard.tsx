@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { Slot } from "./Slot";
-import { fmt, badge, statusLabel, type Moto } from "@/lib/data";
+import { badge, statusLabel, type Moto } from "@/lib/data";
+import { Price } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
 
 // Жагсаалт / онцлох хэсэгт ашиглах мотоциклын карт.
@@ -11,11 +12,11 @@ export function MotoCard({ m, showCc = false }: { m: Moto; showCc?: boolean }) {
   const { t } = useI18n();
   const priceEl = m.salePrice ? (
     <span style={{ display: "inline-flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
-      <span style={sx("font:500 13px Montserrat;color:#6b7280;text-decoration:line-through;")}>{fmt(m.price)}</span>
-      <span style={sx("font:700 17px Montserrat;color:#E10613;")}>{fmt(m.salePrice)}</span>
+      <span style={sx("font:500 13px Montserrat;color:#6b7280;text-decoration:line-through;")}><Price amount={m.price} /></span>
+      <span style={sx("font:700 17px Montserrat;color:#E10613;")}><Price amount={m.salePrice} /></span>
     </span>
   ) : (
-    <span style={sx("font:700 17px Montserrat;color:#E10613;")}>{fmt(m.price)}</span>
+    <span style={sx("font:700 17px Montserrat;color:#E10613;")}><Price amount={m.price} /></span>
   );
   return (
     <Link

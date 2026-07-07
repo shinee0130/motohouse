@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { sx } from "@/lib/sx";
-import { fmt } from "@/lib/data";
+import { Price } from "@/lib/currency";
 import { orderBadge, type Order } from "@/lib/account";
 import { useAuth } from "@/lib/auth";
 import { getUserOrders } from "@/lib/queries";
@@ -28,7 +28,7 @@ export default function OrdersPage() {
               <div style={sx("font:400 12px 'JetBrains Mono';color:#8A8F98;margin-top:4px;")}>{o.id} · {o.date} · {o.qty}ш</div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              <span style={sx("font:800 15px Montserrat;color:#fff;")}>{fmt(o.total)}</span>
+              <span style={sx("font:800 15px Montserrat;color:#fff;")}><Price amount={o.total} /></span>
               <span style={sx(orderBadge(o.status))}>{o.status}</span>
             </div>
           </div>

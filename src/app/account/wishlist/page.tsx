@@ -4,7 +4,8 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { Slot } from "@/components/Slot";
-import { fmt, statusLabel, type GearItem, type Moto } from "@/lib/data";
+import { statusLabel, type GearItem, type Moto } from "@/lib/data";
+import { Price } from "@/lib/currency";
 import { useAuth } from "@/lib/auth";
 import { getSavedItems } from "@/lib/queries";
 import { setSaved } from "@/lib/admin";
@@ -77,7 +78,7 @@ function SavedCard({ href, img, brand, name, price, tag, onRemove, cover }: {
         <div style={{ padding: "13px 15px" }}>
           <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>{brand.toUpperCase()}</div>
           <div style={sx("font:700 14px Montserrat;color:#fff;margin-top:3px;")}>{name}</div>
-          <div style={sx("font:800 14px Montserrat;color:#E10613;margin-top:8px;")}>{fmt(price)}</div>
+          <div style={sx("font:800 14px Montserrat;color:#E10613;margin-top:8px;")}><Price amount={price} /></div>
         </div>
       </Link>
       <button onClick={onRemove} aria-label={t("Хасах")}

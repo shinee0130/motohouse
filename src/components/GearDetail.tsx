@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { Slot } from "./Slot";
-import { fmt, type GearItem } from "@/lib/data";
+import { type GearItem } from "@/lib/data";
+import { Price } from "@/lib/currency";
 import { useAuth } from "@/lib/auth";
 import { getSavedIds } from "@/lib/queries";
 import { createOrder, setSaved } from "@/lib/admin";
@@ -147,9 +148,9 @@ export function GearDetail({
           <div style={sx("font:500 14px Roboto;color:#8A8F98;margin-top:4px;")}>{item.brand} · {item.category}</div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
-            <span style={sx("font:800 28px Montserrat;color:#fff;")}>{fmt(item.price)}</span>
+            <span style={sx("font:800 28px Montserrat;color:#fff;")}><Price amount={item.price} /></span>
             {item.oldPrice > item.price && (
-              <span style={sx("font:400 16px Roboto;color:#8A8F98;text-decoration:line-through;")}>{fmt(item.oldPrice)}</span>
+              <span style={sx("font:400 16px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={item.oldPrice} /></span>
             )}
             <button
               onClick={toggleSave}
@@ -328,7 +329,7 @@ function GearMini({ g, baseHref }: { g: GearItem; baseHref: "/gear" | "/parts" }
       <div style={{ padding: "13px 15px" }}>
         <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>{g.brand.toUpperCase()}</div>
         <div style={sx("font:700 14px Montserrat;color:#fff;margin-top:3px;")}>{g.name}</div>
-        <div style={sx("font:800 14px Montserrat;color:#fff;margin-top:8px;")}>{fmt(g.price)}</div>
+        <div style={sx("font:800 14px Montserrat;color:#fff;margin-top:8px;")}><Price amount={g.price} /></div>
       </div>
     </Link>
   );

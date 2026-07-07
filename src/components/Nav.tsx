@@ -8,6 +8,7 @@ import { Brand } from "./Brand";
 import { useAuth } from "@/lib/auth";
 import { cartCount, CART_EVENT } from "@/lib/cart";
 import { LanguageToggle, useI18n } from "@/lib/i18n";
+import { CurrencySwitch } from "@/lib/currency";
 import { IconHome, IconBike, IconHelmet, IconCog, IconWrench, IconRoute, IconCalendar, IconTicket, IconCart, IconPackage } from "./icons";
 
 const NAV = [
@@ -92,8 +93,11 @@ export function Nav() {
 
           <div style={{ marginLeft: "auto" }} />
 
-          {/* сагс */}
-          <LanguageToggle compact />
+          {/* хэл + валют */}
+          <div className="mh-nav-switches" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <LanguageToggle compact />
+            <CurrencySwitch compact />
+          </div>
 
           <Link href="/cart" aria-label={t("Миний сагс")} style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 44, height: 44, borderRadius: 10, border: "1px solid #262626", color: "#fff", flexShrink: 0 }}>
             <IconCart style={{ width: 21, height: 21 }} />
@@ -277,9 +281,12 @@ export function Nav() {
         </nav>
 
         {/* доод хэсэг */}
-        <div style={sx("padding:14px 18px;border-top:1px solid #1c1c1f;display:flex;align-items:center;justify-content:space-between;gap:12px;")}>
+        <div style={sx("padding:14px 18px;border-top:1px solid #1c1c1f;display:flex;flex-direction:column;gap:12px;")}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <LanguageToggle compact />
+            <CurrencySwitch compact />
+          </div>
           <span style={sx("font:500 11px 'JetBrains Mono';letter-spacing:.1em;color:#5b5b60;")}>RIDE. POWER. LIVE.</span>
-          <LanguageToggle compact />
         </div>
       </aside>
     </>

@@ -127,3 +127,10 @@ a {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* header дэх хэл/валют солигч — жижиг дэлгэц дээр нуух (sidebar дотор байгаа) */
+@media (max-width: 560px) {
+  .mh-nav-switches {
+    display: none !important;
+  }
+}

@@ -4,7 +4,8 @@ import { sx } from "@/lib/sx";
 import { Slot } from "@/components/Slot";
 import { MotoGallery } from "@/components/MotoGallery";
 import { MotoActions } from "@/components/MotoActions";
-import { fmt, statusLabel } from "@/lib/data";
+import { statusLabel } from "@/lib/data";
+import { Price } from "@/lib/currency";
 import { getMotos, similarOf } from "@/lib/queries";
 import { T } from "@/lib/i18n";
 
@@ -50,12 +51,12 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
             <h1 style={sx("font:800 clamp(28px,4vw,40px) Montserrat;color:#fff;margin-top:6px;")}>{m.model}</h1>
             {m.salePrice ? (
               <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap", marginTop: 10 }}>
-                <span style={sx("font:600 18px Montserrat;color:#6b7280;text-decoration:line-through;")}>{fmt(m.price)}</span>
-                <span style={sx("font:800 30px Montserrat;color:#E10613;")}>{fmt(m.salePrice)}</span>
+                <span style={sx("font:600 18px Montserrat;color:#6b7280;text-decoration:line-through;")}><Price amount={m.price} /></span>
+                <span style={sx("font:800 30px Montserrat;color:#E10613;")}><Price amount={m.salePrice} /></span>
                 <span style={sx("font:700 11px Montserrat;letter-spacing:.05em;color:#fff;background:#E10613;padding:5px 10px;border-radius:6px;")}><T>ХЯМДРАЛ</T></span>
               </div>
             ) : (
-              <div style={sx("font:800 30px Montserrat;color:#E10613;margin-top:10px;")}>{fmt(m.price)}</div>
+              <div style={sx("font:800 30px Montserrat;color:#E10613;margin-top:10px;")}><Price amount={m.price} /></div>
             )}
 
             <div
@@ -166,7 +167,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
                 </div>
                 <div style={{ padding: "14px 16px" }}>
                   <div style={sx("font:700 16px Montserrat;color:#fff;")}>{s.brand} {s.model}</div>
-                  <div style={sx("font:700 14px Montserrat;color:#E10613;margin-top:6px;")}>{fmt(s.price)}</div>
+                  <div style={sx("font:700 14px Montserrat;color:#E10613;margin-top:6px;")}><Price amount={s.price} /></div>
                 </div>
               </Link>
             ))}

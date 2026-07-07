@@ -4,6 +4,8 @@ import { AuthProvider } from "@/lib/auth";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { I18nProvider } from "@/lib/i18n";
+import { CurrencyProvider } from "@/lib/currency";
+import { getRates } from "@/lib/fx";
 
 export const metadata: Metadata = {
   title: "motohouse",
@@ -11,11 +13,12 @@ export const metadata: Metadata = {
     "Монголд суурилсан мотоцикл, riding gear, сэлбэг, засвар үйлчилгээ болон олон улсын захиалга нийлүүлэлтийн платформ.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const rates = await getRates();
   return (
     <html lang="mn">
       <body>
@@ -30,11 +33,13 @@ export default function RootLayout({
           }}
         >
           <I18nProvider>
-            <AuthProvider>
-              <Nav />
-              <div style={{ flex: 1 }}>{children}</div>
-              <Footer />
-            </AuthProvider>
+            <CurrencyProvider rates={rates}>
+              <AuthProvider>
+                <Nav />
+                <div style={{ flex: 1 }}>{children}</div>
+                <Footer />
+              </AuthProvider>
+            </CurrencyProvider>
           </I18nProvider>
         </div>
       </body>

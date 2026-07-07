@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/sx";
-import { fmt } from "@/lib/data";
+import { Price } from "@/lib/currency";
 import { orderBadge, type Order } from "@/lib/account";
 import { useAuth } from "@/lib/auth";
 import { getUserOrders, getSavedItems } from "@/lib/queries";
@@ -64,7 +64,7 @@ export default function AccountOverview() {
                 <div style={sx("font:400 12px 'JetBrains Mono';color:#8A8F98;margin-top:3px;")}>{o.id} · {o.date}</div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                <span style={sx("font:700 14px Montserrat;color:#fff;")}>{fmt(o.total)}</span>
+                <span style={sx("font:700 14px Montserrat;color:#fff;")}><Price amount={o.total} /></span>
                 <span style={sx(orderBadge(o.status))}>{o.status}</span>
               </div>
             </div>

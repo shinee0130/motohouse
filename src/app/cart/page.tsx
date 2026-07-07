@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
-import { fmt } from "@/lib/data";
+import { Price } from "@/lib/currency";
 import { useAuth } from "@/lib/auth";
 import { createOrder } from "@/lib/admin";
 import { getCart, setCartQty, removeFromCart, clearCart, CART_EVENT, type CartItem } from "@/lib/cart";
@@ -84,14 +84,14 @@ export default function CartPage() {
                 <div style={{ minWidth: 160, flex: 1 }}>
                   <div style={sx("font:700 15px Montserrat;color:#fff;")}>{it.name}</div>
                   {it.meta && <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:2px;")}>{it.meta}</div>}
-                  <div style={sx("font:700 14px Montserrat;color:#E10613;margin-top:4px;")}>{fmt(it.price)}</div>
+                  <div style={sx("font:700 14px Montserrat;color:#E10613;margin-top:4px;")}><Price amount={it.price} /></div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <button onClick={() => setCartQty(it.id, it.meta, it.qty - 1)} style={sx("width:32px;height:32px;border-radius:8px;background:#0B0B0D;border:1px solid #333;color:#fff;font:700 15px Montserrat;cursor:pointer;")}>−</button>
                   <span style={sx("font:700 15px Montserrat;color:#fff;min-width:26px;text-align:center;")}>{it.qty}</span>
                   <button onClick={() => setCartQty(it.id, it.meta, it.qty + 1)} style={sx("width:32px;height:32px;border-radius:8px;background:#0B0B0D;border:1px solid #333;color:#fff;font:700 15px Montserrat;cursor:pointer;")}>+</button>
                 </div>
-                <div style={sx("font:800 15px Montserrat;color:#fff;min-width:110px;text-align:right;")}>{fmt(it.price * it.qty)}</div>
+                <div style={sx("font:800 15px Montserrat;color:#fff;min-width:110px;text-align:right;")}><Price amount={it.price * it.qty} /></div>
                 <button onClick={() => removeFromCart(it.id, it.meta)} aria-label="Устгах" style={sx("background:none;border:none;color:#ef4444;font:700 16px Montserrat;cursor:pointer;padding:6px;")}>✕</button>
               </div>
             ))}
@@ -100,7 +100,7 @@ export default function CartPage() {
           <div style={sx("display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:20px;")}>
             <div>
               <div style={sx("font:600 11px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>{t("НИЙТ ДҮН")}</div>
-              <div style={sx("font:800 26px Montserrat;color:#E10613;margin-top:2px;")}>{fmt(total)}</div>
+              <div style={sx("font:800 26px Montserrat;color:#E10613;margin-top:2px;")}><Price amount={total} /></div>
             </div>
             <button
               onClick={checkout}

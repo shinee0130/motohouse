@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { Slot } from "@/components/Slot";
-import { fmt, type GearItem } from "@/lib/data";
+import { type GearItem } from "@/lib/data";
+import { Price } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
 
 function chip(active: boolean): string {
@@ -81,9 +82,9 @@ export function GearClient({
                   <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:3px;")}>{g.name}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 11 }}>
                     {g.oldPrice > g.price && (
-                      <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}>{fmt(g.oldPrice)}</span>
+                      <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={g.oldPrice} /></span>
                     )}
-                    <span style={sx("font:800 16px Montserrat;color:#fff;")}>{fmt(g.price)}</span>
+                    <span style={sx("font:800 16px Montserrat;color:#fff;")}><Price amount={g.price} /></span>
                   </div>
                 </div>
               </Link>
