@@ -167,3 +167,13 @@ export function IconCart({ style }: { style?: CSSProperties }) {
     </svg>
   );
 }
+
+export function IconRequest({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" style={base(style)}>
+      <path d="M6 3h8l4 4v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+      <path d="M13 3v5h5" />
+      <path d="M8 13h5M8 16.5h3" />
+    </svg>
+  );
+}

@@ -115,6 +115,31 @@ export async function getUserOrders(phone: string): Promise<Order[]> {
   return (data ?? []).map(mapOrder);
 }
 
+// ---- Order requests (Захиалгын хүсэлт) ----
+export interface OrderRequest {
+  id: string; category: string; detail: string; image?: string;
+  status: string; quote?: string; date: string;
+  name?: string; phone?: string; userPhone?: string;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapRequest(r: any): OrderRequest {
+  return {
+    id: r.id, category: r.category, detail: r.detail, image: r.image ?? undefined,
+    status: r.status, quote: r.quote ?? undefined,
+    date: (r.created_at ?? "").slice(0, 10),
+    name: r.name ?? undefined, phone: r.phone ?? undefined, userPhone: r.user_phone ?? undefined,
+  };
+}
+export async function getOrderRequests(): Promise<OrderRequest[]> {
+  const { data, error } = await supabase.from("order_requests").select("*").order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map(mapRequest);
+}
+export async function getMyOrderRequests(phone: string): Promise<OrderRequest[]> {
+  const { data } = await supabase.from("order_requests").select("*").eq("user_phone", phone).order("created_at", { ascending: false });
+  return (data ?? []).map(mapRequest);
+}
+
 // ---- Saved (Хадгалсан) ----
 export async function getSavedItems(phone: string): Promise<{ gear: GearItem[]; motos: Moto[] }> {
   const { data } = await supabase.from("saved").select("*").eq("user_phone", phone).order("created_at", { ascending: false });

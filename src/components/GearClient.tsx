@@ -91,6 +91,17 @@ export function GearClient({
             );
           })}
         </div>
+
+        {/* дэлгүүрт байхгүй бол захиалах */}
+        <div style={sx("margin-top:30px;background:linear-gradient(120deg,#1a0405,#111113 70%);border:1px solid #262626;border-radius:16px;padding:clamp(20px,3vw,28px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;")}>
+          <div>
+            <div style={sx("font:800 clamp(17px,2.4vw,22px) Montserrat;color:#fff;")}>{t("Хайж байгаа зүйл олдсонгүй юу?")}</div>
+            <div style={sx("font:400 13px Roboto;color:#A3A3A3;margin-top:5px;max-width:520px;")}>{t("Дэлгүүрт байхгүй сэлбэг, каск, хувцас болон бусад зүйлийг захиалж, үнийн санал аваарай.")}</div>
+          </div>
+          <Link href="/request" style={sx("background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.05em;padding:14px 24px;border-radius:10px;text-transform:uppercase;cursor:pointer;white-space:nowrap;")}>
+            {t("Захиалгын хүсэлт")}
+          </Link>
+        </div>
       </div>
     </div>
   );

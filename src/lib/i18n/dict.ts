@@ -378,6 +378,43 @@ export const EN: Record<string, string> = {
   "Хүлээн авагчийн нэрээ оруулна уу.": "Please enter the recipient name.",
   "Утасны дугаараа оруулна уу.": "Please enter a phone number.",
   "Хүргэх хаягаа оруулна уу.": "Please enter a delivery address.",
+
+  // ===== Захиалгын хүсэлт (custom order request) =====
+  "Захиалгын хүсэлт": "Order request",
+  "Миний хүсэлтүүд": "My requests",
+  "Шинэ хүсэлт": "New request",
+  "Хяналтын самбар": "Dashboard",
+  "гишүүн": "member",
+  "Ангилал": "Category",
+  "Ангилал сонгох…": "Select category…",
+  "Ангиллаа сонгоно уу.": "Please select a category.",
+  "Юу захиалах вэ? (дэлгэрэнгүй)": "What would you like to order? (details)",
+  "Юу захиалахаа дэлгэрэнгүй бичнэ үү.": "Please describe what you want to order.",
+  "Жишээ: Kawasaki ZX-10R-ийн урд тормозны колодка, эсвэл M хэмжээтэй хар өнгийн текстиль хүрэм…": "e.g. Front brake pads for a Kawasaki ZX-10R, or a size-M black textile jacket…",
+  "Жишээ зураг (сонгох)": "Reference image (optional)",
+  "Зураг хавсаргах": "Attach image",
+  "Зураг солих": "Change image",
+  "Зураг оруулахад алдаа гарлаа.": "Failed to upload the image.",
+  "Устгах": "Remove",
+  "Хүсэлт илгээх": "Send request",
+  "Хүсэлт илгээгдлээ!": "Request sent!",
+  "Хүсэлт илгээснээр төлбөр үүсэхгүй — бид эхлээд боломж/үнийг судалж хариулна.": "Sending a request creates no charge — we'll review availability and price and get back to you.",
+  "Хүсэлт илгээхийн тулд нэвтэрнэ үү.": "Please sign in to send a request.",
+  "Бид таны хүсэлтийг судалж, үнийн санал болон боломжийг эргэж мэдэгдэнэ.": "We'll review your request and get back to you with a quote and availability.",
+  "Дэлгүүрт байхгүй сэлбэг, каск, хувцас болон бусад зүйлийг захиалж болно. Юу хэрэгтэйгээ дэлгэрэнгүй бичээрэй — бид судалж үнийн санал болон боломжийг эргэж хэлнэ.": "You can request parts, helmets, apparel and other items not in the shop. Describe what you need in detail — we'll review it and reply with a quote and availability.",
+  "Одоогоор хүсэлт алга.": "No requests yet.",
+  "ҮНИЙН САНАЛ": "QUOTE",
+  "Хайж байгаа зүйл олдсонгүй юу?": "Can't find what you're looking for?",
+  "Дэлгүүрт байхгүй сэлбэг, каск, хувцас болон бусад зүйлийг захиалж, үнийн санал аваарай.": "Request parts, helmets, apparel and other items not in the shop, and get a quote.",
+  // request категори
+  "Мотоцикл сэлбэг": "Motorcycle parts",
+  "Дагалдах хэрэгсэл (каск, хувцас)": "Gear (helmet, apparel)",
+  "Бусад": "Other",
+  // request статус
+  "Шинэ": "New",
+  "Хянаж буй": "Reviewing",
+  "Үнэ өгсөн": "Quoted",
+  "Хаагдсан": "Closed",
 };
 
 export const tFor = (lang: Lang) => (s: string): string => (lang === "en" ? EN[s] ?? s : s);

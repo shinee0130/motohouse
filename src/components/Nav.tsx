@@ -9,13 +9,14 @@ import { useAuth } from "@/lib/auth";
 import { cartCount, CART_EVENT } from "@/lib/cart";
 import { LanguageToggle, useI18n } from "@/lib/i18n";
 import { CurrencySwitch } from "@/lib/currency";
-import { IconHome, IconBike, IconHelmet, IconCog, IconWrench, IconRoute, IconCalendar, IconTicket, IconCart, IconPackage } from "./icons";
+import { IconHome, IconBike, IconHelmet, IconCog, IconWrench, IconRoute, IconCalendar, IconTicket, IconCart, IconPackage, IconRequest } from "./icons";
 
 const NAV = [
   { label: "Нүүр", href: "/", Icon: IconHome },
   { label: "Мотоцикл", href: "/motorcycles", Icon: IconBike },
   { label: "Дагалдах хэрэгсэл", href: "/gear", Icon: IconHelmet },
   { label: "Сэлбэг", href: "/parts", Icon: IconPackage },
+  { label: "Захиалгын хүсэлт", href: "/request", Icon: IconRequest },
   { label: "Засвар", href: "/service", Icon: IconWrench },
   { label: "Аялал", href: "/travel", Icon: IconRoute },
   { label: "Event", href: "/events", Icon: IconCalendar },

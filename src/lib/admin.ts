@@ -106,6 +106,26 @@ export async function createOrder(o: {
   return id;
 }
 
+// ===== Order requests (Захиалгын хүсэлт — үнийн санал) =====
+export async function createOrderRequest(r: {
+  userPhone: string; name: string; phone: string; category: string; detail: string; image?: string;
+}): Promise<string> {
+  const id = `REQ-${Date.now().toString().slice(-6)}`;
+  const { error } = await supabase.from("order_requests").insert({
+    id, user_phone: r.userPhone, name: r.name, phone: r.phone,
+    category: r.category, detail: r.detail, image: r.image || null, status: "Шинэ",
+  });
+  if (error) throw error;
+  return id;
+}
+export async function updateOrderRequest(id: string, patch: { status?: string; quote?: string }) {
+  const { error } = await supabase.from("order_requests").update(patch).eq("id", id);
+  if (error) throw error;
+}
+export async function uploadRequestImage(file: File): Promise<string> {
+  return uploadTo("requests", file);
+}
+
 // ===== Service bookings (Засварын цаг захиалга) =====
 export interface Booking {
   id: number; service_type: string; booking_date: string; booking_time: string;
