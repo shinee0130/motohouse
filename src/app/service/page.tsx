@@ -54,18 +54,18 @@ export default function ServicePage() {
     e.preventDefault();
     setError("");
     if (!user) { router.push("/login"); return; }
-    if (!serviceType) return setError("Үйлчилгээний төрлөө сонгоно уу.");
-    if (!date) return setError("Огноогоо сонгоно уу.");
-    if (!time) return setError("Цагаа сонгоно уу.");
-    if (!name.trim()) return setError("Нэрээ оруулна уу.");
-    if (phone.replace(/\D/g, "").length !== 8) return setError("Утасны дугаар 8 оронтой байх ёстой.");
+    if (!serviceType) return setError(t("Үйлчилгээний төрлөө сонгоно уу."));
+    if (!date) return setError(t("Огноогоо сонгоно уу."));
+    if (!time) return setError(t("Цагаа сонгоно уу."));
+    if (!name.trim()) return setError(t("Нэрээ оруулна уу."));
+    if (phone.replace(/\D/g, "").length !== 8) return setError(t("Утасны дугаар 8 оронтой байх ёстой."));
     setBusy(true);
     try {
       // Давхар захиалгаас сэргийлэх — сүүлийн байдлаар шалгах
       const { data: taken } = await supabase.rpc("booked_times", { d: date });
       if (((taken ?? []) as string[]).includes(time)) {
         setBooked((taken ?? []) as string[]); setTime("");
-        setError("Уучлаарай, энэ цаг дөнгөж авагдлаа. Өөр цаг сонгоно уу.");
+        setError(t("Уучлаарай, энэ цаг дөнгөж авагдлаа. Өөр цаг сонгоно уу."));
         return;
       }
       await createBooking({
@@ -75,7 +75,7 @@ export default function ServicePage() {
       });
       setSent(true);
     } catch {
-      setError("Алдаа гарлаа. Дахин оролдоно уу.");
+      setError(t("Алдаа гарлаа. Дахин оролдоно уу."));
     } finally { setBusy(false); }
   }
 

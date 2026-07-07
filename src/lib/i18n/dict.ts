@@ -247,6 +247,42 @@ export const EN: Record<string, string> = {
   "Ерөнхий засвар": "General service",
   "Custom тюнинг": "Custom tuning",
   "Импортын зөвлөгөө": "Import consultation",
+
+  // ===== Cart / Gear detail / Service (session 2026-07-07) =====
+  "НИЙТ ДҮН": "TOTAL",
+  "Сагс хоосон байна": "Your cart is empty",
+  "Дагалдах хэрэгсэл үзэх": "Browse gear",
+  "Сэлбэг үзэх": "Browse parts",
+  "Захиалах": "Place order",
+  "Захиалга өгөх": "Place order",
+  "Захиалга": "Order",
+  "үүслээ.": "created.",
+  "Захиалга илгээгдлээ!": "Order sent!",
+  "Сагслах": "Add to cart",
+  "Сагсанд нэмэгдлээ.": "Added to cart.",
+  "Сагс үзэх": "View cart",
+  "Хадгалах": "Save",
+  "Хадгалснаас хасах": "Remove from saved",
+  "Өнгө": "Color",
+  "Хэмжээ": "Size",
+  "Хэмжээний заавар": "Size guide",
+  "Тайлбар": "Description",
+  "Онцлог": "Features",
+  "Зураг": "Image",
+  "Хүргэлт & буцаалт": "Shipping & returns",
+  "УБ хот доторх хүргэлт 1–2 хоног. Барааг задлаагүй, гэмтээгүй тохиолдолд 14 хоногийн дотор солих/буцаах боломжтой.":
+    "Delivery within Ulaanbaatar takes 1-2 days. Unopened, undamaged items can be exchanged or returned within 14 days.",
+  // Service form validation
+  "Үйлчилгээний төрлөө сонгоно уу.": "Please select a service type.",
+  "Огноогоо сонгоно уу.": "Please select a date.",
+  "Цагаа сонгоно уу.": "Please select a time.",
+  "Нэрээ оруулна уу.": "Please enter your name.",
+  "Утасны дугаар 8 оронтой байх ёстой.": "Phone number must be 8 digits.",
+  "Уучлаарай, энэ цаг дөнгөж авагдлаа. Өөр цаг сонгоно уу.": "Sorry, that time was just booked. Please pick another.",
+  "Алдаа гарлаа. Дахин оролдоно уу.": "Something went wrong. Please try again.",
+  // Travel stop
+  "Тэрэлж": "Terelj",
+  "Танд таалагдаж магадгүй": "You may also like",
 };
 
 export const tFor = (lang: Lang) => (s: string): string => (lang === "en" ? EN[s] ?? s : s);

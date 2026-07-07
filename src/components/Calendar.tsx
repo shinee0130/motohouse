@@ -2,15 +2,21 @@
 
 import { useState } from "react";
 import { sx } from "@/lib/sx";
+import { useI18n } from "@/lib/i18n";
 
-const MONTHS = ["1-р сар", "2-р сар", "3-р сар", "4-р сар", "5-р сар", "6-р сар", "7-р сар", "8-р сар", "9-р сар", "10-р сар", "11-р сар", "12-р сар"];
-const WD = ["Да", "Мя", "Лх", "Пү", "Ба", "Бя", "Ня"]; // Даваа эхэлнэ
+const MONTHS_MN = ["1-р сар", "2-р сар", "3-р сар", "4-р сар", "5-р сар", "6-р сар", "7-р сар", "8-р сар", "9-р сар", "10-р сар", "11-р сар", "12-р сар"];
+const MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const WD_MN = ["Да", "Мя", "Лх", "Пү", "Ба", "Бя", "Ня"]; // Даваа эхэлнэ
+const WD_EN = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 function ymd(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 export function Calendar({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const { lang } = useI18n();
+  const MONTHS = lang === "en" ? MONTHS_EN : MONTHS_MN;
+  const WD = lang === "en" ? WD_EN : WD_MN;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const [view, setView] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));

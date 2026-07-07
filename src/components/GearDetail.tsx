@@ -119,7 +119,7 @@ export function GearDetail({
               // eslint-disable-next-line @next/next/no-img-element
               <img src={imgs[Math.min(activeImg, imgs.length - 1)]} alt={item.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
             ) : (
-              <Slot label="Бүтээгдэхүүн зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+              <Slot label={t("Бүтээгдэхүүн зураг")} light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
             )}
             {sale > 0 && (
               <span style={sx("position:absolute;top:14px;left:14px;font:800 12px Montserrat;letter-spacing:.04em;color:#fff;background:#E10613;padding:6px 11px;border-radius:5px;")}>
@@ -153,8 +153,8 @@ export function GearDetail({
             )}
             <button
               onClick={toggleSave}
-              aria-label="Хадгалах"
-              title={saved ? "Хадгалснаас хасах" : "Хадгалах"}
+              aria-label={t("Хадгалах")}
+              title={saved ? t("Хадгалснаас хасах") : t("Хадгалах")}
               style={sx(`margin-left:auto;width:44px;height:44px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;background:${saved ? "rgba(225,6,19,.12)" : "#111113"};border:1px solid ${saved ? "#E10613" : "#262626"};color:${saved ? "#E10613" : "#8A8F98"};`)}
             >
               {saved ? "♥" : "♡"}
@@ -165,7 +165,7 @@ export function GearDetail({
           {item.colors && item.colors.length > 0 && (
             <div style={{ marginTop: 24 }}>
               <div style={sx("font:600 13px Montserrat;color:#fff;margin-bottom:10px;")}>
-                Өнгө: <span style={{ color: "#A3A3A3", fontWeight: 400 }}>{color}</span>
+                {t("Өнгө")}: <span style={{ color: "#A3A3A3", fontWeight: 400 }}>{color}</span>
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {item.colors.map((c) => (
@@ -187,8 +187,8 @@ export function GearDetail({
           {item.sizes && item.sizes.length > 0 && (
             <div style={{ marginTop: 24 }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                <span style={sx("font:600 13px Montserrat;color:#fff;")}>Хэмжээ</span>
-                <span style={sx("font:500 12px Roboto;color:#8A8F98;text-decoration:underline;cursor:pointer;")}>Хэмжээний заавар</span>
+                <span style={sx("font:600 13px Montserrat;color:#fff;")}>{t("Хэмжээ")}</span>
+                <span style={sx("font:500 12px Roboto;color:#8A8F98;text-decoration:underline;cursor:pointer;")}>{t("Хэмжээний заавар")}</span>
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {item.sizes.map((s) => (
@@ -212,7 +212,7 @@ export function GearDetail({
             disabled={busy}
             style={sx(`width:100%;margin-top:26px;background:#E10613;color:#fff;font:700 15px Montserrat;letter-spacing:.04em;padding:17px;border:none;border-radius:12px;text-transform:uppercase;cursor:pointer;${busy ? "opacity:.6;" : ""}`)}
           >
-            {busy ? "Илгээж байна…" : user ? "Захиалга өгөх" : "Нэвтэрч захиалах"}
+            {busy ? t("Илгээж байна…") : user ? t("Захиалга өгөх") : t("Нэвтэрч захиалах")}
           </button>
           <button
             onClick={() => {
@@ -226,16 +226,16 @@ export function GearDetail({
             }}
             style={sx("width:100%;margin-top:10px;background:#111113;color:#fff;border:1px solid #333;font:700 14px Montserrat;letter-spacing:.04em;padding:15px;border-radius:12px;text-transform:uppercase;cursor:pointer;")}
           >
-            🛒 Сагслах
+            🛒 {t("Сагслах")}
           </button>
           {cartMsg && (
             <div style={sx("font:500 13px Roboto;color:#22c55e;text-align:center;margin-top:10px;")}>
-              ✓ Сагсанд нэмэгдлээ. <Link href="/cart" style={{ color: "#22c55e", textDecoration: "underline" }}>Сагс үзэх</Link>
+              ✓ {t("Сагсанд нэмэгдлээ.")} <Link href="/cart" style={{ color: "#22c55e", textDecoration: "underline" }}>{t("Сагс үзэх")}</Link>
             </div>
           )}
           {orderId && (
             <div style={sx("font:500 13px Roboto;color:#22c55e;text-align:center;margin-top:12px;")}>
-              ✓ Захиалга #{orderId} үүслээ. <Link href="/account/orders" style={{ color: "#22c55e", textDecoration: "underline" }}>Миний захиалга</Link>
+              ✓ {t("Захиалга")} #{orderId} {t("үүслээ.")} <Link href="/account/orders" style={{ color: "#22c55e", textDecoration: "underline" }}>{t("Миний захиалга")}</Link>
             </div>
           )}
           <div style={sx("font:400 12px Roboto;color:#8A8F98;text-align:center;margin-top:12px;")}>
@@ -257,10 +257,10 @@ export function GearDetail({
 
           {/* accordions */}
           <div style={{ marginTop: 28 }}>
-            <Accordion title="Тайлбар" open>
+            <Accordion title={t("Тайлбар")} open>
               <p style={sx("font:400 14px/1.7 Roboto;color:#A3A3A3;")}>{item.desc}</p>
             </Accordion>
-            <Accordion title="Онцлог">
+            <Accordion title={t("Онцлог")}>
               <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
                 {item.features.map((f) => (
                   <div key={f} style={{ display: "flex", alignItems: "center", gap: 11 }}>
@@ -270,9 +270,9 @@ export function GearDetail({
                 ))}
               </div>
             </Accordion>
-            <Accordion title="Хүргэлт & буцаалт">
+            <Accordion title={t("Хүргэлт & буцаалт")}>
               <p style={sx("font:400 14px/1.7 Roboto;color:#A3A3A3;")}>
-                УБ хот доторх хүргэлт 1–2 хоног. Барааг задлаагүй, гэмтээгүй тохиолдолд 14 хоногийн дотор солих/буцаах боломжтой.
+                {t("УБ хот доторх хүргэлт 1–2 хоног. Барааг задлаагүй, гэмтээгүй тохиолдолд 14 хоногийн дотор солих/буцаах боломжтой.")}
               </p>
             </Accordion>
             <div style={sx("font:500 12px 'JetBrains Mono';color:#8A8F98;padding:16px 0;letter-spacing:.04em;")}>
@@ -297,7 +297,7 @@ export function GearDetail({
       {/* ===== YOU MAY ALSO LIKE ===== */}
       {more.length > 0 && (
         <div style={{ marginTop: "clamp(36px,5vw,56px)" }}>
-          <h2 style={sx("font:800 20px Montserrat;color:#fff;text-transform:uppercase;")}>Танд таалагдаж магадгүй</h2>
+          <h2 style={sx("font:800 20px Montserrat;color:#fff;text-transform:uppercase;")}>{t("Танд таалагдаж магадгүй")}</h2>
           <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;margin-top:18px;")}>
             {more.map((g) => (
               <GearMini key={g.id} g={g} baseHref={baseHref} />
@@ -310,6 +310,7 @@ export function GearDetail({
 }
 
 function GearMini({ g, baseHref }: { g: GearItem; baseHref: "/gear" | "/parts" }) {
+  const { t } = useI18n();
   return (
     <Link
       href={`${baseHref}/${g.id}`}
@@ -321,7 +322,7 @@ function GearMini({ g, baseHref }: { g: GearItem; baseHref: "/gear" | "/parts" }
           // eslint-disable-next-line @next/next/no-img-element
           <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
         ) : (
-          <Slot label="Зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+          <Slot label={t("Зураг")} light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
         )}
       </div>
       <div style={{ padding: "13px 15px" }}>
