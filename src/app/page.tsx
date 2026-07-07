@@ -54,6 +54,7 @@ export default async function HomePage() {
   // hero видеог түр хассан (Free egress хэмнэх) — сэргээхэд доорх <img>-ийг <video>-оор солино
   const homePoster = settings.home_poster; // урт poster зураг (admin-аас)
   const homePoster2 = settings.home_poster2; // 2 дахь poster (promo ба riding gear хооронд)
+  const homePoster3 = settings.home_poster3; // 3 дахь poster (parts ба event хооронд)
 
   const featuredAll = motos.filter((m) => m.featured);
   const featured = (featuredAll.length ? featuredAll : motos).slice(0, 4);
@@ -324,6 +325,14 @@ export default async function HomePage() {
           {renderProductCards(bestParts, "/parts")}
         </div>
       </div>
+
+      {/* ===== POSTER 3 (parts ба event хооронд, full-width) ===== */}
+      {homePoster3 && (
+        <div style={{ marginTop: "clamp(44px,6vw,72px)" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={homePoster3} alt="MOTO HOUSE" style={{ width: "100%", height: "auto", display: "block" }} />
+        </div>
+      )}
 
       {/* ===== EVENTS TEASER ===== */}
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
