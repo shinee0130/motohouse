@@ -10,7 +10,7 @@ export const EN: Record<string, string> = {
   "Дагалдах хэрэгсэл": "Riding gear",
   "Сэлбэг": "Parts",
   "Засвар": "Service",
-  "Аялал": "Rides",
+  "Аялал": "Travel",
   "Event": "Event",
   "Giveaway": "Giveaway",
   "Event & Giveaway": "Event & Giveaway",
