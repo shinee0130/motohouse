@@ -8,6 +8,7 @@ import { CurrencyProvider } from "@/lib/currency";
 import { getRates } from "@/lib/fx";
 import { AuthModalProvider } from "@/lib/authModal";
 import { CartModalProvider } from "@/lib/cartModal";
+import { ConfirmProvider } from "@/lib/confirm";
 
 const SITE_DESC =
   "Монголд суурилсан мотоцикл, riding gear, сэлбэг, засвар үйлчилгээ болон олон улсын захиалга нийлүүлэлтийн платформ.";
@@ -58,9 +59,11 @@ export default async function RootLayout({
               <AuthProvider>
                 <AuthModalProvider>
                   <CartModalProvider>
-                    <Nav />
-                    <div style={{ flex: 1 }}>{children}</div>
-                    <Footer />
+                    <ConfirmProvider>
+                      <Nav />
+                      <div style={{ flex: 1 }}>{children}</div>
+                      <Footer />
+                    </ConfirmProvider>
                   </CartModalProvider>
                 </AuthModalProvider>
               </AuthProvider>

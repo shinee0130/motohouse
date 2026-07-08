@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { sx } from "@/lib/sx";
 import { getRideRoutes, type RideRoute } from "@/lib/queries";
 import { createRideRoute, updateRideRoute, deleteRideRoute, uploadRouteImage } from "@/lib/admin";
+import { useConfirm } from "@/lib/confirm";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:11px 13px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
 const LABEL = "font:600 11px Montserrat;letter-spacing:.04em;color:#A3A3A3;margin-bottom:6px;display:block;";
@@ -52,6 +53,7 @@ export default function AdminRoutes() {
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [flang, setFlang] = useState<"mn" | "en">("mn");
+  const confirm = useConfirm();
 
   const EN_KEY = {
     title: "titleEn", region: "regionEn", summary: "summaryEn", duration: "durationEn",
@@ -98,7 +100,7 @@ export default function AdminRoutes() {
     } finally { setBusy(false); }
   }
   async function del(id: number) {
-    if (!confirm("Энэ маршрутыг устгах уу?")) return;
+    if (!(await confirm({ title: "Энэ маршрутыг устгах уу?", confirmLabel: "Устгах", danger: true }))) return;
     await deleteRideRoute(id);
     await refresh();
   }

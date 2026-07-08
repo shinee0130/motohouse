@@ -5,6 +5,7 @@ import { sx } from "@/lib/sx";
 import { Select } from "@/components/Select";
 import { fmt } from "@/lib/data";
 import { getProfiles, setUserRole, type Profile } from "@/lib/admin";
+import { useConfirm } from "@/lib/confirm";
 
 const ROLES = [
   { value: "customer", label: "Хэрэглэгч" },
@@ -24,6 +25,7 @@ export default function AdminUsers() {
   const [loaded, setLoaded] = useState(false);
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
+  const confirm = useConfirm();
 
   useEffect(() => {
     getProfiles().then((p) => { setList(p); setLoaded(true); });
@@ -35,9 +37,18 @@ export default function AdminUsers() {
     const name = u.name || "энэ хэрэглэгч";
     // Админ болгох / админ эрхийг хасах бүрд баталгаажуулна
     if (role === "admin") {
-      if (!confirm(`${name}-г АДМИН болгох уу?\n\nАдмин нь бүх бараа, захиалга, хэрэглэгчийг засах, устгах эрхтэй болно.`)) return;
+      const ok = await confirm({
+        title: `${name}-г админ болгох уу?`,
+        message: "Админ нь бүх бараа, захиалга, хэрэглэгчийг засах, устгах эрхтэй болно.",
+        confirmLabel: "Админ болгох",
+      });
+      if (!ok) return;
     } else if (u.role === "admin") {
-      if (!confirm(`${name}-ийн АДМИН эрхийг хасах уу?`)) return;
+      const ok = await confirm({
+        title: `${name}-ийн админ эрхийг хасах уу?`,
+        confirmLabel: "Эрх хасах", danger: true,
+      });
+      if (!ok) return;
     }
     setList((l) => l.map((x) => (x.id === id ? { ...x, role } : x)));
     await setUserRole(id, role);
