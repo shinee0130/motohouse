@@ -14,6 +14,7 @@ const MENU = [
   { label: "Events", href: "/admin/events" },
   { label: "Giveaway", href: "/admin/giveaway" },
   { label: "Аялал", href: "/admin/tours" },
+  { label: "Аяллын маршрут", href: "/admin/routes" },
   { label: "Захиалга", href: "/admin/orders" },
   { label: "Захиалгын хүсэлт", href: "/admin/requests" },
   { label: "Засварын цаг", href: "/admin/service" },

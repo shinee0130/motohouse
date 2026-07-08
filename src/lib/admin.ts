@@ -2,7 +2,7 @@
 
 import { supabase } from "./supabase";
 import type { Moto, GearItem, EventItem } from "./data";
-import type { Tour } from "./queries";
+import type { Tour, RideRoute } from "./queries";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -156,6 +156,37 @@ export async function deleteTour(id: number) {
 }
 export async function uploadTourImage(file: File): Promise<string> {
   return uploadTo("tours", file);
+}
+
+// ===== Ride routes (аяллын маршрут) =====
+function routeRow(r: Partial<RideRoute>): any {
+  return {
+    slug: r.slug, sort: r.sort ?? 0,
+    title: r.title, region: r.region ?? null, summary: r.summary ?? null, distance_km: r.distanceKm ?? 0,
+    duration: r.duration ?? null, difficulty: r.difficulty ?? null, road: r.road ?? null, season: r.season ?? null,
+    start_place: r.startPlace ?? null, destination: r.destination ?? null, coords: r.coords ?? null,
+    map_x: r.mapX ?? 50, map_y: r.mapY ?? 50,
+    gradient: r.gradient ?? null, image: r.image ?? null, image_alt: r.imageAlt ?? null,
+    tags: r.tags ?? [], stops: r.stops ?? [], checklist: r.checklist ?? [],
+    title_en: r.titleEn || null, region_en: r.regionEn || null, summary_en: r.summaryEn || null,
+    duration_en: r.durationEn || null, difficulty_en: r.difficultyEn || null, road_en: r.roadEn || null, season_en: r.seasonEn || null,
+    image_alt_en: r.imageAltEn || null, tags_en: r.tagsEn ?? [], stops_en: r.stopsEn ?? [], checklist_en: r.checklistEn ?? [],
+  };
+}
+export async function createRideRoute(r: Partial<RideRoute>) {
+  const { error } = await supabase.from("ride_routes").insert(routeRow(r));
+  if (error) throw error;
+}
+export async function updateRideRoute(id: number, r: Partial<RideRoute>) {
+  const { error } = await supabase.from("ride_routes").update(routeRow(r)).eq("id", id);
+  if (error) throw error;
+}
+export async function deleteRideRoute(id: number) {
+  const { error } = await supabase.from("ride_routes").delete().eq("id", id);
+  if (error) throw error;
+}
+export async function uploadRouteImage(file: File): Promise<string> {
+  return uploadTo("routes", file);
 }
 // Хэрэглэгчийн аяллын booking. Багтаамж хэтэрвэл DB trigger алдаа өгнө → "TOUR_FULL".
 export async function createTourBooking(b: {

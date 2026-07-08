@@ -173,6 +173,39 @@ export async function getTour(id: number): Promise<Tour | null> {
   return data ? mapTour(data) : null;
 }
 
+// ---- Ride routes (аяллын маршрут — showcase, map pin) ----
+export interface RideRoute {
+  id: number; slug: string; sort: number;
+  title: string; region?: string; summary?: string; distanceKm: number;
+  duration?: string; difficulty?: string; road?: string; season?: string;
+  startPlace?: string; destination?: string; coords?: string; mapX: number; mapY: number;
+  gradient?: string; image?: string; imageAlt?: string;
+  tags: string[]; stops: string[]; checklist: string[];
+  titleEn?: string; regionEn?: string; summaryEn?: string;
+  durationEn?: string; difficultyEn?: string; roadEn?: string; seasonEn?: string;
+  imageAltEn?: string; tagsEn: string[]; stopsEn: string[]; checklistEn: string[];
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapRideRoute(r: any): RideRoute {
+  return {
+    id: r.id, slug: r.slug, sort: r.sort ?? 0,
+    title: r.title, region: r.region ?? undefined, summary: r.summary ?? undefined, distanceKm: r.distance_km ?? 0,
+    duration: r.duration ?? undefined, difficulty: r.difficulty ?? undefined, road: r.road ?? undefined, season: r.season ?? undefined,
+    startPlace: r.start_place ?? undefined, destination: r.destination ?? undefined, coords: r.coords ?? undefined,
+    mapX: Number(r.map_x ?? 50), mapY: Number(r.map_y ?? 50),
+    gradient: r.gradient ?? undefined, image: r.image ?? undefined, imageAlt: r.image_alt ?? undefined,
+    tags: r.tags ?? [], stops: r.stops ?? [], checklist: r.checklist ?? [],
+    titleEn: r.title_en ?? undefined, regionEn: r.region_en ?? undefined, summaryEn: r.summary_en ?? undefined,
+    durationEn: r.duration_en ?? undefined, difficultyEn: r.difficulty_en ?? undefined, roadEn: r.road_en ?? undefined, seasonEn: r.season_en ?? undefined,
+    imageAltEn: r.image_alt_en ?? undefined, tagsEn: r.tags_en ?? [], stopsEn: r.stops_en ?? [], checklistEn: r.checklist_en ?? [],
+  };
+}
+export async function getRideRoutes(): Promise<RideRoute[]> {
+  const { data, error } = await supabase.from("ride_routes").select("*").order("sort");
+  if (error) throw error;
+  return (data ?? []).map(mapRideRoute);
+}
+
 export interface TourBooking {
   id: string; tourId: number; tourTitle?: string; people: number;
   motoChoice: string; motoModel?: string; note?: string; total: number;
