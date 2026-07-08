@@ -114,7 +114,8 @@ export const EN: Record<string, string> = {
   "И-мэйлээ үлдээгээрэй — drop, Giveaway, performance parts-ийн мэдээллийг хүргэнэ.":
     "Get updates on new arrivals, events, giveaways, and service tips by email.",
   "И-мэйл хаяг": "Email address",
-  "Бүртгүүлэх": "Subscribe",
+  "Бүртгүүлэх": "Sign up",
+  "Мэдээ авах": "Subscribe",
 
   // ===== Footer =====
   "Мотоцикл, хамгаалалтын хэрэгсэл, сэлбэг болон засвар үйлчилгээг нэг дор.":

@@ -375,7 +375,7 @@ export default async function HomePage() {
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <NewsletterInput />
             <button style={sx("background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:14px 26px;border:none;border-radius:10px;text-transform:uppercase;cursor:pointer;")}>
-              <T>Бүртгүүлэх</T>
+              <T>Мэдээ авах</T>
             </button>
           </div>
         </div>
