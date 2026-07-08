@@ -8,10 +8,12 @@ import { AuthShell, AUTH_LABEL, AUTH_BTN } from "@/components/AuthShell";
 import { PasswordInput } from "@/components/PasswordInput";
 import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
+import { useAuthModal } from "@/lib/authModal";
 
 export default function ResetPasswordPage() {
   const { t } = useI18n();
   const router = useRouter();
+  const authModal = useAuthModal();
   const [ready, setReady] = useState(false);
   const [hasSession, setHasSession] = useState(false);
   const [pw, setPw] = useState("");
@@ -48,7 +50,7 @@ export default function ResetPasswordPage() {
     <AuthShell
       title={done ? t("Амжилттай") : t("Шинэ нууц үг")}
       subtitle={done ? "" : t("Шинэ нууц үгээ оруулна уу.")}
-      footer={<Link href="/login" style={{ color: "#8A8F98" }}>← {t("Нэвтрэх хуудас")}</Link>}
+      footer={<button onClick={() => authModal.open("login")} style={{ background: "none", border: "none", color: "#8A8F98", cursor: "pointer", font: "inherit" }}>← {t("Нэвтрэх")}</button>}
     >
       {done ? (
         <div style={sx("text-align:center;padding:14px 0;")}>

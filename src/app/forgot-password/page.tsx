@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { AuthShell, AUTH_INPUT, AUTH_LABEL, AUTH_BTN } from "@/components/AuthShell";
 import { supabase } from "@/lib/supabase";
 import { useI18n } from "@/lib/i18n";
+import { useAuthModal } from "@/lib/authModal";
 
 export default function ForgotPasswordPage() {
   const { t } = useI18n();
+  const authModal = useAuthModal();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -32,7 +33,7 @@ export default function ForgotPasswordPage() {
     <AuthShell
       title={sent ? t("И-мэйл илгээлээ") : t("Нууц үг сэргээх")}
       subtitle={sent ? "" : t("Бүртгэлтэй и-мэйл хаягаа оруулна уу — нууц үг сэргээх линк илгээнэ.")}
-      footer={<Link href="/login" style={{ color: "#8A8F98" }}>← {t("Нэвтрэх хуудас")}</Link>}
+      footer={<button onClick={() => authModal.open("login")} style={{ background: "none", border: "none", color: "#8A8F98", cursor: "pointer", font: "inherit" }}>← {t("Нэвтрэх")}</button>}
     >
       {sent ? (
         <div style={sx("text-align:center;padding:10px 0;")}>
