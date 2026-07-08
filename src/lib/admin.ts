@@ -1,6 +1,6 @@
 "use client";
 
-import { supabase } from "./supabase";
+import { supabase, SUPABASE_URL, SUPABASE_KEY } from "./supabase";
 import type { Moto, GearItem, EventItem } from "./data";
 import type { Tour, RideRoute } from "./queries";
 
@@ -278,21 +278,41 @@ export async function getSettingsMap(): Promise<Record<string, string>> {
 export async function updateSetting(key: string, value: string) {
   await supabase.from("settings").upsert({ key, value }, { onConflict: "key" });
 }
+// Storage-д зураг байршуулах — нэвтэрсэн хэрэглэгчийн token-ыг REST API руу
+// ГАРААР дамжуулна. (supabase-js storage client энэ token-ыг зөв дамжуулдаггүй
+// тул upload anon болж RLS-д унадаг байсныг тойрсон.) public URL буцаана.
+async function rawUpload(path: string, file: File): Promise<string> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token || SUPABASE_KEY;
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/site/${encodeURI(path)}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      apikey: SUPABASE_KEY,
+      "x-upsert": "true",
+      "cache-control": "3600",
+      ...(file.type ? { "Content-Type": file.type } : {}),
+    },
+    body: file,
+  });
+  if (!res.ok) {
+    let msg = `Upload failed (${res.status})`;
+    try { const j = await res.json(); msg = j.message || j.error || msg; } catch {}
+    throw new Error(msg);
+  }
+  return `${SUPABASE_URL}/storage/v1/object/public/site/${path}`;
+}
+
 export async function uploadSiteImage(file: File, path: string): Promise<string> {
-  const { error } = await supabase.storage.from("site").upload(path, file, { upsert: true, cacheControl: "3600" });
-  if (error) throw error;
-  const { data } = supabase.storage.from("site").getPublicUrl(path);
-  return `${data.publicUrl}?v=${Date.now()}`;
+  const url = await rawUpload(path, file);
+  return `${url}?v=${Date.now()}`;
 }
 
 // Зураг/видео storage-д upload хийж public URL буцаана.
 async function uploadTo(folder: string, file: File, ext?: string): Promise<string> {
   const e = ext || file.name.split(".").pop() || "bin";
   const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${e}`;
-  const { error } = await supabase.storage.from("site").upload(path, file, { upsert: true, cacheControl: "3600", contentType: file.type || undefined });
-  if (error) throw error;
-  const { data } = supabase.storage.from("site").getPublicUrl(path);
-  return data.publicUrl;
+  return rawUpload(path, file);
 }
 export function uploadMoto(file: File, kind: "img" | "video"): Promise<string> {
   return uploadTo("motos", file, kind === "video" ? (file.name.split(".").pop() || "mp4") : undefined);

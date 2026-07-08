@@ -12,3 +12,8 @@ const KEY = envKey && !envKey.startsWith("sb_publishable_") ? envKey : ANON_KEY;
 
 // Нийтийн (anon/publishable) client — унших + (demo) бичих.
 export const supabase = createClient(URL, KEY);
+
+// Storage upload-д зориулж (supabase-js storage client нэвтэрсэн token-ыг зөв
+// дамжуулдаггүй тул REST API руу гараар илгээхэд ашиглана).
+export const SUPABASE_URL = URL;
+export const SUPABASE_KEY = KEY;
