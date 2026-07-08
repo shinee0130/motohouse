@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { Slot } from "@/components/Slot";
 import { Price } from "@/lib/currency";
 import { useAuth } from "@/lib/auth";
+import { useAuthModal } from "@/lib/authModal";
 import { useI18n } from "@/lib/i18n";
 import { createTourBooking } from "@/lib/admin";
 import type { Tour } from "@/lib/queries";
@@ -17,7 +17,7 @@ const INPUT = "background:#050505;border:1px solid #262626;border-radius:10px;pa
 export function TourDetail({ tour }: { tour: Tour }) {
   const { user } = useAuth();
   const { t, loc } = useI18n();
-  const router = useRouter();
+  const authModal = useAuthModal();
 
   const left = Math.max(0, tour.maxCapacity - tour.booked);
   const soldOut = tour.status !== "Нээлттэй" || left <= 0;
@@ -40,7 +40,7 @@ export function TourDetail({ tour }: { tour: Tour }) {
   const total = tour.price * people;
 
   async function book() {
-    if (!user) { router.push("/login"); return; }
+    if (!user) { authModal.open("login"); return; }
     if (people < 1) return setErr(t("Хүний тоог оруулна уу."));
     if (people > left) return setErr(t("Сул суудлаас хэтэрсэн байна."));
     if (motoChoice === "own" && !motoModel.trim()) return setErr(t("Өөрийн мотоциклийн моделийг бичнэ үү."));

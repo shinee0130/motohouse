@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { SERVICES } from "@/lib/data";
 import { useAuth } from "@/lib/auth";
+import { useAuthModal } from "@/lib/authModal";
 import { createBooking } from "@/lib/admin";
 import { supabase } from "@/lib/supabase";
 import { Calendar } from "@/components/Calendar";
@@ -17,7 +17,7 @@ const TIMES = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "1
 export default function ServicePage() {
   const { user } = useAuth();
   const { t } = useI18n();
-  const router = useRouter();
+  const authModal = useAuthModal();
   const [serviceType, setServiceType] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -53,7 +53,7 @@ export default function ServicePage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    if (!user) { router.push("/login"); return; }
+    if (!user) { authModal.open("login"); return; }
     if (!serviceType) return setError(t("Үйлчилгээний төрлөө сонгоно уу."));
     if (!date) return setError(t("Огноогоо сонгоно уу."));
     if (!time) return setError(t("Цагаа сонгоно уу."));

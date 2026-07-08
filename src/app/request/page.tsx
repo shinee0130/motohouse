@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { useAuth } from "@/lib/auth";
+import { useAuthModal } from "@/lib/authModal";
 import { useI18n } from "@/lib/i18n";
 import { createOrderRequest, uploadRequestImage } from "@/lib/admin";
 import { Select } from "@/components/Select";
@@ -16,7 +16,7 @@ const LABEL = "font:600 11px Montserrat;letter-spacing:.03em;color:#A3A3A3;margi
 export default function RequestPage() {
   const { user, ready } = useAuth();
   const { t } = useI18n();
-  const router = useRouter();
+  const authModal = useAuthModal();
   const [category, setCategory] = useState("");
   const [detail, setDetail] = useState("");
   const [name, setName] = useState("");
@@ -41,7 +41,7 @@ export default function RequestPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!user) { router.push("/login"); return; }
+    if (!user) { authModal.open("login"); return; }
     if (!category) return setErr(t("Ангиллаа сонгоно уу."));
     if (!detail.trim()) return setErr(t("Юу захиалахаа дэлгэрэнгүй бичнэ үү."));
     if (!name.trim()) return setErr(t("Нэрээ оруулна уу."));
@@ -83,7 +83,7 @@ export default function RequestPage() {
       ) : !user ? (
         <div style={sx("background:#111113;border:1px solid #262626;border-radius:18px;padding:44px 24px;margin-top:26px;text-align:center;")}>
           <div style={sx("font:600 16px Montserrat;color:#C8C8C8;")}>{t("Хүсэлт илгээхийн тулд нэвтэрнэ үү.")}</div>
-          <Link href="/login" style={sx("display:inline-block;margin-top:18px;background:#E10613;color:#fff;font:700 13px Montserrat;padding:12px 24px;border-radius:10px;cursor:pointer;")}>{t("Нэвтрэх")}</Link>
+          <button onClick={() => authModal.open("login")} style={sx("display:inline-block;margin-top:18px;background:#E10613;color:#fff;font:700 13px Montserrat;padding:12px 24px;border:none;border-radius:10px;cursor:pointer;")}>{t("Нэвтрэх")}</button>
         </div>
       ) : (
         <form onSubmit={submit} style={sx("background:#111113;border:1px solid #262626;border-radius:18px;padding:clamp(20px,3vw,28px);margin-top:26px;display:flex;flex-direction:column;gap:16px;")}>

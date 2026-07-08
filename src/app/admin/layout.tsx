@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { useAuth } from "@/lib/auth";
+import { useAuthModal } from "@/lib/authModal";
 
 const MENU = [
   { label: "Хяналтын самбар", href: "/admin" },
@@ -26,12 +27,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user, ready, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const authModal = useAuthModal();
 
   useEffect(() => {
     if (!ready) return;
-    if (!user) router.replace("/login");
+    if (!user) { router.replace("/"); authModal.open("login"); } // нэвтрэх modal
     else if (user.role !== "admin") router.replace("/account"); // зөвхөн админ
-  }, [ready, user, router]);
+  }, [ready, user, router, authModal]);
 
   if (!ready || !user || user.role !== "admin") {
     return (

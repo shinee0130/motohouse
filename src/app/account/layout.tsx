@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { useAuth } from "@/lib/auth";
+import { useAuthModal } from "@/lib/authModal";
 import { useI18n } from "@/lib/i18n";
 
 const MENU = [
@@ -22,10 +23,11 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
   const tr = t; // tier IIFE дотор t давхцахаас сэргийлсэн alias
   const router = useRouter();
   const pathname = usePathname();
+  const authModal = useAuthModal();
 
   useEffect(() => {
-    if (ready && !user) router.replace("/login");
-  }, [ready, user, router]);
+    if (ready && !user) { router.replace("/"); authModal.open("login"); }
+  }, [ready, user, router, authModal]);
 
   if (!ready || !user) {
     return (

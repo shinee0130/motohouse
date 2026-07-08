@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { useAuth } from "@/lib/auth";
+import { useAuthModal } from "@/lib/authModal";
 import { getParticipants, type Participant } from "@/lib/queries";
 import { joinEvent, leaveEvent } from "@/lib/admin";
 
 export function EventParticipate({ eventId, status, initial }: { eventId: number; status: string; initial: Participant[] }) {
   const { user } = useAuth();
-  const router = useRouter();
+  const authModal = useAuthModal();
   const [list, setList] = useState<Participant[]>(initial);
   const [joined, setJoined] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -21,7 +21,7 @@ export function EventParticipate({ eventId, status, initial }: { eventId: number
   }, [user, initial]);
 
   async function toggle() {
-    if (!user) { router.push("/login"); return; }
+    if (!user) { authModal.open("login"); return; }
     setBusy(true);
     try {
       if (joined) {

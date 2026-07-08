@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { Slot } from "./Slot";
 import { type GearItem } from "@/lib/data";
 import { Price } from "@/lib/currency";
 import { useAuth } from "@/lib/auth";
+import { useAuthModal } from "@/lib/authModal";
 import { getSavedIds } from "@/lib/queries";
 import { createOrder, setSaved } from "@/lib/admin";
 import { addToCart } from "@/lib/cart";
@@ -55,7 +55,7 @@ export function GearDetail({
 }) {
   const { user } = useAuth();
   const { t, loc } = useI18n();
-  const router = useRouter();
+  const authModal = useAuthModal();
   const [color, setColor] = useState(item.colors?.[0] ?? "");
   const [size, setSize] = useState("");
   const [activeImg, setActiveImg] = useState(0);
@@ -71,13 +71,13 @@ export function GearDetail({
   }, [user, item.id]);
 
   async function toggleSave() {
-    if (!user) { router.push("/login"); return; }
+    if (!user) { authModal.open("login"); return; }
     const next = !saved;
     setSavedState(next);
     await setSaved(user.phone, "gear", item.id, next);
   }
   async function order() {
-    if (!user) { router.push("/login"); return; }
+    if (!user) { authModal.open("login"); return; }
     setBusy(true);
     try {
       const id = await createOrder({ userPhone: user.phone, item: `${item.name}${size ? ` (${size})` : ""}`, total: item.price });

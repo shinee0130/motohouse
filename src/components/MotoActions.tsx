@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { sx } from "@/lib/sx";
 import { useAuth } from "@/lib/auth";
+import { useAuthModal } from "@/lib/authModal";
 import { getSavedIds } from "@/lib/queries";
 import { createOrder, setSaved } from "@/lib/admin";
 import { useI18n } from "@/lib/i18n";
@@ -12,7 +12,7 @@ import { useI18n } from "@/lib/i18n";
 export function MotoActions({ id, name, price }: { id: number; name: string; price: number }) {
   const { user } = useAuth();
   const { t } = useI18n();
-  const router = useRouter();
+  const authModal = useAuthModal();
   const [saved, setSavedState] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -22,13 +22,13 @@ export function MotoActions({ id, name, price }: { id: number; name: string; pri
   }, [user, id]);
 
   async function toggleSave() {
-    if (!user) { router.push("/login"); return; }
+    if (!user) { authModal.open("login"); return; }
     const next = !saved;
     setSavedState(next);
     await setSaved(user.phone, "moto", id, next);
   }
   async function order() {
-    if (!user) { router.push("/login"); return; }
+    if (!user) { authModal.open("login"); return; }
     setBusy(true);
     try {
       const oid = await createOrder({ userPhone: user.phone, item: name, total: price });
