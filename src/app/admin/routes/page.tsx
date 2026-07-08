@@ -169,9 +169,26 @@ export default function AdminRoutes() {
           <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Tag-ууд ( , тусгаарлана) {EN}</label><input {...bind("tags")} placeholder="Gobi, 426 km, 2 өдөр" style={sx(INPUT)} /></div>
           <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Бэлтгэл ( , тусгаарлана) {EN}</label><input {...bind("checklist")} placeholder="Салхины хамгаалалт, GPS offline map" style={sx(INPUT)} /></div>
 
-          {/* газрын зураг + чиглэл */}
-          <div><label style={sx(LABEL)}>Pin X (0-100%)</label><input type="number" min={0} max={100} value={f.mapX} onChange={(e) => setF({ ...f, mapX: +e.target.value })} style={sx(INPUT)} /></div>
-          <div><label style={sx(LABEL)}>Pin Y (0-100%)</label><input type="number" min={0} max={100} value={f.mapY} onChange={(e) => setF({ ...f, mapY: +e.target.value })} style={sx(INPUT)} /></div>
+          {/* газрын зураг дээр pin-ийг дарж тавина */}
+          <div style={{ gridColumn: "1 / -1" }}>
+            <label style={sx(LABEL)}>Газрын зураг дээрх байрлал — дарж pin тавь</label>
+            <div
+              onClick={(e) => {
+                const r = e.currentTarget.getBoundingClientRect();
+                const x = Math.max(0, Math.min(100, Math.round(((e.clientX - r.left) / r.width) * 100)));
+                const y = Math.max(0, Math.min(100, Math.round(((e.clientY - r.top) / r.height) * 100)));
+                setF((p) => ({ ...p, mapX: x, mapY: y }));
+              }}
+              style={{ position: "relative", width: "100%", maxWidth: 420, aspectRatio: "4 / 3", background: "#0B0B0D", border: "1px solid #262626", borderRadius: 12, overflow: "hidden", cursor: "crosshair" }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/assets/maps/mongolia-map-dark.png" alt="" draggable={false} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", pointerEvents: "none" }} />
+              <div style={{ position: "absolute", left: `${f.mapX}%`, top: `${f.mapY}%`, transform: "translate(-50%,-100%)", width: 26, height: 26, borderRadius: 999, border: "2px solid #fff", background: "#E10613", boxShadow: "0 0 0 6px rgba(225,6,19,.2),0 6px 14px rgba(0,0,0,.4)", pointerEvents: "none", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ width: 7, height: 7, borderRadius: 999, background: "#fff", display: "block" }} />
+              </div>
+            </div>
+            <div style={sx("font:400 11px Roboto;color:#6b7280;margin-top:6px;")}>Зураг дээр дарахад pin тэнд шилжинэ. (X: {f.mapX}% · Y: {f.mapY}%)</div>
+          </div>
           <div><label style={sx(LABEL)}>Эхлэх цэг</label><input value={f.startPlace} onChange={(e) => setF({ ...f, startPlace: e.target.value })} placeholder="Улаанбаатар" style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Очих газар (Google Maps)</label><input value={f.destination} onChange={(e) => setF({ ...f, destination: e.target.value })} placeholder="Tsagaan Suvarga, Mongolia" style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Координат (lat,lng)</label><input value={f.coords} onChange={(e) => setF({ ...f, coords: e.target.value })} placeholder="45.3186,106.8333" style={sx(INPUT)} /></div>
