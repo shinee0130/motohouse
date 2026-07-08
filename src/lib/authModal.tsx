@@ -247,6 +247,9 @@ function ForgotForm({ t, toLogin }: { t: (s: string) => string; toLogin: () => v
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) return setError(t("И-мэйл хаягаа зөв оруулна уу."));
     setBusy(true);
     try {
+      // Бүртгэлгүй имэйл бол шууд анхааруулна
+      const { data: exists } = await supabase.rpc("email_taken", { e: email.trim() });
+      if (!exists) { setError(t("Энэ и-мэйл бүртгэлгүй байна.")); return; }
       // recovery линк нүүр рүү авчирна — тэнд PASSWORD_RECOVERY эвент reset modal-ыг нээнэ
       const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: `${window.location.origin}/`,
