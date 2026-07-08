@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
 
-// Нүүрний full-width постер — EN хувилбар байвал EN горимд түүнийг, үгүй бол монгол постер (fallback).
-// Аль аль нь байхгүй бол юу ч харуулахгүй (хэсэг нуугдана). href өгвөл дарахад тухайн хуудас руу орно.
+// Нүүрний full-width постер — сонгосон хэлний хувилбарыг харуулна.
+// Тухайн хэлний зураг байхгүй бол нөгөө хэлнийхийг fallback болгож харуулна
+// (жишээ: MN постер байхгүй бол EN-ийг шууд харуулна). Аль аль нь байхгүй бол хэсэг нуугдана.
 export function Poster({ mn, en, href }: { mn?: string; en?: string; href?: string }) {
   const { loc } = useI18n();
-  const src = loc(mn || "", en) || mn;
+  const src = loc(mn || "", en) || mn || en;
   if (!src) return null;
   const img = (
     // eslint-disable-next-line @next/next/no-img-element
