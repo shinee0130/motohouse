@@ -88,7 +88,7 @@ export default async function HomePage() {
           </div>
           <div style={{ padding: "14px 16px" }}>
             <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>
-              {g.brand.toUpperCase()} · {g.category}
+              {g.brand.toUpperCase()} · <T>{g.category}</T>
             </div>
             <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:4px;")}><Loc mn={g.name} en={g.nameEn} /></div>
             <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 10 }}>

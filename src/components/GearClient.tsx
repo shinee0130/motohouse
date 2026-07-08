@@ -126,7 +126,7 @@ export function GearClient({
                 <div style={{ padding: "14px 16px" }}>
                   <span style={sx("font:700 13px Montserrat;letter-spacing:.08em;color:#E10613;")}>{"★★★★★".slice(0, g.rating)}</span>
                   <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;margin-top:6px;")}>
-                    {g.brand.toUpperCase()} · {g.category}
+                    {g.brand.toUpperCase()} · {t(g.category)}
                   </div>
                   <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:3px;")}>{loc(g.name, g.nameEn)}</div>
                   <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 11 }}>

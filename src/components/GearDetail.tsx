@@ -91,7 +91,7 @@ export function GearDetail({
       <div style={sx("font:500 12px Roboto;color:#8A8F98;margin-bottom:18px;")}>
         <Link href={baseHref} style={{ cursor: "pointer" }}>{baseLabel}</Link>
         <span style={{ margin: "0 8px", color: "#3a3a3f" }}>/</span>
-        <span>{item.category}</span>
+        <span>{t(item.category)}</span>
         <span style={{ margin: "0 8px", color: "#3a3a3f" }}>/</span>
         <span style={{ color: "#C8C8C8" }}>{loc(item.name, item.nameEn)}</span>
       </div>
@@ -145,7 +145,7 @@ export function GearDetail({
           )}
 
           <h1 style={sx("font:800 clamp(26px,3.5vw,38px) Montserrat;color:#fff;margin-top:14px;")}>{loc(item.name, item.nameEn)}</h1>
-          <div style={sx("font:500 14px Roboto;color:#8A8F98;margin-top:4px;")}>{item.brand} · {item.category}</div>
+          <div style={sx("font:500 14px Roboto;color:#8A8F98;margin-top:4px;")}>{item.brand} · {t(item.category)}</div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
             <span style={sx("font:800 28px Montserrat;color:#fff;")}><Price amount={item.price} /></span>
