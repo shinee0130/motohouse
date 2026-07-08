@@ -30,7 +30,16 @@ export default function AdminUsers() {
   }, []);
 
   async function changeRole(id: string, role: string) {
-    setList((l) => l.map((u) => (u.id === id ? { ...u, role } : u)));
+    const u = list.find((x) => x.id === id);
+    if (!u || u.role === role) return;
+    const name = u.name || "энэ хэрэглэгч";
+    // Админ болгох / админ эрхийг хасах бүрд баталгаажуулна
+    if (role === "admin") {
+      if (!confirm(`${name}-г АДМИН болгох уу?\n\nАдмин нь бүх бараа, захиалга, хэрэглэгчийг засах, устгах эрхтэй болно.`)) return;
+    } else if (u.role === "admin") {
+      if (!confirm(`${name}-ийн АДМИН эрхийг хасах уу?`)) return;
+    }
+    setList((l) => l.map((x) => (x.id === id ? { ...x, role } : x)));
     await setUserRole(id, role);
   }
 
