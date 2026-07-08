@@ -278,29 +278,26 @@ export async function getSettingsMap(): Promise<Record<string, string>> {
 export async function updateSetting(key: string, value: string) {
   await supabase.from("settings").upsert({ key, value }, { onConflict: "key" });
 }
-// Storage-д зураг байршуулах — нэвтэрсэн хэрэглэгчийн token-ыг REST API руу
-// ГАРААР дамжуулна. (supabase-js storage client энэ token-ыг зөв дамжуулдаггүй
-// тул upload anon болж RLS-д унадаг байсныг тойрсон.) public URL буцаана.
+// Storage-д зураг байршуулах — `admin-upload` Edge Function-оор дамжуулна.
+// (Энэ project-ийн storage-api нь client-ийн нэвтрэлтийг зөв танихгүй тул
+//  upload шууд RLS-д унадаг байсан. Edge function caller-ийг admin эсэхийг
+//  шалгаад service_role-оор байршуулж, эвдэрсэн замыг тойрдог.) public URL буцаана.
 async function rawUpload(path: string, file: File): Promise<string> {
   const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token || SUPABASE_KEY;
-  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/site/${encodeURI(path)}`, {
+  const token = session?.access_token;
+  if (!token) throw new Error("Нэвтрэлт хүчингүй байна. Дахин нэвтэрнэ үү.");
+  const form = new FormData();
+  form.append("path", path);
+  form.append("file", file);
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/admin-upload`, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      apikey: SUPABASE_KEY,
-      "x-upsert": "true",
-      "cache-control": "3600",
-      ...(file.type ? { "Content-Type": file.type } : {}),
-    },
-    body: file,
+    headers: { Authorization: `Bearer ${token}`, apikey: SUPABASE_KEY },
+    body: form,
   });
-  if (!res.ok) {
-    let msg = `Upload failed (${res.status})`;
-    try { const j = await res.json(); msg = j.message || j.error || msg; } catch {}
-    throw new Error(msg);
-  }
-  return `${SUPABASE_URL}/storage/v1/object/public/site/${path}`;
+  let json: { url?: string; error?: string } = {};
+  try { json = await res.json(); } catch {}
+  if (!res.ok || !json.url) throw new Error(json.error || `Upload failed (${res.status})`);
+  return json.url;
 }
 
 export async function uploadSiteImage(file: File, path: string): Promise<string> {
