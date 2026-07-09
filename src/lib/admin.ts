@@ -96,20 +96,37 @@ export async function updateOrderStatus(id: string, status: string) {
 
 // Хэрэглэгчийн захиалга үүсгэх (detail хуудаснаас)
 export async function createOrder(o: {
-  userPhone: string; item: string; total: number;
+  userPhone: string; item: string; total: number; transactionId?: string;
   shipCountry?: string; shipName?: string; shipPhone?: string; shipAddress?: string;
 }): Promise<string> {
-  const id = `MH-${Date.now().toString().slice(-6)}`;
+  const id = `MH-${Date.now().toString().slice(-6)}-${Math.random().toString(36).slice(2, 5)}`;
   const d = new Date();
   const date = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
   const { error } = await supabase.from("orders").insert({
     id, user_phone: o.userPhone, item: o.item, qty: 1, total: o.total,
-    status: "Хүлээгдэж буй", order_date: date,
+    status: "Хүлээгдэж буй", order_date: date, transaction_id: o.transactionId || null,
     ship_country: o.shipCountry || null, ship_name: o.shipName || null,
     ship_phone: o.shipPhone || null, ship_address: o.shipAddress || null,
   });
   if (error) throw error;
   return id;
+}
+
+// Bonum төлбөрийн invoice үүсгэх — bonum-invoice Edge Function дуудна.
+// Дүнг сервер тал (edge function) DB-ийн захиалгаас авдаг тул энд дамжуулахгүй.
+export async function createBonumInvoice(transactionId: string): Promise<{ followUpLink: string }> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+  if (!token) throw new Error("Нэвтрэлт шаардлагатай. Дахин нэвтэрнэ үү.");
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/bonum-invoice`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, apikey: SUPABASE_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ transactionId }),
+  });
+  let json: { followUpLink?: string; error?: string } = {};
+  try { json = await res.json(); } catch {}
+  if (!res.ok || !json.followUpLink) throw new Error(json.error || `Төлбөрийн хуудас үүсгэхэд алдаа (${res.status})`);
+  return { followUpLink: json.followUpLink };
 }
 
 // ===== Order requests (Захиалгын хүсэлт — үнийн санал) =====

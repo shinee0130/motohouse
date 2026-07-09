@@ -127,6 +127,10 @@ export const EN: Record<string, string> = {
   "Улаанбаатар, Монгол": "Ulaanbaatar, Mongolia",
   "Тийм": "Yes",
   "Болих": "Cancel",
+  "Төлбөр төлөх": "Pay",
+  "Нэвтэрч төлөх": "Sign in to pay",
+  "Төлбөр рүү шилжиж байна…": "Redirecting to payment…",
+  "Төлбөрийн хуудас үүсгэхэд алдаа гарлаа. Дахин оролдоно уу.": "Failed to open the payment page. Please try again.",
   "Энэ и-мэйл бүртгэлгүй байна.": "This email is not registered.",
   "Улаанбаатар хот, Хан-Уул дүүрэг, 18-р хороо, Их Монгол Улсын гудамж, Uniqcenter, 00 тоот, 17013":
     "Uniqcenter, unit 00, Ikh Mongol Ulsyn Street, 18th khoroo, Khan-Uul District, Ulaanbaatar, 17013, Mongolia",

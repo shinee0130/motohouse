@@ -8,7 +8,7 @@ import { sx } from "@/lib/sx";
 import { Price } from "@/lib/currency";
 import { useAuth } from "@/lib/auth";
 import { useAuthModal } from "@/lib/authModal";
-import { createOrder } from "@/lib/admin";
+import { createOrder, createBonumInvoice } from "@/lib/admin";
 import { getCart, setCartQty, removeFromCart, clearCart, CART_EVENT, type CartItem } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
 import { Select } from "@/components/Select";
@@ -59,16 +59,23 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
     if (!shipAddress.trim()) return setErr(t("Хүргэх хаягаа оруулна уу."));
     setErr(""); setBusy(true);
     try {
+      // Нэг checkout = нэг transactionId (Bonum-д дамжина, webhook үүгээр захиалгыг олно)
+      const txId = `MH${Date.now()}${Math.random().toString(36).slice(2, 7)}`;
       for (const it of items) {
         const label = `${it.name}${it.meta ? ` (${it.meta})` : ""}${it.qty > 1 ? ` ×${it.qty}` : ""}`;
         await createOrder({
-          userPhone: user.phone, item: label, total: it.price * it.qty,
+          userPhone: user.phone, item: label, total: it.price * it.qty, transactionId: txId,
           shipCountry: country, shipName: shipName.trim(), shipPhone: shipPhone.trim(), shipAddress: shipAddress.trim(),
         });
       }
+      // Bonum төлбөрийн хуудас үүсгэж, тийш чиглүүлнэ (төлмөгц webhook захиалгыг "Төлсөн" болгоно)
+      const { followUpLink } = await createBonumInvoice(txId);
       clearCart();
-      setDone(true);
-    } finally { setBusy(false); }
+      window.location.href = followUpLink;
+    } catch (e) {
+      setErr(t("Төлбөрийн хуудас үүсгэхэд алдаа гарлаа. Дахин оролдоно уу.") + " " + (e instanceof Error ? e.message : ""));
+      setBusy(false);
+    }
   }
 
   if (done) {
@@ -174,7 +181,7 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
           disabled={busy}
           style={sx(`background:#E10613;color:#fff;font:700 15px Montserrat;letter-spacing:.05em;padding:16px 34px;border:none;border-radius:12px;text-transform:uppercase;cursor:pointer;${busy ? "opacity:.6;" : ""}`)}
         >
-          {busy ? t("Илгээж байна…") : user ? t("Захиалах") : t("Нэвтэрч захиалах")}
+          {busy ? t("Төлбөр рүү шилжиж байна…") : user ? t("Төлбөр төлөх") : t("Нэвтэрч төлөх")}
         </button>
       </div>
       <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:12px;")}>
