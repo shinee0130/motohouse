@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { sx } from "@/lib/sx";
 import { Select } from "@/components/Select";
 import { fmt } from "@/lib/data";
-import { orderBadge, type Order } from "@/lib/account";
+import { orderBadge, paymentBadge, paymentLabel, type Order } from "@/lib/account";
 import { getOrders } from "@/lib/queries";
 import { updateOrderStatus } from "@/lib/admin";
 
@@ -15,11 +15,18 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: "undelivered", label: "Хүргэгдээгүй" },
   { key: "delivered", label: "Хүргэгдсэн" },
 ];
+type PayFilter = "all" | "paid" | "unpaid";
+const PAY_FILTERS: { key: PayFilter; label: string }[] = [
+  { key: "all", label: "Төлбөр: бүгд" },
+  { key: "paid", label: "Төлсөн" },
+  { key: "unpaid", label: "Төлөгдөөгүй" },
+];
 
 export default function AdminOrders() {
   const [list, setList] = useState<Order[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
+  const [payFilter, setPayFilter] = useState<PayFilter>("all");
 
   async function refresh() { setList(await getOrders()); setLoaded(true); }
   useEffect(() => { refresh(); }, []);
@@ -31,25 +38,42 @@ export default function AdminOrders() {
   async function markDelivered(id: string) { await changeStatus(id, "Хүргэгдсэн"); }
 
   const shown = useMemo(() => {
-    if (filter === "delivered") return list.filter((o) => o.status === "Хүргэгдсэн");
-    if (filter === "undelivered") return list.filter((o) => o.status !== "Хүргэгдсэн" && o.status !== "Цуцлагдсан");
-    return list;
-  }, [list, filter]);
+    let l = list;
+    if (filter === "delivered") l = l.filter((o) => o.status === "Хүргэгдсэн");
+    else if (filter === "undelivered") l = l.filter((o) => o.status !== "Хүргэгдсэн" && o.status !== "Цуцлагдсан");
+    if (payFilter === "paid") l = l.filter((o) => o.paymentStatus === "paid");
+    else if (payFilter === "unpaid") l = l.filter((o) => o.paymentStatus !== "paid");
+    return l;
+  }, [list, filter, payFilter]);
 
   const undeliveredCount = list.filter((o) => o.status !== "Хүргэгдсэн" && o.status !== "Цуцлагдсан").length;
+  const paidCount = list.filter((o) => o.paymentStatus === "paid").length;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <div style={sx("font:700 18px Montserrat;color:#fff;")}>Захиалга ({list.length})</div>
-        <div style={sx("font:600 12px Montserrat;color:#f59e0b;")}>Хүргэгдээгүй: {undeliveredCount}</div>
+        <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+          <div style={sx("font:600 12px Montserrat;color:#22c55e;")}>Төлсөн: {paidCount}</div>
+          <div style={sx("font:600 12px Montserrat;color:#f59e0b;")}>Хүргэгдээгүй: {undeliveredCount}</div>
+        </div>
       </div>
 
-      {/* filter */}
+      {/* хүргэлтийн шүүлт */}
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         {FILTERS.map((ff) => (
           <button key={ff.key} onClick={() => setFilter(ff.key)}
             style={sx(`cursor:pointer;font:700 12px Montserrat;padding:8px 16px;border-radius:999px;${filter === ff.key ? "background:#E10613;border:1px solid #E10613;color:#fff;" : "background:#111113;border:1px solid #333;color:#C8C8C8;"}`)}>
+            {ff.label}
+          </button>
+        ))}
+      </div>
+
+      {/* төлбөрийн шүүлт */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {PAY_FILTERS.map((ff) => (
+          <button key={ff.key} onClick={() => setPayFilter(ff.key)}
+            style={sx(`cursor:pointer;font:700 12px Montserrat;padding:8px 16px;border-radius:999px;${payFilter === ff.key ? "background:#22c55e;border:1px solid #22c55e;color:#04120a;" : "background:#111113;border:1px solid #333;color:#C8C8C8;"}`)}>
             {ff.label}
           </button>
         ))}
@@ -81,6 +105,8 @@ export default function AdminOrders() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                 <span style={sx("font:800 15px Montserrat;color:#fff;")}>{fmt(o.total)}</span>
+                {/* төлбөрийн төлөв */}
+                <span style={sx(paymentBadge(o.paymentStatus))}>{paymentLabel(o.paymentStatus)}</span>
                 {/* хүргэлтийн төлөв */}
                 <span style={sx(`font:700 11px Montserrat;letter-spacing:.03em;padding:6px 12px;border-radius:999px;${delivered ? "color:#22c55e;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);" : "color:#f59e0b;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);"}`)}>
                   {delivered ? "✓ Хүргэгдсэн" : "Хүргэгдээгүй"}
