@@ -14,8 +14,34 @@ import { useI18n } from "@/lib/i18n";
 import { Select } from "@/components/Select";
 
 const PAYMENT_METHODS = ["Visa", "Mastercard", "American Express", "UnionPay", "T Card", "Apple Pay", "Google Pay", "WeChat Pay", "QPay", "SocialPay", "HiPay"];
-const COUNTRIES = ["Mongolia", "China", "Japan", "South Korea", "Kazakhstan", "Russia", "USA", "Germany", "United Kingdom", "France", "Australia"];
-const OTHER = "__other";
+// Дэлхийн улсуудын бүрэн жагсаалт — Монгол эхэнд, дараа нь цагаан толгойгоор.
+const COUNTRIES = [
+  "Mongolia",
+  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
+  "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
+  "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czechia",
+  "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
+  "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
+  "Fiji", "Finland", "France",
+  "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana",
+  "Haiti", "Honduras", "Hong Kong", "Hungary",
+  "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Ivory Coast",
+  "Jamaica", "Japan", "Jordan",
+  "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait", "Kyrgyzstan",
+  "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
+  "Macao", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Montenegro", "Morocco", "Mozambique", "Myanmar",
+  "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway",
+  "Oman",
+  "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal",
+  "Qatar",
+  "Romania", "Russia", "Rwanda",
+  "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria",
+  "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu",
+  "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan",
+  "Vanuatu", "Vatican City", "Venezuela", "Vietnam",
+  "Yemen",
+  "Zambia", "Zimbabwe",
+];
 const SHIP_INPUT = "background:#050505;border:1px solid #262626;border-radius:10px;padding:12px 14px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
 const SHIP_LABEL = "font:600 11px Montserrat;letter-spacing:.03em;color:#A3A3A3;margin-bottom:6px;display:block;";
 
@@ -30,8 +56,7 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
   const [done, setDone] = useState(false);
 
   // хүргэлтийн хаяг (олон улсын захиалга)
-  const [shipCountry, setShipCountry] = useState("");
-  const [customCountry, setCustomCountry] = useState("");
+  const [shipCountry, setShipCountry] = useState("Mongolia");
   const [shipName, setShipName] = useState("");
   const [shipPhone, setShipPhone] = useState("");
   const [shipAddress, setShipAddress] = useState("");
@@ -52,7 +77,7 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
 
   async function checkout() {
     if (!user) { onNavigate?.(); authModal.open("login"); return; }
-    const country = shipCountry === OTHER ? customCountry.trim() : shipCountry;
+    const country = shipCountry.trim();
     if (!country) return setErr(t("Хүргэх улсаа сонгоно уу."));
     if (!shipName.trim()) return setErr(t("Хүлээн авагчийн нэрээ оруулна уу."));
     if (!shipPhone.trim()) return setErr(t("Утасны дугаараа оруулна уу."));
@@ -149,11 +174,10 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
               ariaLabel={t("Хүргэх улс")}
               full
               bg="#050505"
-              options={[...COUNTRIES.map((c) => ({ value: c, label: c })), { value: OTHER, label: t("Бусад…") }]}
+              searchable
+              searchPlaceholder={t("Улс хайх…")}
+              options={COUNTRIES.map((c) => ({ value: c, label: c }))}
             />
-            {shipCountry === OTHER && (
-              <input value={customCountry} onChange={(e) => setCustomCountry(e.target.value)} placeholder={t("Улсын нэр")} style={sx(SHIP_INPUT + "margin-top:8px;")} />
-            )}
           </div>
           <div>
             <label style={sx(SHIP_LABEL)}>{t("Хүлээн авагчийн нэр")}</label>

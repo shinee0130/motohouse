@@ -20,6 +20,8 @@ interface SelectProps {
   bg?: string; // товчны дэвсгэр (default #111113)
   disabled?: boolean;
   ariaLabel?: string;
+  searchable?: boolean; // олон сонголттой үед (улс гэх мэт) дээр хайх талбар гарна
+  searchPlaceholder?: string;
 }
 
 export function Select({
@@ -31,33 +33,57 @@ export function Select({
   bg = "#111113",
   disabled = false,
   ariaLabel,
+  searchable = false,
+  searchPlaceholder = "Хайх…",
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const [hi, setHi] = useState(-1); // highlight index (гарын навигац)
+  const [query, setQuery] = useState("");
   const wrapRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const selected = options.find((o) => o.value === value);
-  const selectedIdx = options.findIndex((o) => o.value === value);
+
+  // хайлтаар шүүсэн жагсаалт (навигаци, сонголт бүгд үүн дээр)
+  const q = query.trim().toLowerCase();
+  const list = searchable && q ? options.filter((o) => o.label.toLowerCase().includes(q)) : options;
 
   function openMenu() {
     if (disabled) return;
-    setHi(selectedIdx >= 0 ? selectedIdx : 0);
+    setQuery("");
+    const idx = options.findIndex((o) => o.value === value);
+    setHi(idx >= 0 ? idx : 0);
     setOpen(true);
   }
 
   function pick(v: string) {
     onChange(v);
+    setQuery("");
     setOpen(false);
   }
 
-  // нээгдэх үед сонгосон мөр рүү гүйлгэнэ
+  // нээгдэх үед сонгосон мөр рүү гүйлгэж, хайх талбарт фокус өгнө
   useEffect(() => {
     if (open && menuRef.current) {
       const el = menuRef.current.querySelector<HTMLElement>(`[data-i="${hi}"]`);
       el?.scrollIntoView({ block: "nearest" });
     }
   }, [open, hi]);
+
+  useEffect(() => {
+    if (open && searchable) searchRef.current?.focus();
+  }, [open, searchable]);
+
+  // навигаци — товч болон хайх талбар 2уланд ажиллана (шүүсэн list дээр)
+  function navKey(e: React.KeyboardEvent) {
+    if (disabled) return;
+    if (e.key === "Escape") { e.preventDefault(); setOpen(false); }
+    else if (e.key === "ArrowDown") { e.preventDefault(); setHi((i) => Math.min(list.length - 1, i + 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setHi((i) => Math.max(0, i - 1)); }
+    else if (e.key === "Enter") { e.preventDefault(); if (list[hi]) pick(list[hi].value); }
+    else if (e.key === "Tab") { setOpen(false); }
+  }
 
   function onKey(e: React.KeyboardEvent) {
     if (disabled) return;
@@ -68,11 +94,7 @@ export function Select({
       }
       return;
     }
-    if (e.key === "Escape") { e.preventDefault(); setOpen(false); }
-    else if (e.key === "ArrowDown") { e.preventDefault(); setHi((i) => Math.min(options.length - 1, i + 1)); }
-    else if (e.key === "ArrowUp") { e.preventDefault(); setHi((i) => Math.max(0, i - 1)); }
-    else if (e.key === "Enter") { e.preventDefault(); if (options[hi]) pick(options[hi].value); }
-    else if (e.key === "Tab") { setOpen(false); }
+    navKey(e);
   }
 
   return (
@@ -105,10 +127,25 @@ export function Select({
             ref={menuRef}
             role="listbox"
             style={sx(
-              "position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:1001;background:#141416;border:1px solid #2f2f33;border-radius:12px;padding:5px;max-height:280px;overflow-y:auto;box-shadow:0 16px 44px rgba(0,0,0,.55);animation:mhfade .14s both;",
+              "position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:1001;background:#141416;border:1px solid #2f2f33;border-radius:12px;padding:5px;max-height:300px;overflow-y:auto;box-shadow:0 16px 44px rgba(0,0,0,.55);animation:mhfade .14s both;",
             )}
           >
-            {options.map((o, i) => {
+            {searchable && (
+              <div style={sx("position:sticky;top:-5px;z-index:2;background:#141416;padding:2px 2px 6px;margin:-1px 0 2px;")}>
+                <input
+                  ref={searchRef}
+                  value={query}
+                  onChange={(e) => { setQuery(e.target.value); setHi(0); }}
+                  onKeyDown={navKey}
+                  placeholder={searchPlaceholder}
+                  style={sx("width:100%;background:#050505;border:1px solid #2f2f33;border-radius:9px;padding:9px 11px;color:#fff;font:500 13px Roboto;outline:none;")}
+                />
+              </div>
+            )}
+            {list.length === 0 && (
+              <div style={sx("padding:12px 11px;font:500 13px Roboto;color:#8A8F98;text-align:center;")}>Илэрц алга</div>
+            )}
+            {list.map((o, i) => {
               const active = o.value === value;
               const hot = i === hi;
               return (

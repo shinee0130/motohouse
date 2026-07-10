@@ -383,6 +383,7 @@ export const EN: Record<string, string> = {
   "Улс болон хаягаа оруулаарай — admin хүргэлтийн үнийг тооцож холбогдоно.": "Enter your country and address — admin will calculate shipping and get in touch.",
   "Хүргэх улс": "Destination country",
   "Улс сонгох…": "Select country…",
+  "Улс хайх…": "Search country…",
   "Бусад…": "Other…",
   "Улсын нэр": "Country name",
   "Хүлээн авагчийн нэр": "Recipient name",
