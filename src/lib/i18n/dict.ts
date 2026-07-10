@@ -508,6 +508,78 @@ export const EN: Record<string, string> = {
   "Дууссан": "Ended",
   "Баталгаажсан": "Confirmed",
   "Цуцлагдсан": "Cancelled",
+
+  // ===== Checkout / хүргэлтийн хаяг =====
+  // Бүс нутаг
+  "Ази": "Asia",
+  "Европ": "Europe",
+  "Ойрхи Дорнод": "Middle East",
+  "Хойд Америк": "North America",
+  "Өмнөд Америк": "South America",
+  "Номхон далай": "Oceania",
+  "Африк": "Africa",
+  "Түгээмэл": "Popular",
+  // Улс сонгогч
+  "Улс сонгох": "Select country",
+  "Улс, код, +утас хайх…": "Search country, code, +phone…",
+  "Илэрц алга": "No results",
+  // Авах хэлбэр
+  "Авах хэлбэр": "Delivery method",
+  "Хүргэлтээр авах": "Delivery",
+  "Дэлгүүрээс очиж авах": "Store pickup",
+  "Газрын зураг дээр харах": "View on map",
+  // Section / хүлээн авагч
+  "Хүлээн авагч": "Recipient",
+  "Хүргэлтийн улс": "Destination country",
+  // Хаягийн талбарууд
+  "Хот / Аймаг": "City / Province",
+  "Дүүрэг / Сум": "District / Soum",
+  "Хороо / Баг": "Khoroo / Bag",
+  "Гудамж, байр, тоот": "Street, building, unit",
+  "Орц, давхар, хаалганы код": "Entrance, floor, door code",
+  "Нэмэлт тайлбар": "Delivery note",
+  "Гэрийн хаяг (гудамж)": "Street address",
+  "Байр, өрөө, тоот": "Apartment, suite, unit",
+  "Хот": "City",
+  "Муж": "State",
+  "ZIP код": "ZIP code",
+  "Шуудангийн код": "Postal code",
+  "Префектур": "Prefecture",
+  "Хот / Дүүрэг": "City / Ward",
+  "Гудамжны хаяг": "Street address",
+  "Барилга / Байр": "Building / Apartment",
+  "Аймаг / Хот": "Province / City",
+  "Дүүрэг": "District",
+  "Замын хаяг": "Road address",
+  "Барилга / Орц": "Building / Unit",
+  "Хаягийн мөр 1": "Address line 1",
+  "Хаягийн мөр 2": "Address line 2",
+  "Муж / Аймаг / Бүс": "State / Province / Region",
+  // Validation
+  "Заавал бөглөнө үү": "This field is required",
+  "Шуудангийн код буруу байна.": "Invalid postal code.",
+  "Утасны дугаар буруу байна.": "Invalid phone number.",
+  // Autocomplete
+  "Санал болгосон хаягаас сонгоно уу": "Pick a suggested address",
+  // Хадгалсан хаяг
+  "Хаяг устгах уу?": "Delete address?",
+  "Хаяг": "Address",
+  "Үндсэн": "Default",
+  "Хадгалсан хаягаас сонгох": "Choose a saved address",
+  "Шинэ хаяг оруулах": "Enter a new address",
+  "Энэ хаягийг хадгалах": "Save this address",
+  "Хаягийн нэр (Гэр / Ажил)": "Address label (Home / Office)",
+  "Гэр": "Home",
+  // Байршил
+  "Одоогийн байршлыг ашиглах": "Use current location",
+  "Байршил тогтоох боломжгүй байна.": "Location is unavailable.",
+  "Байршлаас хаяг тодорхойлж чадсангүй.": "Couldn't determine address from location.",
+  "Байршлын зөвшөөрөл өгөгдсөнгүй.": "Location permission was denied.",
+  // Order summary / CTA
+  "бараа": "items",
+  "Захиалга үргэлжлүүлэх": "Continue order",
+  "Нэвтэрч үргэлжлүүлэх": "Sign in to continue",
+  "Захиалгыг баталгаажуулсны дараа хүргэлтийн үнийг тооцож холбогдоно.": "After you confirm, we'll calculate shipping and contact you.",
 };
 
 export const tFor = (lang: Lang) => (s: string): string => (lang === "en" ? EN[s] ?? s : s);

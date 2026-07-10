@@ -42,14 +42,14 @@ function CartModal({ close }: { close: () => void }) {
     <div
       onClick={close}
       style={{
-        position: "fixed", inset: 0, zIndex: 200, display: "flex", alignItems: "flex-start", justifyContent: "center",
-        padding: 20, background: "rgba(4,4,5,.66)", backdropFilter: "blur(7px)", WebkitBackdropFilter: "blur(7px)",
-        animation: "mhfade .25s both", overflowY: "auto",
+        position: "fixed", inset: 0, zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "clamp(8px,3vw,20px)", background: "rgba(4,4,5,.66)", backdropFilter: "blur(7px)", WebkitBackdropFilter: "blur(7px)",
+        animation: "mhfade .25s both",
       }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        style={sx("position:relative;width:100%;max-width:720px;background:#0c0c0e;border:1px solid #262626;border-radius:20px;padding:clamp(20px,4vw,32px);box-shadow:0 24px 70px rgba(0,0,0,.6);margin:auto;")}
+        style={sx("position:relative;width:100%;max-width:720px;max-height:94vh;overflow-y:auto;background:#0c0c0e;border:1px solid #262626;border-radius:20px;padding:clamp(16px,4vw,32px);box-shadow:0 24px 70px rgba(0,0,0,.6);margin:auto;")}
       >
         <button onClick={close} aria-label={t("Хаах")}
           style={sx("position:absolute;top:16px;right:16px;background:none;border:1px solid #262626;border-radius:8px;width:34px;height:34px;color:#8A8F98;font:600 15px Montserrat;cursor:pointer;z-index:1;")}>✕</button>

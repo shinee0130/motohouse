@@ -98,6 +98,7 @@ export async function updateOrderStatus(id: string, status: string) {
 export async function createOrder(o: {
   userPhone: string; item: string; total: number; transactionId?: string;
   shipCountry?: string; shipName?: string; shipPhone?: string; shipAddress?: string;
+  countryCode?: string; deliveryMethod?: string;
 }): Promise<string> {
   const id = `MH-${Date.now().toString().slice(-6)}-${Math.random().toString(36).slice(2, 5)}`;
   const d = new Date();
@@ -107,6 +108,7 @@ export async function createOrder(o: {
     status: "Хүлээгдэж буй", order_date: date, transaction_id: o.transactionId || null,
     ship_country: o.shipCountry || null, ship_name: o.shipName || null,
     ship_phone: o.shipPhone || null, ship_address: o.shipAddress || null,
+    country_code: o.countryCode || null, delivery_method: o.deliveryMethod || null,
   });
   if (error) throw error;
   return id;

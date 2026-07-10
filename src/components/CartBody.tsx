@@ -1,8 +1,9 @@
 "use client";
 
 // Сагсны бие — modal болон /cart хуудас 2уланд нь ашиглана.
+// Хүргэлтийн хаягийг олон улсын, mobile-first, бүтэцлэсэн form-оор авна.
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { Price } from "@/lib/currency";
@@ -11,41 +12,23 @@ import { useAuthModal } from "@/lib/authModal";
 import { createOrder, createBonumInvoice } from "@/lib/admin";
 import { getCart, setCartQty, removeFromCart, clearCart, CART_EVENT, type CartItem } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
-import { Select } from "@/components/Select";
+import { DEFAULT_COUNTRY, countryByCode } from "@/lib/countries";
+import {
+  callingCodeOf, composeAddress, isValidPhone, splitE164, toE164, validateAddress,
+  type AddrFieldKey, type AddressValue, type DeliveryMethod,
+} from "@/lib/checkout";
+import { saveAddress, toAddressValue, type SavedAddress } from "@/lib/addresses";
+import { hasReverseGeocode, getReverseGeocoder } from "@/lib/addressAutocomplete";
+import { Section, TextField } from "@/components/checkout/fields";
+import { DeliveryMethodSelector } from "@/components/checkout/DeliveryMethodSelector";
+import { CountryPicker } from "@/components/checkout/CountryPicker";
+import { InternationalPhoneInput } from "@/components/checkout/InternationalPhoneInput";
+import { AddressForm } from "@/components/checkout/AddressForm";
+import { SavedAddressSelector } from "@/components/checkout/SavedAddressSelector";
+import { OrderSummary } from "@/components/checkout/OrderSummary";
 
-const PAYMENT_METHODS = ["Visa", "Mastercard", "American Express", "UnionPay", "T Card", "Apple Pay", "Google Pay", "WeChat Pay", "QPay", "SocialPay", "HiPay"];
-// Дэлхийн улсуудын бүрэн жагсаалт — Монгол эхэнд, дараа нь цагаан толгойгоор.
-const COUNTRIES = [
-  "Mongolia",
-  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
-  "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi",
-  "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czechia",
-  "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic",
-  "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia",
-  "Fiji", "Finland", "France",
-  "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana",
-  "Haiti", "Honduras", "Hong Kong", "Hungary",
-  "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Ivory Coast",
-  "Jamaica", "Japan", "Jordan",
-  "Kazakhstan", "Kenya", "Kiribati", "Kosovo", "Kuwait", "Kyrgyzstan",
-  "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
-  "Macao", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Montenegro", "Morocco", "Mozambique", "Myanmar",
-  "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway",
-  "Oman",
-  "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal",
-  "Qatar",
-  "Romania", "Russia", "Rwanda",
-  "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria",
-  "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu",
-  "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan",
-  "Vanuatu", "Vatican City", "Venezuela", "Vietnam",
-  "Yemen",
-  "Zambia", "Zimbabwe",
-];
-const SHIP_INPUT = "background:#050505;border:1px solid #262626;border-radius:10px;padding:12px 14px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
-const SHIP_LABEL = "font:600 11px Montserrat;letter-spacing:.03em;color:#A3A3A3;margin-bottom:6px;display:block;";
+const PAYMENT_METHODS = ["Visa", "Mastercard", "UnionPay", "Apple Pay", "Google Pay", "QPay", "SocialPay"];
 
-// onNavigate: сагснаас өөр хуудас руу шилжих/захиалга дуусах үед дуудна (modal бол хаана).
 export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
   const { user } = useAuth();
   const { t } = useI18n();
@@ -53,14 +36,24 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState(false);
 
-  // хүргэлтийн хаяг (олон улсын захиалга)
-  const [shipCountry, setShipCountry] = useState("Mongolia");
-  const [shipName, setShipName] = useState("");
-  const [shipPhone, setShipPhone] = useState("");
-  const [shipAddress, setShipAddress] = useState("");
+  // Хүргэлт / хаяг
+  const [method, setMethod] = useState<DeliveryMethod>("delivery");
+  const [countryCode, setCountryCode] = useState(DEFAULT_COUNTRY);
+  const [recipientName, setRecipientName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState<AddressValue>({});
+  const [saveThis, setSaveThis] = useState(false);
+  const [saveLabel, setSaveLabel] = useState("");
+  const [selectedSavedId, setSelectedSavedId] = useState<string | null>(null);
+  const [reloadKey] = useState(0);
+
+  // Алдаанууд
+  const [errName, setErrName] = useState<string>();
+  const [errPhone, setErrPhone] = useState<string>();
+  const [addrErrors, setAddrErrors] = useState<Partial<Record<AddrFieldKey, string>>>({});
   const [err, setErr] = useState("");
+  const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const load = () => setItems(getCart());
@@ -70,30 +63,99 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
   }, []);
 
   useEffect(() => {
-    if (user) { setShipName((n) => n || user.name || ""); setShipPhone((p) => p || user.phone || ""); }
+    if (user) {
+      setRecipientName((n) => n || user.name || "");
+      setPhone((p) => p || user.phone || "");
+    }
   }, [user]);
 
   const total = items.reduce((s, x) => s + x.price * x.qty, 0);
+  const itemCount = items.reduce((s, x) => s + x.qty, 0);
+
+  function applySaved(a: SavedAddress) {
+    setSelectedSavedId(a.id);
+    setCountryCode(a.countryCode || DEFAULT_COUNTRY);
+    if (a.recipientName) setRecipientName(a.recipientName);
+    if (a.phone) setPhone(a.phone);
+    setAddress(toAddressValue(a));
+    setAddrErrors({});
+  }
+  function pickSaved(a: SavedAddress | null) {
+    if (a) applySaved(a);
+    else { setSelectedSavedId(null); setAddress({}); setAddrErrors({}); }
+  }
+
+  function useLocation() {
+    const geo = getReverseGeocoder();
+    if (!geo || typeof navigator === "undefined" || !navigator.geolocation) {
+      setErr(t("Байршил тогтоох боломжгүй байна."));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const d = await geo.reverse(pos.coords.latitude, pos.coords.longitude);
+          if (d) { setAddress((v) => ({ ...v, ...d.address })); if (d.countryCode) setCountryCode(d.countryCode); }
+        } catch { setErr(t("Байршлаас хаяг тодорхойлж чадсангүй.")); }
+      },
+      () => setErr(t("Байршлын зөвшөөрөл өгөгдсөнгүй.")),
+      { enableHighAccuracy: false, timeout: 8000 },
+    );
+  }
+
+  function focusFirstError() {
+    setTimeout(() => {
+      const el = formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]');
+      el?.focus();
+      el?.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, 30);
+  }
 
   async function checkout() {
     if (!user) { onNavigate?.(); authModal.open("login"); return; }
-    const country = shipCountry.trim();
-    if (!country) return setErr(t("Хүргэх улсаа сонгоно уу."));
-    if (!shipName.trim()) return setErr(t("Хүлээн авагчийн нэрээ оруулна уу."));
-    if (!shipPhone.trim()) return setErr(t("Утасны дугаараа оруулна уу."));
-    if (!shipAddress.trim()) return setErr(t("Хүргэх хаягаа оруулна уу."));
+
+    const calling = callingCodeOf(countryCode);
+    const { national } = splitE164(phone, calling);
+
+    const nameErr = recipientName.trim() ? undefined : "Заавал бөглөнө үү";
+    const phoneErr = !national ? "Заавал бөглөнө үү" : (isValidPhone(calling, national) ? undefined : "Утасны дугаар буруу байна.");
+    const aErrs = method === "delivery" ? validateAddress(countryCode, address) : {};
+
+    setErrName(nameErr && t(nameErr));
+    setErrPhone(phoneErr && t(phoneErr));
+    setAddrErrors(aErrs);
+
+    if (nameErr || phoneErr || Object.keys(aErrs).length) { setErr(""); focusFirstError(); return; }
+
     setErr(""); setBusy(true);
     try {
-      // Нэг checkout = нэг transactionId (Bonum-д дамжина, webhook үүгээр захиалгыг олно)
+      const country = countryByCode(countryCode);
+      const e164 = toE164(calling, national);
+      const shipCountry = method === "pickup" ? "Дэлгүүрээс авах" : (country?.nameEn || countryCode);
+      const shipAddress = method === "pickup"
+        ? "MOTO HOUSE — Uniqcenter, Хан-Уул, УБ"
+        : composeAddress(country, address);
+
+      // Хаяг хадгалах (сонгосон бол)
+      if (method === "delivery" && saveThis) {
+        try {
+          await saveAddress({
+            label: saveLabel.trim() || t("Хаяг"),
+            recipientName: recipientName.trim(), phone: e164, countryCode,
+            address, isDefault: selectedSavedId === null && reloadKey === 0,
+          });
+        } catch { /* хадгалалт амжилтгүй ч захиалгыг зогсоохгүй */ }
+      }
+
       const txId = `MH${Date.now()}${Math.random().toString(36).slice(2, 7)}`;
       for (const it of items) {
         const label = `${it.name}${it.meta ? ` (${it.meta})` : ""}${it.qty > 1 ? ` ×${it.qty}` : ""}`;
         await createOrder({
           userPhone: user.phone, item: label, total: it.price * it.qty, transactionId: txId,
-          shipCountry: country, shipName: shipName.trim(), shipPhone: shipPhone.trim(), shipAddress: shipAddress.trim(),
+          shipCountry, shipName: recipientName.trim(), shipPhone: e164, shipAddress,
+          countryCode: method === "pickup" ? undefined : countryCode, deliveryMethod: method,
         });
       }
-      // Bonum төлбөрийн хуудас үүсгэж, тийш чиглүүлнэ (төлмөгц webhook захиалгыг "Төлсөн" болгоно)
       const { followUpLink } = await createBonumInvoice(txId);
       clearCart();
       window.location.href = followUpLink;
@@ -101,20 +163,6 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
       setErr(t("Төлбөрийн хуудас үүсгэхэд алдаа гарлаа. Дахин оролдоно уу.") + " " + (e instanceof Error ? e.message : ""));
       setBusy(false);
     }
-  }
-
-  if (done) {
-    return (
-      <div style={sx("background:#111113;border:1px solid #262626;border-radius:18px;padding:clamp(28px,5vw,48px);text-align:center;")}>
-        <div style={sx("font:800 22px Montserrat;color:#22c55e;")}>✓ {t("Захиалга илгээгдлээ!")}</div>
-        <div style={sx("font:400 14px Roboto;color:#A3A3A3;margin-top:10px;")}>
-          {t("Захиалгыг баталгаажуулсны дараа төлбөр/хүргэлтийг тохирно. Олон улсын карт болон digital wallet төлбөрүүдийг дэмжинэ.")}
-        </div>
-        <Link href="/account/orders" onClick={onNavigate} style={sx("display:inline-block;margin-top:20px;background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.05em;padding:13px 24px;border-radius:10px;text-transform:uppercase;cursor:pointer;")}>
-          {t("Миний захиалга")}
-        </Link>
-      </div>
-    );
   }
 
   if (!ready) return null;
@@ -131,99 +179,110 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
     );
   }
 
+  const delivery = method === "delivery";
+  const ctaLabel = busy
+    ? t("Төлбөр рүү шилжиж байна…")
+    : user ? t("Захиалга үргэлжлүүлэх") : t("Нэвтэрч үргэлжлүүлэх");
+
   return (
-    <>
+    <div ref={formRef} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {/* Барааны жагсаалт */}
       <div style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;")}>
         {items.map((it) => (
           <div key={`${it.id}-${it.meta ?? ""}`} style={sx("display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid #1c1c1f;flex-wrap:wrap;")}>
-            <div style={sx("width:64px;height:64px;border-radius:10px;overflow:hidden;background:#fff;flex-shrink:0;")}>
+            <div style={sx("width:56px;height:56px;border-radius:10px;overflow:hidden;background:#fff;flex-shrink:0;")}>
               {it.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={it.image} alt="" style={sx("width:100%;height:100%;object-fit:contain;")} />
-              ) : (
-                <div style={sx("width:100%;height:100%;background:#1a1a1d;")} />
-              )}
+              ) : (<div style={sx("width:100%;height:100%;background:#1a1a1d;")} />)}
             </div>
-            <div style={{ minWidth: 160, flex: 1 }}>
-              <div style={sx("font:700 15px Montserrat;color:#fff;")}>{it.name}</div>
+            <div style={{ minWidth: 140, flex: 1 }}>
+              <div style={sx("font:700 14px Montserrat;color:#fff;")}>{it.name}</div>
               {it.meta && <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:2px;")}>{it.meta}</div>}
-              <div style={sx("font:700 14px Montserrat;color:#E10613;margin-top:4px;")}><Price amount={it.price} /></div>
+              <div style={sx("font:700 13px Montserrat;color:#E10613;margin-top:4px;")}><Price amount={it.price} /></div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <button onClick={() => setCartQty(it.id, it.meta, it.qty - 1)} style={sx("width:32px;height:32px;border-radius:8px;background:#0B0B0D;border:1px solid #333;color:#fff;font:700 15px Montserrat;cursor:pointer;")}>−</button>
+              <button onClick={() => setCartQty(it.id, it.meta, it.qty - 1)} aria-label="−" style={sx("width:34px;height:34px;border-radius:8px;background:#0B0B0D;border:1px solid #333;color:#fff;font:700 15px Montserrat;cursor:pointer;")}>−</button>
               <span style={sx("font:700 15px Montserrat;color:#fff;min-width:26px;text-align:center;")}>{it.qty}</span>
-              <button onClick={() => setCartQty(it.id, it.meta, it.qty + 1)} style={sx("width:32px;height:32px;border-radius:8px;background:#0B0B0D;border:1px solid #333;color:#fff;font:700 15px Montserrat;cursor:pointer;")}>+</button>
+              <button onClick={() => setCartQty(it.id, it.meta, it.qty + 1)} aria-label="+" style={sx("width:34px;height:34px;border-radius:8px;background:#0B0B0D;border:1px solid #333;color:#fff;font:700 15px Montserrat;cursor:pointer;")}>+</button>
             </div>
-            <div style={sx("font:800 15px Montserrat;color:#fff;min-width:110px;text-align:right;")}><Price amount={it.price * it.qty} /></div>
+            <div style={sx("font:800 14px Montserrat;color:#fff;min-width:96px;text-align:right;")}><Price amount={it.price * it.qty} /></div>
             <button onClick={() => removeFromCart(it.id, it.meta)} aria-label={t("Устгах")} style={sx("background:none;border:none;color:#ef4444;font:700 16px Montserrat;cursor:pointer;padding:6px;")}>✕</button>
           </div>
         ))}
       </div>
 
-      {/* хүргэлтийн хаяг */}
-      <div style={sx("background:#111113;border:1px solid #262626;border-radius:16px;padding:18px 18px 20px;margin-top:20px;")}>
-        <div style={sx("font:700 11px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;text-transform:uppercase;")}>{t("Хүргэлтийн хаяг")}</div>
-        <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:6px;margin-bottom:14px;")}>{t("Улс болон хаягаа оруулаарай — admin хүргэлтийн үнийг тооцож холбогдоно.")}</div>
-        <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;")}>
-          <div>
-            <label style={sx(SHIP_LABEL)}>{t("Хүргэх улс")}</label>
-            <Select
-              value={shipCountry}
-              onChange={setShipCountry}
-              placeholder={t("Улс сонгох…")}
-              ariaLabel={t("Хүргэх улс")}
-              full
-              bg="#050505"
-              searchable
-              searchPlaceholder={t("Улс хайх…")}
-              options={COUNTRIES.map((c) => ({ value: c, label: c }))}
-            />
-          </div>
-          <div>
-            <label style={sx(SHIP_LABEL)}>{t("Хүлээн авагчийн нэр")}</label>
-            <input value={shipName} onChange={(e) => setShipName(e.target.value)} style={sx(SHIP_INPUT)} />
-          </div>
-          <div>
-            <label style={sx(SHIP_LABEL)}>{t("Утасны дугаар")}</label>
-            <input value={shipPhone} onChange={(e) => setShipPhone(e.target.value)} style={sx(SHIP_INPUT)} />
-          </div>
+      {/* 1. Авах хэлбэр */}
+      <Section index={1} title={t("Авах хэлбэр")}>
+        <DeliveryMethodSelector value={method} onChange={setMethod} />
+      </Section>
+
+      {/* Хадгалсан хаяг (нэвтэрсэн, хүргэлт) — байхгүй бол өөрөө нуугдана */}
+      {user && delivery && (
+        <div style={sx("background:#111113;border:1px solid #262626;border-radius:16px;padding:14px 16px;")}>
+          <SavedAddressSelector selectedId={selectedSavedId} onPick={pickSaved} reloadKey={reloadKey} />
         </div>
-        <div style={{ marginTop: 12 }}>
-          <label style={sx(SHIP_LABEL)}>{t("Хүргэх хаяг (хот, гудамж, шуудангийн код)")}</label>
-          <textarea value={shipAddress} onChange={(e) => setShipAddress(e.target.value)} rows={3} style={sx(SHIP_INPUT + "resize:vertical;")} />
+      )}
+
+      {/* 2. Хүлээн авагч */}
+      <Section index={2} title={t("Хүлээн авагч")}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
+          <TextField label={t("Хүлээн авагчийн нэр")} value={recipientName} onChange={setRecipientName} required error={errName} autoComplete="name" />
+          <InternationalPhoneInput label={t("Утасны дугаар")} value={phone} onChange={setPhone} countryCode={countryCode} required error={errPhone} />
         </div>
-        {err && <div style={sx("font:500 13px Roboto;color:#ef4444;margin-top:10px;")}>{err}</div>}
+      </Section>
+
+      {delivery && (
+        <>
+          {/* 3. Хүргэлтийн улс */}
+          <Section index={3} title={t("Хүргэлтийн улс")}>
+            <CountryPicker value={countryCode} onChange={setCountryCode} ariaLabel={t("Хүргэлтийн улс")} />
+            {hasReverseGeocode() && (
+              <button type="button" onClick={useLocation}
+                style={sx("display:inline-flex;align-items:center;gap:7px;margin-top:10px;background:#0B0B0D;border:1px solid #333;color:#C8C8C8;font:600 12px Montserrat;padding:9px 13px;border-radius:9px;cursor:pointer;")}>
+                📍 {t("Одоогийн байршлыг ашиглах")}
+              </button>
+            )}
+          </Section>
+
+          {/* 4. Хүргэлтийн хаяг */}
+          <Section index={4} title={t("Хүргэлтийн хаяг")}>
+            <AddressForm countryCode={countryCode} value={address} onChange={setAddress} onCountry={setCountryCode} errors={addrErrors} />
+            {user && (
+              <label style={sx("display:flex;align-items:center;gap:9px;margin-top:14px;cursor:pointer;font:500 13px Roboto;color:#C8C8C8;")}>
+                <input type="checkbox" checked={saveThis} onChange={(e) => setSaveThis(e.target.checked)} style={{ width: 18, height: 18, accentColor: "#E10613" }} />
+                {t("Энэ хаягийг хадгалах")}
+              </label>
+            )}
+            {user && saveThis && (
+              <div style={{ marginTop: 10 }}>
+                <TextField label={t("Хаягийн нэр (Гэр / Ажил)")} value={saveLabel} onChange={setSaveLabel} placeholder={t("Гэр")} />
+              </div>
+            )}
+          </Section>
+        </>
+      )}
+
+      {err && <div role="alert" style={sx("font:500 13px Roboto;color:#ef4444;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:11px 13px;")}>{err}</div>}
+
+      {/* 6. Захиалгын дүн — sticky */}
+      <div style={{ position: "sticky", bottom: 0, zIndex: 3, paddingTop: 4 }}>
+        <OrderSummary
+          total={total}
+          itemCount={itemCount}
+          ctaLabel={ctaLabel}
+          onCta={checkout}
+          busy={busy}
+          note={t("Захиалгыг баталгаажуулсны дараа хүргэлтийн үнийг тооцож холбогдоно.")}
+        />
       </div>
 
-      <div style={sx("display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:20px;")}>
-        <div>
-          <div style={sx("font:600 11px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>{t("НИЙТ ДҮН")}</div>
-          <div style={sx("font:800 26px Montserrat;color:#E10613;margin-top:2px;")}><Price amount={total} /></div>
-        </div>
-        <button
-          onClick={checkout}
-          disabled={busy}
-          style={sx(`background:#E10613;color:#fff;font:700 15px Montserrat;letter-spacing:.05em;padding:16px 34px;border:none;border-radius:12px;text-transform:uppercase;cursor:pointer;${busy ? "opacity:.6;" : ""}`)}
-        >
-          {busy ? t("Төлбөр рүү шилжиж байна…") : user ? t("Төлбөр төлөх") : t("Нэвтэрч төлөх")}
-        </button>
+      {/* Төлбөрийн боломжууд */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", opacity: 0.75 }}>
+        {PAYMENT_METHODS.map((m) => (
+          <span key={m} style={sx("font:700 9px Montserrat;color:#C8C8C8;border:1px solid #2a2a2d;background:#0d0d0f;border-radius:999px;padding:5px 8px;")}>{m}</span>
+        ))}
       </div>
-      <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:12px;")}>
-        {t("Захиалгыг баталгаажуулсны дараа төлбөр/хүргэлтийг тохирно. Олон улсын карт болон digital wallet төлбөрүүдийг дэмжинэ.")}
-      </div>
-      <div style={sx("background:#0B0B0D;border:1px solid #262626;border-radius:14px;padding:14px 16px;margin-top:14px;")}>
-        <div style={sx("font:700 11px 'JetBrains Mono';letter-spacing:.12em;color:#E10613;text-transform:uppercase;")}>{t("Төлбөрийн боломжууд")}</div>
-        <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:7px;")}>
-          {t("Visa, Mastercard, American Express, UnionPay, T Card, Apple Pay, Google Pay, WeChat Pay, QPay, SocialPay, HiPay дэмжинэ.")}
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 10 }}>
-          {PAYMENT_METHODS.map((method) => (
-            <span key={method} style={sx("font:700 10px Montserrat;color:#C8C8C8;border:1px solid #333;background:#111113;border-radius:999px;padding:6px 9px;")}>
-              {method}
-            </span>
-          ))}
-        </div>
-      </div>
-    </>
+    </div>
   );
 }
