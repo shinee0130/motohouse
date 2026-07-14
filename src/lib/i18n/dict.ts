@@ -577,6 +577,7 @@ export const EN: Record<string, string> = {
   "Байршлын зөвшөөрөл өгөгдсөнгүй.": "Location permission was denied.",
   // Order summary / CTA
   "бараа": "items",
+  "Шууд худалдан авах": "Buy now",
   "Захиалга үргэлжлүүлэх": "Continue order",
   "Нэвтэрч үргэлжлүүлэх": "Sign in to continue",
   "Захиалгыг баталгаажуулсны дараа хүргэлтийн үнийг тооцож холбогдоно.": "After you confirm, we'll calculate shipping and contact you.",

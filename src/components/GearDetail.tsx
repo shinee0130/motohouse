@@ -8,8 +8,9 @@ import { type GearItem } from "@/lib/data";
 import { Price } from "@/lib/currency";
 import { useAuth } from "@/lib/auth";
 import { useAuthModal } from "@/lib/authModal";
+import { useCartModal } from "@/lib/cartModal";
 import { getSavedIds } from "@/lib/queries";
-import { createOrder, setSaved } from "@/lib/admin";
+import { setSaved } from "@/lib/admin";
 import { addToCart } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
 
@@ -56,13 +57,12 @@ export function GearDetail({
   const { user } = useAuth();
   const { t, loc } = useI18n();
   const authModal = useAuthModal();
+  const cartModal = useCartModal();
   const [color, setColor] = useState(item.colors?.[0] ?? "");
   const [size, setSize] = useState("");
   const [activeImg, setActiveImg] = useState(0);
   const imgs = item.images ?? [];
-  const [orderId, setOrderId] = useState<string | null>(null);
   const [saved, setSavedState] = useState(false);
-  const [busy, setBusy] = useState(false);
   const [cartMsg, setCartMsg] = useState(false);
   const sale = item.oldPrice > item.price ? Math.round((1 - item.price / item.oldPrice) * 100) : 0;
 
@@ -76,13 +76,18 @@ export function GearDetail({
     setSavedState(next);
     await setSaved(user.phone, "gear", item.id, next);
   }
-  async function order() {
-    if (!user) { authModal.open("login"); return; }
-    setBusy(true);
-    try {
-      const id = await createOrder({ userPhone: user.phone, item: `${item.name}${size ? ` (${size})` : ""}`, total: item.price });
-      setOrderId(id);
-    } finally { setBusy(false); }
+  function intoCart() {
+    addToCart({
+      id: item.id, name: item.name, price: item.price,
+      image: item.images?.[0],
+      meta: [size, color].filter(Boolean).join(" · ") || undefined,
+    });
+  }
+
+  // Шууд худалдан авах — сагсанд хийгээд checkout цонхыг шууд нээнэ.
+  function buyNow() {
+    intoCart();
+    cartModal.open();
   }
 
   return (
@@ -209,19 +214,14 @@ export function GearDetail({
 
           {/* CTA */}
           <button
-            onClick={order}
-            disabled={busy}
-            style={sx(`width:100%;margin-top:26px;background:#E10613;color:#fff;font:700 15px Montserrat;letter-spacing:.04em;padding:17px;border:none;border-radius:12px;text-transform:uppercase;cursor:pointer;${busy ? "opacity:.6;" : ""}`)}
+            onClick={buyNow}
+            style={sx("width:100%;margin-top:26px;background:#E10613;color:#fff;font:700 15px Montserrat;letter-spacing:.04em;padding:17px;border:none;border-radius:12px;text-transform:uppercase;cursor:pointer;")}
           >
-            {busy ? t("Илгээж байна…") : user ? t("Захиалга өгөх") : t("Нэвтэрч захиалах")}
+            ⚡ {t("Шууд худалдан авах")}
           </button>
           <button
             onClick={() => {
-              addToCart({
-                id: item.id, name: item.name, price: item.price,
-                image: item.images?.[0],
-                meta: [size, color].filter(Boolean).join(" · ") || undefined,
-              });
+              intoCart();
               setCartMsg(true);
               setTimeout(() => setCartMsg(false), 2200);
             }}
@@ -232,11 +232,6 @@ export function GearDetail({
           {cartMsg && (
             <div style={sx("font:500 13px Roboto;color:#22c55e;text-align:center;margin-top:10px;")}>
               ✓ {t("Сагсанд нэмэгдлээ.")} <Link href="/cart" style={{ color: "#22c55e", textDecoration: "underline" }}>{t("Сагс үзэх")}</Link>
-            </div>
-          )}
-          {orderId && (
-            <div style={sx("font:500 13px Roboto;color:#22c55e;text-align:center;margin-top:12px;")}>
-              ✓ {t("Захиалга")} #{orderId} {t("үүслээ.")} <Link href="/account/orders" style={{ color: "#22c55e", textDecoration: "underline" }}>{t("Миний захиалга")}</Link>
             </div>
           )}
           <div style={sx("font:400 12px Roboto;color:#8A8F98;text-align:center;margin-top:12px;")}>
