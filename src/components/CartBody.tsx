@@ -27,7 +27,8 @@ import { AddressForm } from "@/components/checkout/AddressForm";
 import { SavedAddressSelector } from "@/components/checkout/SavedAddressSelector";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 
-const PAYMENT_METHODS = ["Visa", "Mastercard", "UnionPay", "Apple Pay", "Google Pay", "QPay", "SocialPay"];
+// Bonum терминал дээр бодитоор идэвхтэй хэрэгслүүд (QPAY + E_COMMERCE картын суваг)
+const PAYMENT_METHODS = ["QPay", "SocialPay", "Visa", "Mastercard"];
 
 export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
   const { user } = useAuth();

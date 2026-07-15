@@ -14,7 +14,8 @@ import { setSaved } from "@/lib/admin";
 import { addToCart } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
 
-const PAYMENT_METHODS = ["Visa", "Mastercard", "American Express", "UnionPay", "T Card", "Apple Pay", "Google Pay", "WeChat Pay", "QPay", "SocialPay", "HiPay"];
+// Bonum терминал дээр бодитоор идэвхтэй хэрэгслүүд (QPAY + E_COMMERCE картын суваг)
+const PAYMENT_METHODS = ["QPay", "SocialPay", "Visa", "Mastercard"];
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -235,12 +236,12 @@ export function GearDetail({
             </div>
           )}
           <div style={sx("font:400 12px Roboto;color:#8A8F98;text-align:center;margin-top:12px;")}>
-            {t("Захиалгыг баталгаажуулсны дараа төлбөр/хүргэлтийг тохирно. Олон улсын карт болон digital wallet төлбөрүүдийг дэмжинэ.")}
+            {t("Төлбөрөө QPay, SocialPay эсвэл картаар шууд онлайнаар төлнө. Хүргэлтийн үнийг захиалга баталгаажсаны дараа тооцно.")}
           </div>
           <div style={sx("background:#0B0B0D;border:1px solid #262626;border-radius:14px;padding:14px;margin-top:14px;")}>
             <div style={sx("font:700 11px 'JetBrains Mono';letter-spacing:.12em;color:#E10613;text-transform:uppercase;")}>{t("Төлбөрийн боломжууд")}</div>
             <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:7px;")}>
-              {t("Visa, Mastercard, American Express, UnionPay, T Card, Apple Pay, Google Pay, WeChat Pay, QPay, SocialPay, HiPay дэмжинэ.")}
+              {t("QPay, SocialPay болон банкны карт (Visa, Mastercard) дэмжинэ.")}
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 10 }}>
               {PAYMENT_METHODS.map((method) => (

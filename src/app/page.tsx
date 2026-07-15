@@ -35,7 +35,7 @@ const SEE_ALL = "font:600 14px Montserrat;color:#A3A3A3;cursor:pointer;white-spa
 
 const TRUST = [
   { Icon: IconTruck, t: "Дотоод ба олон улсын хүргэлт", d: "Монголд шуурхай, гадаад захиалгад бэлтгэнэ" },
-  { Icon: IconCard, t: "Олон улсын төлбөр", d: "Visa · Mastercard · American Express · Apple Pay · Google Pay" },
+  { Icon: IconCard, t: "Онлайн төлбөр", d: "QPay · SocialPay · Visa · Mastercard" },
   { Icon: IconWrench, t: "Мэргэжлийн засвар", d: "Туршлагатай механик баг" },
   { Icon: IconShield, t: "Баталгаат оригинал бараа", d: "Албан эх сурвалжтай, оригинал" },
 ];

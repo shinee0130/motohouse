@@ -52,12 +52,11 @@ export const EN: Record<string, string> = {
   "Зээлээр авах": "Flexible payment",
   "Уян хатан төлбөр": "Flexible payment",
   "Дотоодын төлбөр болон экспортын захиалгын нөхцөл": "Local payments and export order terms",
-  "Олон улсын төлбөр": "International payments",
-  "Visa · Mastercard · American Express · Apple Pay · Google Pay": "Visa · Mastercard · American Express · Apple Pay · Google Pay",
-  "Visa, Mastercard, American Express, UnionPay, T Card, Apple Pay, Google Pay, WeChat Pay, QPay, SocialPay, HiPay дэмжинэ.":
-    "Visa, Mastercard, American Express, UnionPay, T Card, Apple Pay, Google Pay, WeChat Pay, QPay, SocialPay, and HiPay are supported.",
-  "Захиалгыг баталгаажуулсны дараа төлбөр/хүргэлтийг тохирно. Олон улсын карт болон digital wallet төлбөрүүдийг дэмжинэ.":
-    "Payment and shipping are confirmed after order review. International cards and digital wallet payments are supported.",
+  "Онлайн төлбөр": "Online payments",
+  "QPay, SocialPay болон банкны карт (Visa, Mastercard) дэмжинэ.":
+    "QPay, SocialPay, and bank cards (Visa, Mastercard) are supported.",
+  "Төлбөрөө QPay, SocialPay эсвэл картаар шууд онлайнаар төлнө. Хүргэлтийн үнийг захиалга баталгаажсаны дараа тооцно.":
+    "Pay online instantly with QPay, SocialPay, or card. Shipping cost is calculated after your order is confirmed.",
   "Төлбөрийн боломжууд": "Payment options",
   "StorePay · Pocket · LeasePay": "StorePay · Pocket · LeasePay",
   "Мэргэжлийн засвар": "Professional service",
