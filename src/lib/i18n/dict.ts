@@ -577,6 +577,21 @@ export const EN: Record<string, string> = {
   // Order summary / CTA
   "бараа": "items",
   "Шууд худалдан авах": "Buy now",
+  // Header (хайлт, promo, давуу тал)
+  "Бараа, мотоцикл хайх…": "Search gear, bikes…",
+  "Хайх": "Search",
+  "Хайлт": "Search",
+  "илэрц олдлоо": "results found",
+  "Илэрц олдсонгүй": "No results found",
+  "Өөр түлхүүр үгээр дахин хайж үзээрэй.": "Try a different keyword.",
+  "Дээрх хайлтын мөрөнд бараа, мотоцикл, брэндийн нэрээ бичээрэй.": "Type a product, motorcycle, or brand name in the search bar above.",
+  "Бараа, сэлбэг": "Gear & parts",
+  "Онлайн төлбөр — QPay, SocialPay, картаар шууд төлөөрэй": "Online payments are live — pay instantly with QPay, SocialPay, or card",
+  "Дотоод болон олон улсын хүргэлт": "Domestic & international shipping",
+  "Даваа–Ням 10:00–21:00 · Uniqcenter, Хан-Уул": "Open Mon–Sun 10:00–21:00 · Uniqcenter, Khan-Uul",
+  "Онлайн төлбөр — QPay · Карт": "Online payment — QPay · Card",
+  "Мэргэжлийн засварын баг": "Professional service team",
+
   // Захиалгын явцын timeline
   "Төлсөн": "Paid",
   "Төлбөр хүлээгдэж буй": "Payment pending",

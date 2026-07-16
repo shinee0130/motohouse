@@ -135,6 +135,30 @@ a {
   }
 }
 
+/* Header (RevZilla маягийн): хайлт desktop дээр голд, mobile дээр тусдаа мөр */
+.mh-hd-search-mobile {
+  display: none;
+}
+@media (max-width: 760px) {
+  .mh-hd-search-desktop {
+    display: none !important;
+  }
+  .mh-hd-search-mobile {
+    display: block;
+  }
+  /* давуу талын мөр жижиг дэлгэцэд нуугдана */
+  .mh-hd-benefits {
+    display: none !important;
+  }
+}
+/* ангиллын мөр — mobile дээр хажуу тийш гүйлгэнэ, scrollbar нуух */
+.mh-hd-cats {
+  scrollbar-width: none;
+}
+.mh-hd-cats::-webkit-scrollbar {
+  display: none;
+}
+
 /* Нүүрний категори — hover дээр өнгө тодорч, cursor холдоход бүдэг (зөвхөн hover-тэй төхөөрөмжид) */
 @media (hover: hover) {
   .mh-cat img {
