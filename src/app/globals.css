@@ -70,26 +70,6 @@ a {
   border-color: #e10613 !important;
 }
 
-.mh-trust-item {
-  min-width: 0;
-}
-
-@media (max-width: 960px) {
-  .mh-trust-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-}
-
-@media (max-width: 560px) {
-  .mh-trust-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .mh-trust-item {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-}
-
 /* responsive nav (эх загвар: isMobile < 880px) */
 .mh-desktop-nav {
   display: flex;

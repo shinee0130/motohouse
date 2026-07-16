@@ -18,7 +18,7 @@ import { useAuthModal } from "@/lib/authModal";
 import { useCartModal } from "@/lib/cartModal";
 import {
   IconHome, IconBike, IconHelmet, IconCog, IconWrench, IconRoute, IconCalendar,
-  IconTicket, IconCart, IconPackage, IconRequest, IconTruck, IconCard,
+  IconTicket, IconCart, IconPackage, IconRequest, IconTruck, IconCard, IconShield,
 } from "./icons";
 
 const NAV = [
@@ -289,11 +289,12 @@ export function Nav() {
 
       {/* ===== (3) ДАВУУ ТАЛЫН МӨР (desktop) ===== */}
       <div className="mh-hd-benefits" style={sx("background:#0B0B0D;border-bottom:1px solid #151517;")}>
-        <div style={sx(wrap + "height:46px;display:flex;align-items:center;justify-content:center;gap:clamp(26px,6vw,80px);")}>
+        <div style={sx(wrap + "height:46px;display:flex;align-items:center;justify-content:center;gap:clamp(18px,4vw,56px);")}>
           {[
             { Icon: IconTruck, text: "Дотоод ба олон улсын хүргэлт" },
             { Icon: IconCard, text: "Онлайн төлбөр — QPay · Карт" },
             { Icon: IconWrench, text: "Мэргэжлийн засварын баг" },
+            { Icon: IconShield, text: "Баталгаат оригинал бараа" },
           ].map(({ Icon, text }) => (
             <span key={text} style={{ display: "flex", alignItems: "center", gap: 9 }}>
               <Icon style={{ width: 18, height: 18, color: "#E10613", flexShrink: 0 }} />

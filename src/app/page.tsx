@@ -8,12 +8,6 @@ import { getMotos, getGearAll, getEvents, getSettings } from "@/lib/queries";
 import { T, Loc } from "@/lib/i18n";
 import { NewsletterInput } from "@/components/NewsletterInput";
 import { Poster } from "@/components/Poster";
-import {
-  IconTruck,
-  IconCard,
-  IconWrench,
-  IconShield,
-} from "@/components/icons";
 
 // Бодит лого байгаа брэндүүд — marquee-д зургаар, бусад нь текстээр.
 const BRAND_LOGOS: Record<string, string> = {
@@ -32,13 +26,6 @@ const WRAP = "max-width:1280px;margin:0 auto;padding:0 clamp(20px,4vw,40px);";
 const SECTION_LABEL = "font:500 12px 'JetBrains Mono';letter-spacing:.24em;color:#E10613;";
 const SECTION_TITLE = "font:800 clamp(24px,4vw,36px) Montserrat;color:#fff;margin-top:6px;text-transform:uppercase;";
 const SEE_ALL = "font:600 14px Montserrat;color:#A3A3A3;cursor:pointer;white-space:nowrap;";
-
-const TRUST = [
-  { Icon: IconTruck, t: "Дотоод ба олон улсын хүргэлт", d: "Монголд шуурхай, гадаад захиалгад бэлтгэнэ" },
-  { Icon: IconCard, t: "Онлайн төлбөр", d: "QPay · SocialPay · Visa · Mastercard" },
-  { Icon: IconWrench, t: "Мэргэжлийн засвар", d: "Туршлагатай механик баг" },
-  { Icon: IconShield, t: "Баталгаат оригинал бараа", d: "Албан эх сурвалжтай, оригинал" },
-];
 
 const CATS = [
   { title: "Мотоцикл", desc: "Sport, naked, adventure төрлийн сонголтууд", href: "/motorcycles", img: "/assets/home/cat_moto.webp", setKey: "cat_moto" },
@@ -118,15 +105,12 @@ export default async function HomePage() {
           )}
         />
         <div style={sx(`position:relative;${WRAP}padding-top:clamp(64px,10vw,128px);padding-bottom:clamp(64px,10vw,128px);pointer-events:none;`)}>
-          <span style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.32em;color:#8A8F98;")}>
-            MONGOLIA · SUPPLY · SERVICE · EXPORT
-          </span>
-          <h1 style={sx("font:900 clamp(46px,8vw,96px)/0.92 Montserrat;letter-spacing:-.01em;color:#fff;margin-top:18px;text-transform:uppercase;")}>
-            Ride.
+          <h1 style={sx("font:900 clamp(46px,8vw,96px)/0.92 Montserrat;letter-spacing:-.01em;color:#fff;text-transform:uppercase;")}>
+            Ride
             <br />
-            Power.
+            Power
             <br />
-            <span style={{ color: "#E10613" }}>Live.</span>
+            <span style={{ color: "#E10613" }}>Live</span>
           </h1>
           <p style={sx("font:400 clamp(15px,2vw,19px)/1.6 Roboto;color:#C8C8C8;max-width:520px;margin-top:24px;")}>
             <T>Монголд суурилсан MOTO HOUSE нь мотоцикл, хамгаалалтын хэрэгсэл, сэлбэг, засвар үйлчилгээ болон гадаад захиалгын нийлүүлэлтийг нэг дор холбодог платформ.</T>
@@ -139,23 +123,6 @@ export default async function HomePage() {
               <T>Гадаад захиалгын бараа үзэх</T>
             </Link>
           </div>
-        </div>
-      </div>
-
-      {/* ===== TRUST BAR ===== */}
-      <div style={sx("border-bottom:1px solid #1c1c1f;background:#0B0B0D;")}>
-        <div className="mh-trust-grid" style={sx(`${WRAP}display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;`)}>
-          {TRUST.map(({ Icon, t, d }) => (
-            <div className="mh-trust-item" key={t} style={{ display: "flex", alignItems: "center", gap: 14, padding: "22px 12px", minWidth: 0 }}>
-              <span style={{ color: "#E10613", flexShrink: 0, display: "flex" }}>
-                <Icon />
-              </span>
-              <div style={{ minWidth: 0 }}>
-                <div style={sx("font:700 14px/1.25 Montserrat;color:#fff;")}><T>{t}</T></div>
-                <div style={sx("font:400 12px/1.35 Roboto;color:#8A8F98;margin-top:3px;max-width:230px;")}><T>{d}</T></div>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
 
