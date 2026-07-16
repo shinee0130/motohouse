@@ -57,15 +57,18 @@ export default async function RootLayout({
           <I18nProvider>
             <CurrencyProvider rates={rates}>
               <AuthProvider>
-                <AuthModalProvider>
-                  <CartModalProvider>
-                    <ConfirmProvider>
+                {/* ConfirmProvider modal provider-уудын ДЭЭР байх ёстой — modal-ууд
+                    (сагс г.м) өөрийн provider-ийн түвшинд render хийгддэг тул доор нь
+                    байвал useConfirm/useAlert context олдохгүй crash болно. */}
+                <ConfirmProvider>
+                  <AuthModalProvider>
+                    <CartModalProvider>
                       <Nav />
                       <div style={{ flex: 1 }}>{children}</div>
                       <Footer />
-                    </ConfirmProvider>
-                  </CartModalProvider>
-                </AuthModalProvider>
+                    </CartModalProvider>
+                  </AuthModalProvider>
+                </ConfirmProvider>
               </AuthProvider>
             </CurrencyProvider>
           </I18nProvider>
