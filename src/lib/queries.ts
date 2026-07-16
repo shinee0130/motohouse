@@ -42,6 +42,8 @@ function mapOrder(r: any): Order {
     paymentStatus: r.payment_status ?? undefined,
     shipCountry: r.ship_country ?? undefined, shipName: r.ship_name ?? undefined,
     shipPhone: r.ship_phone ?? undefined, shipAddress: r.ship_address ?? undefined,
+    countryCode: r.country_code ?? undefined, deliveryMethod: r.delivery_method ?? undefined,
+    trackingNumber: r.tracking_number ?? undefined,
   };
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */

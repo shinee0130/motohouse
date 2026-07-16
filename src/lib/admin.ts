@@ -89,6 +89,11 @@ export async function deleteEvent(id: number) {
 }
 
 // ===== Orders =====
+export async function updateOrderTracking(id: string, trackingNumber: string) {
+  const { error } = await supabase.from("orders").update({ tracking_number: trackingNumber.trim() || null }).eq("id", id);
+  if (error) throw error;
+}
+
 export async function updateOrderStatus(id: string, status: string) {
   const { error } = await supabase.from("orders").update({ status }).eq("id", id);
   if (error) throw error;

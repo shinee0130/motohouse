@@ -4,11 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import { sx } from "@/lib/sx";
 import { Select } from "@/components/Select";
 import { fmt } from "@/lib/data";
-import { orderBadge, paymentBadge, paymentLabel, type Order } from "@/lib/account";
+import { orderBadge, paymentBadge, paymentLabel, isInternational, type Order } from "@/lib/account";
 import { getOrders } from "@/lib/queries";
-import { updateOrderStatus } from "@/lib/admin";
+import { updateOrderStatus, updateOrderTracking } from "@/lib/admin";
 
-const STATUSES: Order["status"][] = ["Хүлээгдэж буй", "Баталгаажсан", "Хүргэгдсэн", "Цуцлагдсан"];
+const STATUSES: Order["status"][] = ["Хүлээгдэж буй", "Баталгаажсан", "Хүргэлтэнд гарсан", "Хүргэгдсэн", "Цуцлагдсан"];
 type Filter = "all" | "undelivered" | "delivered";
 const FILTERS: { key: Filter; label: string }[] = [
   { key: "all", label: "Бүгд" },
@@ -36,6 +36,11 @@ export default function AdminOrders() {
     await updateOrderStatus(id, status);
   }
   async function markDelivered(id: string) { await changeStatus(id, "Хүргэгдсэн"); }
+
+  async function saveTracking(id: string, v: string) {
+    setList((l) => l.map((o) => (o.id === id ? { ...o, trackingNumber: v } : o)));
+    await updateOrderTracking(id, v);
+  }
 
   const shown = useMemo(() => {
     let l = list;
@@ -97,9 +102,20 @@ export default function AdminOrders() {
                 <div style={sx("font:400 11px 'JetBrains Mono';color:#6b7280;margin-top:4px;")}>{o.id} · {o.date} · {o.qty}ш</div>
                 {o.shipCountry && (
                   <div style={sx("margin-top:8px;background:#0B0B0D;border:1px solid #262626;border-radius:9px;padding:8px 10px;max-width:340px;")}>
-                    <div style={sx("font:700 10px 'JetBrains Mono';letter-spacing:.1em;color:#E10613;")}>🚚 ХҮРГЭЛТ · {o.shipCountry}</div>
+                    <div style={sx("font:700 10px 'JetBrains Mono';letter-spacing:.1em;color:#E10613;")}>
+                      {o.deliveryMethod === "pickup" ? "🏬 ОЧИЖ АВНА" : `🚚 ХҮРГЭЛТ · ${o.shipCountry}`}{isInternational(o) ? " · ГАДААД" : ""}
+                    </div>
                     <div style={sx("font:600 12px Roboto;color:#C8C8C8;margin-top:4px;")}>{o.shipName}{o.shipPhone ? ` · ${o.shipPhone}` : ""}</div>
                     {o.shipAddress && <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:2px;white-space:pre-wrap;")}>{o.shipAddress}</div>}
+                    {/* Гадаад захиалгад тээврийн код — хэрэглэгчийн timeline дээр харагдана */}
+                    {isInternational(o) && (
+                      <input
+                        defaultValue={o.trackingNumber || ""}
+                        placeholder="Тээврийн код (DHL/EMS…)"
+                        onBlur={(e) => { if (e.target.value !== (o.trackingNumber || "")) saveTracking(o.id, e.target.value); }}
+                        style={sx("width:100%;margin-top:7px;background:#050505;border:1px solid #2a2a2d;border-radius:7px;padding:7px 9px;color:#60a5fa;font:600 12px 'JetBrains Mono';outline:none;")}
+                      />
+                    )}
                   </div>
                 )}
               </div>
