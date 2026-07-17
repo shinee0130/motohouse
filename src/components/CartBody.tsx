@@ -29,10 +29,10 @@ import { OrderSummary } from "@/components/checkout/OrderSummary";
 
 // Bonum терминал дээр бодитоор идэвхтэй хэрэгслүүд (QPAY + E_COMMERCE картын суваг)
 const PAYMENT_METHODS = [
-  { name: "QPay", src: "/assets/payments/qpay.png", width: 26 },
-  { name: "SocialPay", src: "/assets/payments/socialpay.png", width: 76 },
-  { name: "Visa", src: "/assets/payments/visa.png", width: 34 },
-  { name: "Mastercard", src: "/assets/payments/mastercard.png", width: 54 },
+  { name: "QPay", src: "/assets/payments/qpay.png", width: 34 },
+  { name: "SocialPay", src: "/assets/payments/socialpay.png", width: 102 },
+  { name: "Visa", src: "/assets/payments/visa.png", width: 52 },
+  { name: "Mastercard", src: "/assets/payments/mastercard.png", width: 94 },
 ];
 
 export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
@@ -291,9 +291,9 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
       {/* Төлбөрийн боломжууд */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", opacity: 0.75 }}>
         {PAYMENT_METHODS.map((m) => (
-          <span key={m.name} title={m.name} style={sx("height:30px;min-width:42px;display:flex;align-items:center;justify-content:center;padding:4px 7px;")}>
+          <span key={m.name} title={m.name} style={sx(`height:36px;min-width:${m.name === "Mastercard" ? 106 : 52}px;display:flex;align-items:center;justify-content:center;padding:4px 7px;background:${m.name === "Mastercard" ? "#fff" : "transparent"};border-radius:4px;`)}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={m.src} alt={m.name} style={{ width: m.width, height: 20, objectFit: "contain", display: "block" }} />
+            <img src={m.src} alt={m.name} style={{ width: m.width, height: 28, objectFit: "contain", display: "block" }} />
           </span>
         ))}
       </div>
