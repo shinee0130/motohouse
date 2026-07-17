@@ -139,7 +139,7 @@ export function MotorcyclesClient({ motos, initialBrand }: { motos: Moto[]; init
       onClear={clearAll}
       activeCount={activeCount}
     >
-      <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px;")}>
+      <div className="mh-moto-grid">
         {list.map((m) => (
           <MotoCard key={m.id} m={m} showCc />
         ))}

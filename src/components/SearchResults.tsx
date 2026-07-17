@@ -51,7 +51,7 @@ export function SearchResults({ q, gear, motos }: { q: string; gear: GearItem[];
       {foundMotos.length > 0 && (
         <section style={{ marginTop: 34 }}>
           <h2 style={sx("font:800 18px Montserrat;color:#fff;text-transform:uppercase;margin-bottom:16px;")}>{t("Мотоцикл")} ({foundMotos.length})</h2>
-          <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;")}>
+          <div className="mh-prod-grid">
             {foundMotos.map((m) => (
               <Link key={m.id} href={`/motorcycles/${m.id}`} style={sx("display:block;background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;cursor:pointer;")}>
                 <div style={sx("aspect-ratio:4/3;background:#fff;position:relative;")}>
@@ -76,7 +76,7 @@ export function SearchResults({ q, gear, motos }: { q: string; gear: GearItem[];
       {foundGear.length > 0 && (
         <section style={{ marginTop: 34 }}>
           <h2 style={sx("font:800 18px Montserrat;color:#fff;text-transform:uppercase;margin-bottom:16px;")}>{t("Бараа, сэлбэг")} ({foundGear.length})</h2>
-          <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;")}>
+          <div className="mh-prod-grid">
             {foundGear.map((g) => (
               <Link key={g.id} href={`${isPart(g) ? "/parts" : "/gear"}/${g.id}`} style={sx("display:block;background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;cursor:pointer;")}>
                 <div style={sx("aspect-ratio:1/1;background:#fff;position:relative;")}>

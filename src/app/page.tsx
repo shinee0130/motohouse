@@ -59,7 +59,7 @@ export default async function HomePage() {
       const sale = g.oldPrice > g.price ? Math.round((1 - g.price / g.oldPrice) * 100) : 0;
       return (
         <Link key={g.id} href={`${baseHref}/${g.id}`} className="mh-card" style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;cursor:pointer;")}>
-          <div style={{ position: "relative", height: 190, background: "#fff" }}>
+          <div className="mh-card-img" style={{ position: "relative", height: 190, background: "#fff" }}>
             {g.images && g.images[0] ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
@@ -72,16 +72,16 @@ export default async function HomePage() {
               </span>
             )}
           </div>
-          <div style={{ padding: "14px 16px" }}>
+          <div className="mh-card-pad" style={{ padding: "14px 16px" }}>
             <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>
               {g.brand.toUpperCase()} · <T>{g.category}</T>
             </div>
-            <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:4px;")}><Loc mn={g.name} en={g.nameEn} /></div>
+            <div className="mh-card-title" style={sx("font:700 15px Montserrat;color:#fff;margin-top:4px;")}><Loc mn={g.name} en={g.nameEn} /></div>
             <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 10 }}>
               {g.oldPrice > g.price && (
                 <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={g.oldPrice} /></span>
               )}
-              <span style={sx("font:800 16px Montserrat;color:#fff;")}><Price amount={g.price} /></span>
+              <span className="mh-card-price" style={sx("font:800 16px Montserrat;color:#fff;")}><Price amount={g.price} /></span>
             </div>
           </div>
         </Link>
@@ -206,7 +206,7 @@ export default async function HomePage() {
           </div>
           <Link href="/motorcycles" style={sx(SEE_ALL)}><T>Бүгдийг →</T></Link>
         </div>
-        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:24px;")}>
+        <div className="mh-moto-grid" style={{ marginTop: 24 }}>
           {featured.map((m) => (
             <MotoCard key={m.id} m={m} />
           ))}
@@ -260,7 +260,7 @@ export default async function HomePage() {
           </div>
           <Link href="/gear" style={sx(SEE_ALL)}><T>Бүгдийг →</T></Link>
         </div>
-        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;margin-top:24px;")}>
+        <div className="mh-prod-grid" style={{ marginTop: 24 }}>
           {renderProductCards(bestGear, "/gear")}
         </div>
       </div>
@@ -273,7 +273,7 @@ export default async function HomePage() {
           </div>
           <Link href="/parts" style={sx(SEE_ALL)}><T>Бүгдийг →</T></Link>
         </div>
-        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;margin-top:24px;")}>
+        <div className="mh-prod-grid" style={{ marginTop: 24 }}>
           {renderProductCards(bestParts, "/parts")}
         </div>
       </div>

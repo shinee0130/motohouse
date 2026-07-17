@@ -148,7 +148,7 @@ export function GearClient({
       onClear={clearAll}
       activeCount={activeCount}
     >
-      <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px;")}>
+      <div className="mh-prod-grid">
         {list.map((g) => {
           const sale = g.oldPrice > g.price ? Math.round((1 - g.price / g.oldPrice) * 100) : 0;
           return (
@@ -158,7 +158,7 @@ export function GearClient({
               className="mh-card"
               style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;cursor:pointer;")}
             >
-              <div style={{ position: "relative", height: 190, background: "#fff" }}>
+              <div className="mh-card-img" style={{ position: "relative", height: 190, background: "#fff" }}>
                 {g.images && g.images[0] ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
@@ -176,11 +176,11 @@ export function GearClient({
                   </span>
                 )}
               </div>
-              <div style={{ padding: "13px 15px 15px" }}>
+              <div className="mh-card-pad" style={{ padding: "13px 15px 15px" }}>
                 <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>
                   {g.brand.toUpperCase()} · {t(g.category)}
                 </div>
-                <div style={sx("font:700 14px Montserrat;color:#fff;margin-top:4px;")}>{loc(g.name, g.nameEn)}</div>
+                <div className="mh-card-title" style={sx("font:700 14px Montserrat;color:#fff;margin-top:4px;")}>{loc(g.name, g.nameEn)}</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6 }}>
                   <span style={sx("font:700 12px Montserrat;letter-spacing:.08em;color:#E10613;")}>{"★★★★★".slice(0, g.rating)}</span>
                   {g.reviews > 0 && <span style={sx("font:400 11px Roboto;color:#6b7280;")}>({g.reviews})</span>}
@@ -189,7 +189,7 @@ export function GearClient({
                   {g.oldPrice > g.price && (
                     <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={g.oldPrice} /></span>
                   )}
-                  <span style={sx("font:800 16px Montserrat;color:#fff;")}><Price amount={g.price} /></span>
+                  <span className="mh-card-price" style={sx("font:800 16px Montserrat;color:#fff;")}><Price amount={g.price} /></span>
                 </div>
               </div>
             </Link>

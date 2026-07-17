@@ -296,7 +296,7 @@ export function GearDetail({
       {related.length > 0 && (
         <div style={{ marginTop: "clamp(40px,6vw,64px)" }}>
           <h2 style={sx("font:800 20px Montserrat;color:#fff;text-transform:uppercase;")}>{t("Хамт авах")}</h2>
-          <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;margin-top:18px;")}>
+          <div className="mh-prod-grid" style={{ marginTop: 18 }}>
             {related.map((g) => (
               <GearMini key={g.id} g={g} baseHref={baseHref} />
             ))}
@@ -308,7 +308,7 @@ export function GearDetail({
       {more.length > 0 && (
         <div style={{ marginTop: "clamp(36px,5vw,56px)" }}>
           <h2 style={sx("font:800 20px Montserrat;color:#fff;text-transform:uppercase;")}>{t("Танд таалагдаж магадгүй")}</h2>
-          <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px;margin-top:18px;")}>
+          <div className="mh-prod-grid" style={{ marginTop: 18 }}>
             {more.map((g) => (
               <GearMini key={g.id} g={g} baseHref={baseHref} />
             ))}
@@ -327,7 +327,7 @@ function GearMini({ g, baseHref }: { g: GearItem; baseHref: "/gear" | "/parts" }
       className="mh-card"
       style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;cursor:pointer;")}
     >
-      <div style={{ position: "relative", height: 170, background: "#fff" }}>
+      <div className="mh-card-img" style={{ position: "relative", height: 170, background: "#fff" }}>
         {g.images && g.images[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
@@ -335,10 +335,10 @@ function GearMini({ g, baseHref }: { g: GearItem; baseHref: "/gear" | "/parts" }
           <Slot label={t("Зураг")} light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
         )}
       </div>
-      <div style={{ padding: "13px 15px" }}>
+      <div className="mh-card-pad" style={{ padding: "13px 15px" }}>
         <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>{g.brand.toUpperCase()}</div>
-        <div style={sx("font:700 14px Montserrat;color:#fff;margin-top:3px;")}>{loc(g.name, g.nameEn)}</div>
-        <div style={sx("font:800 14px Montserrat;color:#fff;margin-top:8px;")}><Price amount={g.price} /></div>
+        <div className="mh-card-title" style={sx("font:700 14px Montserrat;color:#fff;margin-top:3px;")}>{loc(g.name, g.nameEn)}</div>
+        <div className="mh-card-price" style={sx("font:800 14px Montserrat;color:#fff;margin-top:8px;")}><Price amount={g.price} /></div>
       </div>
     </Link>
   );
