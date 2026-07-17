@@ -90,40 +90,46 @@ export default async function HomePage() {
 
   return (
     <div style={{ animation: "mhfade .5s both" }}>
-      {/* ===== HERO ===== */}
-      <div style={sx("position:relative;overflow:hidden;border-bottom:1px solid #1c1c1f;")}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={heroImg}
-          alt=""
-          style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;")}
-        />
-        <div
-          style={sx(
-            "position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(5,5,5,.72),rgba(5,5,5,.32) 45%,rgba(5,5,5,0) 75%),radial-gradient(70% 120% at 88% 12%,rgba(225,6,19,.18),transparent 55%);",
-          )}
-        />
-        <div style={sx(`position:relative;${WRAP}padding-top:clamp(64px,10vw,128px);padding-bottom:clamp(64px,10vw,128px);pointer-events:none;`)}>
-          <h1 style={sx("font:900 clamp(46px,8vw,96px)/0.92 Montserrat;letter-spacing:-.01em;color:#fff;text-transform:uppercase;")}>
+      {/* ===== HERO — зураг бүтнээр (aspect-ratio), desktop дээр текст давхарлана,
+           mobile дээр текст зургийн доор ордог ===== */}
+      <section className="mh-hero" style={sx("position:relative;border-bottom:1px solid #1c1c1f;background:#050505;")}>
+        {/* зураг — өөрийн харьцаагаар бүтнээр (cover ба ижил харьцаа тул тайрагдахгүй) */}
+        <div className="mh-hero-media" style={{ position: "relative", width: "100%" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={heroImg}
+            alt=""
+            style={sx("display:block;width:100%;height:100%;object-fit:cover;object-position:center;")}
+          />
+          <div
+            className="mh-hero-scrim"
+            style={sx(
+              "position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(5,5,5,.72),rgba(5,5,5,.32) 45%,rgba(5,5,5,0) 75%),radial-gradient(70% 120% at 88% 12%,rgba(225,6,19,.18),transparent 55%);",
+            )}
+          />
+        </div>
+        {/* контент — desktop overlay / mobile доор */}
+        <div className="mh-hero-content" style={sx(`${WRAP}`)}>
+          <h1 style={sx("font:900 clamp(40px,7vw,96px)/0.92 Montserrat;letter-spacing:-.01em;color:#fff;text-transform:uppercase;")}>
             Ride
             <br />
             Power
             <br />
             <span style={{ color: "#E10613" }}>Live</span>
           </h1>
-          <p style={sx("font:400 clamp(15px,2vw,19px)/1.6 Roboto;color:#C8C8C8;max-width:520px;margin-top:24px;")}>
+          <p style={sx("font:400 clamp(14px,2vw,19px)/1.6 Roboto;color:#C8C8C8;max-width:520px;margin-top:20px;")}>
             <T>Монголд суурилсан MOTO HOUSE нь мотоцикл, хамгаалалтын хэрэгсэл, сэлбэг, засвар үйлчилгээ болон гадаад захиалгын нийлүүлэлтийг нэг дор холбодог платформ.</T>
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginTop: 36 }}>
-            <Link href="/motorcycles" style={sx("background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px 28px;border-radius:10px;text-transform:uppercase;cursor:pointer;pointer-events:auto;")}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 28 }}>
+            <Link href="/motorcycles" style={sx("background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px 28px;border-radius:10px;text-transform:uppercase;cursor:pointer;")}>
               <T>Мотоцикл үзэх</T>
             </Link>
-            <Link href="/gear" style={sx("border:1px solid #444;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px 28px;border-radius:10px;text-transform:uppercase;cursor:pointer;pointer-events:auto;")}>
+            <Link href="/gear" style={sx("border:1px solid #444;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px 28px;border-radius:10px;text-transform:uppercase;cursor:pointer;")}>
               <T>Гадаад захиалгын бараа үзэх</T>
             </Link>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* ===== SHOP BY CATEGORY ===== */}
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>

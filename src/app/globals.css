@@ -187,6 +187,32 @@ a {
   }
 }
 
+/* HERO — зураг өөрийн харьцаагаар (16:9) бүтнээр харагдана.
+   Desktop: текст зураг дээр давхарлана. Mobile: зураг банер + текст доор нь. */
+.mh-hero-media {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+/* Default (desktop): текст зураг дээр давхарлана */
+.mh-hero-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+/* Mobile: зураг банер + текст доор нь (overlay-г болиулна) */
+@media (max-width: 768px) {
+  .mh-hero-scrim {
+    display: none;
+  }
+  .mh-hero-content {
+    position: static;
+    padding-top: 26px;
+    padding-bottom: 34px;
+  }
+}
+
 /* Барааны grid — RevZilla шиг утсан дээр 2 багана, компакт карт */
 .mh-prod-grid {
   display: grid;
