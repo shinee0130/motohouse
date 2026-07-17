@@ -3,7 +3,7 @@
 // Бараа/сэлбэгийн жагсаалт — RevZilla маягийн sidebar шүүлтүүртэй (олон сонголт,
 // тоотой), эрэмбэлэлт, хямдралын шүүлт. /gear болон /parts 2ул ашиглана.
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { Slot } from "@/components/Slot";
@@ -12,6 +12,7 @@ import { GENDERS, type GearItem } from "@/lib/data";
 import { Price } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
 import { ListingShell, FilterGroup, CheckRow } from "@/components/ListingShell";
+import { addToCart, CART_EVENT, getCart, setCartQty } from "@/lib/cart";
 
 type SortKey = "featured" | "priceAsc" | "priceDesc" | "sale";
 
@@ -27,6 +28,54 @@ function toggleSet(s: Set<string>, v: string): Set<string> {
   const n = new Set(s);
   if (n.has(v)) n.delete(v); else n.add(v);
   return n;
+}
+
+function GearCartControl({
+  id, name, price, image, t,
+}: { id: number; name: string; price: number; image?: string; t: (text: string) => string }) {
+  const [qty, setQty] = useState(0);
+
+  useEffect(() => {
+    const sync = () => setQty(getCart().find((item) => item.id === id && item.meta === undefined)?.qty ?? 0);
+    const initial = window.setTimeout(sync, 0);
+    window.addEventListener(CART_EVENT, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.clearTimeout(initial);
+      window.removeEventListener(CART_EVENT, sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, [id]);
+
+  function add() {
+    addToCart({ id, name, price, image });
+  }
+
+  function change(next: number) {
+    setCartQty(id, undefined, next);
+  }
+
+  if (!qty) {
+    return (
+      <button
+        type="button"
+        className="mh-card-cart"
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); add(); }}
+        aria-label={`${t("Сагслах")}: ${name}`}
+        style={sx("width:100%;margin-top:11px;background:#E10613;border:none;border-radius:8px;color:#fff;font:700 11px Montserrat;letter-spacing:.04em;padding:10px 8px;cursor:pointer;text-transform:uppercase;")}
+      >
+        🛒 {t("Сагслах")}
+      </button>
+    );
+  }
+
+  return (
+    <div className="mh-card-cart" style={sx("display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:11px;background:#0B0B0D;border:1px solid #333;border-radius:8px;padding:3px;")}>
+      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); change(qty - 1); }} aria-label="−" style={sx("width:30px;height:30px;border:none;border-radius:6px;background:#1b1b1e;color:#fff;font:700 16px Montserrat;cursor:pointer;")}>−</button>
+      <span style={sx("font:800 13px Montserrat;color:#fff;min-width:22px;text-align:center;")}>{qty}</span>
+      <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); change(qty + 1); }} aria-label="+" style={sx("width:30px;height:30px;border:none;border-radius:6px;background:#E10613;color:#fff;font:700 16px Montserrat;cursor:pointer;")}>+</button>
+    </div>
+  );
 }
 
 export function GearClient({
@@ -190,6 +239,7 @@ export function GearClient({
                   )}
                   <span className="mh-card-price" style={sx("font:800 16px Montserrat;color:#fff;")}><Price amount={g.price} /></span>
                 </div>
+                <GearCartControl id={g.id} name={loc(g.name, g.nameEn)} price={g.price} image={g.images?.[0]} t={t} />
               </div>
             </Link>
           );
