@@ -9,7 +9,7 @@ import { sx } from "@/lib/sx";
 import { useAuth } from "@/lib/auth";
 import { useAuthModal } from "@/lib/authModal";
 import { getSavedIds } from "@/lib/queries";
-import { createOrder, setSaved } from "@/lib/admin";
+import { createOrderRequest, setSaved } from "@/lib/admin";
 import { useI18n } from "@/lib/i18n";
 
 export function MotoActions({ id, name, price }: { id: number; name: string; price: number }) {
@@ -17,7 +17,7 @@ export function MotoActions({ id, name, price }: { id: number; name: string; pri
   const { t } = useI18n();
   const authModal = useAuthModal();
   const [saved, setSavedState] = useState(false);
-  const [orderId, setOrderId] = useState<string | null>(null);
+  const [requestId, setRequestId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -34,8 +34,20 @@ export function MotoActions({ id, name, price }: { id: number; name: string; pri
     if (!user) { authModal.open("login"); return; }
     setBusy(true);
     try {
-      const oid = await createOrder({ userPhone: user.phone, item: name, total: price });
-      setOrderId(oid);
+      const detail = [
+        `Мотоцикл: ${name}`,
+        `Үнэ: ${price.toLocaleString("en-US")}₮`,
+        user.email ? `И-мэйл: ${user.email}` : "",
+        "Хэрэглэгч энэ мотоциклийг сонирхож байна. Нөхцөл болон дэлгэрэнгүй мэдээллээр эргэж холбогдоно уу.",
+      ].filter(Boolean).join("\n");
+      const rid = await createOrderRequest({
+        userPhone: user.phone,
+        name: user.name,
+        phone: user.phone,
+        category: "Мотоцикл",
+        detail,
+      });
+      setRequestId(rid);
     } finally { setBusy(false); }
   }
 
@@ -44,10 +56,10 @@ export function MotoActions({ id, name, price }: { id: number; name: string; pri
       <div style={{ marginTop: 22 }}>
         <button
           onClick={order}
-          disabled={busy}
+          disabled={busy || !!requestId}
           style={sx(`width:100%;background:#E10613;color:#fff;font:700 15px Montserrat;letter-spacing:.04em;padding:17px;border:none;border-radius:12px;text-transform:uppercase;cursor:pointer;${busy ? "opacity:.6;" : ""}`)}
         >
-          {busy ? t("Илгээж байна…") : user ? t("Сонирхож байна") : t("Нэвтэрч захиалах")}
+          {requestId ? t("Хүсэлт илгээгдлээ!") : busy ? t("Илгээж байна…") : user ? t("Сонирхож байна") : t("Нэвтэрч захиалах")}
         </button>
         <button
           onClick={toggleSave}
@@ -56,9 +68,9 @@ export function MotoActions({ id, name, price }: { id: number; name: string; pri
           {saved ? `♥ ${t("Хадгалсан")}` : `♡ ${t("Хадгалах")}`}
         </button>
       </div>
-      {orderId && (
+      {requestId && (
         <div style={sx("font:500 13px Roboto;color:#22c55e;margin-top:12px;")}>
-          ✓ {t("Хүсэлт илгээгдлээ — бид тантай удахгүй холбогдоно.")} <Link href="/account/orders" style={{ color: "#22c55e", textDecoration: "underline" }}>{t("Миний захиалга")}</Link>
+          ✓ {t("Хүсэлт илгээгдлээ — бид тантай удахгүй холбогдоно.")} <Link href="/account/requests" style={{ color: "#22c55e", textDecoration: "underline" }}>{t("Миний хүсэлтүүд")}</Link>
         </div>
       )}
 

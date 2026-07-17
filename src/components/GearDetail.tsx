@@ -15,7 +15,12 @@ import { addToCart } from "@/lib/cart";
 import { useI18n } from "@/lib/i18n";
 
 // Bonum терминал дээр бодитоор идэвхтэй хэрэгслүүд (QPAY + E_COMMERCE картын суваг)
-const PAYMENT_METHODS = ["QPay", "SocialPay", "Visa", "Mastercard"];
+const PAYMENT_METHODS = [
+  { name: "QPay", src: "/assets/payments/qpay.png", width: 34 },
+  { name: "SocialPay", src: "/assets/payments/socialpay.png", width: 92 },
+  { name: "Visa", src: "/assets/payments/visa.png", width: 48 },
+  { name: "Mastercard", src: "/assets/payments/mastercard.png", width: 82 },
+];
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -256,8 +261,9 @@ export function GearDetail({
             ))}
             <div style={{ display: "flex", flexWrap: "wrap", gap: 7, padding: "10px 0" }}>
               {PAYMENT_METHODS.map((method) => (
-                <span key={method} style={sx("font:700 10px Montserrat;color:#C8C8C8;border:1px solid #333;background:#111113;border-radius:999px;padding:5px 9px;")}>
-                  {method}
+                <span key={method.name} title={method.name} style={sx(`height:34px;min-width:${method.name === "SocialPay" ? 106 : method.name === "Mastercard" ? 94 : method.name === "QPay" ? 48 : 62}px;display:flex;align-items:center;justify-content:center;padding:3px 7px;background:#fff;border-radius:5px;`)}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={method.src} alt={method.name} style={{ width: method.width, height: 27, objectFit: "contain", display: "block" }} />
                 </span>
               ))}
             </div>
