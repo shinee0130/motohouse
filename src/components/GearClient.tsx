@@ -1,156 +1,218 @@
 "use client";
 
+// Бараа/сэлбэгийн жагсаалт — RevZilla маягийн sidebar шүүлтүүртэй (олон сонголт,
+// тоотой), эрэмбэлэлт, хямдралын шүүлт. /gear болон /parts 2ул ашиглана.
+
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/sx";
 import { Slot } from "@/components/Slot";
+import { Select } from "@/components/Select";
 import { GENDERS, type GearItem } from "@/lib/data";
 import { Price } from "@/lib/currency";
 import { useI18n } from "@/lib/i18n";
+import { ListingShell, FilterGroup, CheckRow } from "@/components/ListingShell";
 
-function chip(active: boolean): string {
-  const base =
-    "cursor:pointer;font:600 13px Montserrat;letter-spacing:.03em;padding:9px 16px;border-radius:999px;user-select:none;";
-  return active
-    ? base + "background:#E10613;color:#fff;border:1px solid #E10613;"
-    : base + "background:#111113;color:#A3A3A3;border:1px solid #262626;";
+type SortKey = "featured" | "priceAsc" | "priceDesc" | "sale";
+
+// Үнийн мужууд (MNT) — label нь dict-д орчуулгатай
+const PRICE_RANGES: { key: string; label: string; min: number; max: number }[] = [
+  { key: "p1", label: "₮200,000 хүртэл", min: 0, max: 200_000 },
+  { key: "p2", label: "₮200,000 – ₮500,000", min: 200_000, max: 500_000 },
+  { key: "p3", label: "₮500,000 – ₮1,000,000", min: 500_000, max: 1_000_000 },
+  { key: "p4", label: "₮1,000,000-аас дээш", min: 1_000_000, max: Infinity },
+];
+
+function toggleSet(s: Set<string>, v: string): Set<string> {
+  const n = new Set(s);
+  if (n.has(v)) n.delete(v); else n.add(v);
+  return n;
 }
 
 export function GearClient({
   gear,
-  label = "GEAR · PARTS",
   title = "Хэрэгсэл ба сэлбэг",
-  desc = "Каск, хувцас, хамгаалалт болон сэлбэгийг ангиллаар нь хурдан сонгоорой.",
   baseHref = "/gear",
   initialGender = "all",
   initialBrand = "all",
   initialCat = "All",
 }: {
   gear: GearItem[];
-  label?: string;
+  label?: string; // хуучин prop — ашиглагдахаа больсон (устгаагүй нь call site-уудыг эвдэхгүйн тулд)
   title?: string;
-  desc?: string;
+  desc?: string;  // мөн адил
   baseHref?: "/gear" | "/parts";
   initialGender?: string;
   initialBrand?: string;
   initialCat?: string;
 }) {
   const { t, loc } = useI18n();
-  const [cat, setCat] = useState(initialCat);
-  const [gender, setGender] = useState(initialGender);
-  const [brand, setBrand] = useState(initialBrand);
-  const cats = useMemo(() => {
-    const c = ["All", ...Array.from(new Set(gear.map((g) => g.category)))];
-    if (initialCat !== "All" && !c.includes(initialCat)) c.push(initialCat);
-    return c;
-  }, [gear, initialCat]);
-  // Брэндүүд — өгөгдлөөс + initialBrand (жиш постероос X-Pro) чипээр харагдана
-  const brands = useMemo(() => {
-    const b = Array.from(new Set(gear.map((g) => g.brand).filter(Boolean))).sort();
-    if (initialBrand !== "all" && !b.includes(initialBrand)) b.unshift(initialBrand);
-    return b;
-  }, [gear, initialBrand]);
-  // "Хэнд зориулсан" шүүлт нь эмэгтэй/эрэгтэй тэмдэглэсэн бараа байвал л харагдана
+  const [cats, setCats] = useState<Set<string>>(() => (initialCat !== "All" ? new Set([initialCat]) : new Set()));
+  const [brands, setBrands] = useState<Set<string>>(() => (initialBrand !== "all" ? new Set([initialBrand]) : new Set()));
+  const [genders, setGenders] = useState<Set<string>>(() => (initialGender !== "all" ? new Set([initialGender]) : new Set()));
+  const [price, setPrice] = useState<string | null>(null);
+  const [saleOnly, setSaleOnly] = useState(false);
+  const [sort, setSort] = useState<SortKey>("featured");
+
+  const allCats = useMemo(() => Array.from(new Set(gear.map((g) => g.category))), [gear]);
+  const allBrands = useMemo(() => Array.from(new Set(gear.map((g) => g.brand).filter(Boolean))).sort(), [gear]);
   const hasGendered = useMemo(() => gear.some((g) => g.gender === "women" || g.gender === "men"), [gear]);
-  const byGender = gender === "all" ? gear : gear.filter((g) => g.gender === gender);
-  const byBrand = brand === "all" ? byGender : byGender.filter((g) => g.brand === brand);
-  const list = cat === "All" ? byBrand : byBrand.filter((g) => g.category === cat);
+
+  // Нэг бүлгээс бусад шүүлтүүрээр шүүх (тоо нь контекстээ дагаж өөрчлөгдөнө)
+  const applyFilters = useMemo(() => {
+    return (items: GearItem[], skip?: "cat" | "brand" | "gender" | "price" | "sale") => {
+      let l = items;
+      if (skip !== "cat" && cats.size) l = l.filter((g) => cats.has(g.category));
+      if (skip !== "brand" && brands.size) l = l.filter((g) => brands.has(g.brand));
+      if (skip !== "gender" && genders.size) l = l.filter((g) => genders.has(g.gender ?? "unisex"));
+      if (skip !== "price" && price) {
+        const r = PRICE_RANGES.find((x) => x.key === price)!;
+        l = l.filter((g) => g.price >= r.min && g.price < r.max);
+      }
+      if (skip !== "sale" && saleOnly) l = l.filter((g) => g.oldPrice > g.price);
+      return l;
+    };
+  }, [cats, brands, genders, price, saleOnly]);
+
+  const list = useMemo(() => {
+    const l = applyFilters(gear).slice();
+    if (sort === "priceAsc") l.sort((a, b) => a.price - b.price);
+    else if (sort === "priceDesc") l.sort((a, b) => b.price - a.price);
+    else if (sort === "sale") l.sort((a, b) => (b.oldPrice > b.price ? 1 : 0) - (a.oldPrice > a.price ? 1 : 0));
+    else l.sort((a, b) => (b.bestSeller ? 1 : 0) - (a.bestSeller ? 1 : 0));
+    return l;
+  }, [gear, applyFilters, sort]);
+
+  const activeCount = cats.size + brands.size + genders.size + (price ? 1 : 0) + (saleOnly ? 1 : 0);
+  const clearAll = () => { setCats(new Set()); setBrands(new Set()); setGenders(new Set()); setPrice(null); setSaleOnly(false); };
+
+  const countBy = (skip: "cat" | "brand" | "gender" | "price" | "sale", pred: (g: GearItem) => boolean) =>
+    applyFilters(gear, skip).filter(pred).length;
+
+  const sidebar = (
+    <>
+      <FilterGroup title={t("Ангилал")}>
+        {allCats.map((c) => (
+          <CheckRow key={c} label={t(c)} count={countBy("cat", (g) => g.category === c)} checked={cats.has(c)} onToggle={() => setCats((s) => toggleSet(s, c))} />
+        ))}
+      </FilterGroup>
+      {allBrands.length > 1 && (
+        <FilterGroup title={t("Брэнд")}>
+          {allBrands.map((b) => (
+            <CheckRow key={b} label={b} count={countBy("brand", (g) => g.brand === b)} checked={brands.has(b)} onToggle={() => setBrands((s) => toggleSet(s, b))} />
+          ))}
+        </FilterGroup>
+      )}
+      {hasGendered && (
+        <FilterGroup title={t("Хэнд зориулсан")}>
+          {GENDERS.map((g) => (
+            <CheckRow key={g.v} label={t(g.mn)} count={countBy("gender", (x) => (x.gender ?? "unisex") === g.v)} checked={genders.has(g.v)} onToggle={() => setGenders((s) => toggleSet(s, g.v))} />
+          ))}
+        </FilterGroup>
+      )}
+      <FilterGroup title={t("Үнэ")}>
+        {PRICE_RANGES.map((r) => (
+          <CheckRow key={r.key} label={t(r.label)} count={countBy("price", (g) => g.price >= r.min && g.price < r.max)} checked={price === r.key} onToggle={() => setPrice((p) => (p === r.key ? null : r.key))} />
+        ))}
+      </FilterGroup>
+      <FilterGroup title={t("Хямдрал")}>
+        <CheckRow label={t("Зөвхөн хямдралтай")} count={countBy("sale", (g) => g.oldPrice > g.price)} checked={saleOnly} onToggle={() => setSaleOnly((v) => !v)} />
+      </FilterGroup>
+    </>
+  );
+
+  const toolbar = (
+    <div style={{ minWidth: 190 }}>
+      <Select
+        value={sort}
+        onChange={(v) => setSort(v as SortKey)}
+        ariaLabel={t("Эрэмбэлэх")}
+        full
+        options={[
+          { value: "featured", label: t("Онцлох эхэндээ") },
+          { value: "priceAsc", label: t("Үнэ: өсөхөөр") },
+          { value: "priceDesc", label: t("Үнэ: буурахаар") },
+          { value: "sale", label: t("Хямдралтай эхэндээ") },
+        ]}
+      />
+    </div>
+  );
 
   return (
-    <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(32px,5vw,56px) clamp(20px,4vw,40px);")}>
-      <div style={{ animation: "mhfade .5s both" }}>
-        <h1 style={sx("font:800 clamp(30px,5vw,46px) Montserrat;color:#fff;margin-top:6px;text-transform:uppercase;")}>
-          {t(title)}
-        </h1>
-        <p style={sx("font:400 15px Roboto;color:#8A8F98;margin-top:8px;max-width:620px;")}>
-          {t(desc)}
-        </p>
-
-        {/* Хэнд зориулсан шүүлт (эмэгтэй/эрэгтэй бараа байвал л) */}
-        {hasGendered && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 18 }}>
-            <span onClick={() => setGender("all")} style={sx(chip(gender === "all"))}>{t("Бүгд")}</span>
-            {GENDERS.filter((g) => g.v !== "unisex").map((g) => (
-              <span key={g.v} onClick={() => setGender(g.v)} style={sx(chip(gender === g.v))}>{t(g.mn)}</span>
-            ))}
-          </div>
-        )}
-
-        {/* Брэнд шүүлт */}
-        {brands.length > 1 && (
-          <div style={{ marginTop: 16 }}>
-            <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.14em;color:#6b7280;margin-bottom:8px;")}>{t("Брэнд")}</div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-              <span onClick={() => setBrand("all")} style={sx(chip(brand === "all"))}>{t("Бүх брэнд")}</span>
-              {brands.map((b) => (
-                <span key={b} onClick={() => setBrand(b)} style={sx(chip(brand === b))}>{b}</span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Ангилал шүүлт */}
-        <div style={{ marginTop: 16 }}>
-          <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.14em;color:#6b7280;margin-bottom:8px;")}>{t("Ангилал")}</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-            {cats.map((c) => (
-              <span key={c} onClick={() => setCat(c)} style={sx(chip(cat === c))}>{t(c)}</span>
-            ))}
-          </div>
-        </div>
-
-        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-top:22px;")}>
-          {list.map((g) => {
-            const sale = g.oldPrice > g.price ? Math.round((1 - g.price / g.oldPrice) * 100) : 0;
-            return (
-              <Link
-                key={g.id}
-                href={`${baseHref}/${g.id}`}
-                className="mh-card"
-                style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;cursor:pointer;")}
-              >
-                <div style={{ position: "relative", height: 200, background: "#fff" }}>
-                  {g.images && g.images[0] ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
-                  ) : (
-                    <Slot label={t("Бүтээгдэхүүн зураг")} light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
-                  )}
-                  {sale > 0 && (
-                    <span style={sx("position:absolute;top:10px;left:10px;z-index:2;font:800 11px Montserrat;letter-spacing:.04em;color:#fff;background:#E10613;padding:5px 9px;border-radius:4px;")}>
-                      SALE -{sale}%
-                    </span>
-                  )}
+    <ListingShell
+      title={t(title)}
+      count={list.length}
+      countLabel={t("бараа олдлоо")}
+      sidebar={sidebar}
+      toolbar={toolbar}
+      onClear={clearAll}
+      activeCount={activeCount}
+    >
+      <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px;")}>
+        {list.map((g) => {
+          const sale = g.oldPrice > g.price ? Math.round((1 - g.price / g.oldPrice) * 100) : 0;
+          return (
+            <Link
+              key={g.id}
+              href={`${baseHref}/${g.id}`}
+              className="mh-card"
+              style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;display:block;cursor:pointer;")}
+            >
+              <div style={{ position: "relative", height: 190, background: "#fff" }}>
+                {g.images && g.images[0] ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
+                ) : (
+                  <Slot label={t("Бүтээгдэхүүн зураг")} light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+                )}
+                {sale > 0 && (
+                  <span style={sx("position:absolute;top:10px;left:10px;z-index:2;font:800 11px Montserrat;letter-spacing:.04em;color:#fff;background:#E10613;padding:5px 9px;border-radius:4px;")}>
+                    SALE -{sale}%
+                  </span>
+                )}
+                {g.bestSeller && sale === 0 && (
+                  <span style={sx("position:absolute;top:10px;left:10px;z-index:2;font:800 10px Montserrat;letter-spacing:.06em;color:#0B0B0D;background:#f5c518;padding:5px 9px;border-radius:4px;")}>
+                    BEST SELLER
+                  </span>
+                )}
+              </div>
+              <div style={{ padding: "13px 15px 15px" }}>
+                <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>
+                  {g.brand.toUpperCase()} · {t(g.category)}
                 </div>
-                <div style={{ padding: "14px 16px" }}>
-                  <span style={sx("font:700 13px Montserrat;letter-spacing:.08em;color:#E10613;")}>{"★★★★★".slice(0, g.rating)}</span>
-                  <div style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;margin-top:6px;")}>
-                    {g.brand.toUpperCase()} · {t(g.category)}
-                  </div>
-                  <div style={sx("font:700 15px Montserrat;color:#fff;margin-top:3px;")}>{loc(g.name, g.nameEn)}</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 11 }}>
-                    {g.oldPrice > g.price && (
-                      <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={g.oldPrice} /></span>
-                    )}
-                    <span style={sx("font:800 16px Montserrat;color:#fff;")}><Price amount={g.price} /></span>
-                  </div>
+                <div style={sx("font:700 14px Montserrat;color:#fff;margin-top:4px;")}>{loc(g.name, g.nameEn)}</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 6 }}>
+                  <span style={sx("font:700 12px Montserrat;letter-spacing:.08em;color:#E10613;")}>{"★★★★★".slice(0, g.rating)}</span>
+                  {g.reviews > 0 && <span style={sx("font:400 11px Roboto;color:#6b7280;")}>({g.reviews})</span>}
                 </div>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* дэлгүүрт байхгүй бол захиалах */}
-        <div style={sx("margin-top:30px;background:linear-gradient(120deg,#1a0405,#111113 70%);border:1px solid #262626;border-radius:16px;padding:clamp(20px,3vw,28px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;")}>
-          <div>
-            <div style={sx("font:800 clamp(17px,2.4vw,22px) Montserrat;color:#fff;")}>{t("Хайж байгаа зүйл олдсонгүй юу?")}</div>
-            <div style={sx("font:400 13px Roboto;color:#A3A3A3;margin-top:5px;max-width:520px;")}>{t("Дэлгүүрт байхгүй сэлбэг, каск, хувцас болон бусад зүйлийг захиалж, үнийн санал аваарай.")}</div>
-          </div>
-          <Link href="/request" style={sx("background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.05em;padding:14px 24px;border-radius:10px;text-transform:uppercase;cursor:pointer;white-space:nowrap;")}>
-            {t("Захиалгын хүсэлт")}
-          </Link>
-        </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 9 }}>
+                  {g.oldPrice > g.price && (
+                    <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={g.oldPrice} /></span>
+                  )}
+                  <span style={sx("font:800 16px Montserrat;color:#fff;")}><Price amount={g.price} /></span>
+                </div>
+              </div>
+            </Link>
+          );
+        })}
       </div>
-    </div>
+
+      {list.length === 0 && (
+        <div style={sx("padding:50px 20px;text-align:center;font:500 14px Roboto;color:#8A8F98;")}>
+          {t("Энэ шүүлтүүрт тохирох бараа алга. Шүүлтүүрээ цэвэрлэж үзээрэй.")}
+        </div>
+      )}
+
+      {/* дэлгүүрт байхгүй бол захиалах */}
+      <div style={sx("margin-top:28px;background:linear-gradient(120deg,#1a0405,#111113 70%);border:1px solid #262626;border-radius:16px;padding:clamp(20px,3vw,28px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;")}>
+        <div>
+          <div style={sx("font:800 clamp(17px,2.4vw,22px) Montserrat;color:#fff;")}>{t("Хайж байгаа зүйл олдсонгүй юу?")}</div>
+          <div style={sx("font:400 13px Roboto;color:#A3A3A3;margin-top:5px;max-width:520px;")}>{t("Дэлгүүрт байхгүй сэлбэг, каск, хувцас болон бусад зүйлийг захиалж, үнийн санал аваарай.")}</div>
+        </div>
+        <Link href="/request" style={sx("background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.05em;padding:14px 24px;border-radius:10px;text-transform:uppercase;cursor:pointer;white-space:nowrap;")}>
+          {t("Захиалгын хүсэлт")}
+        </Link>
+      </div>
+    </ListingShell>
   );
 }

@@ -139,6 +139,32 @@ a {
   display: none;
 }
 
+/* Listing (RevZilla маягийн) — desktop: sidebar + grid, mobile: зөвхөн grid + шүүлтүүр drawer */
+.mh-ls-grid {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  gap: 26px;
+}
+.mh-ls-filterbtn {
+  display: none;
+}
+@media (max-width: 880px) {
+  .mh-ls-grid {
+    grid-template-columns: 1fr;
+  }
+  .mh-ls-sidebar {
+    display: none;
+  }
+  .mh-ls-filterbtn {
+    display: inline-flex;
+  }
+}
+@media (max-width: 560px) {
+  .mh-ls-search {
+    display: none;
+  }
+}
+
 /* Нүүрний категори — hover дээр өнгө тодорч, cursor холдоход бүдэг (зөвхөн hover-тэй төхөөрөмжид) */
 @media (hover: hover) {
   .mh-cat img {
