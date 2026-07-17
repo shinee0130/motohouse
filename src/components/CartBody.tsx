@@ -276,17 +276,15 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
 
       {err && <div role="alert" style={sx("font:500 13px Roboto;color:#ef4444;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:11px 13px;")}>{err}</div>}
 
-      {/* 6. Захиалгын дүн — sticky */}
-      <div style={{ position: "sticky", bottom: 0, zIndex: 3, paddingTop: 4 }}>
-        <OrderSummary
-          total={total}
-          itemCount={itemCount}
-          ctaLabel={ctaLabel}
-          onCta={checkout}
-          busy={busy}
-          note={t("Захиалгыг баталгаажуулсны дараа хүргэлтийн үнийг тооцож холбогдоно.")}
-        />
-      </div>
+      {/* 6. Захиалгын дүн */}
+      <OrderSummary
+        total={total}
+        itemCount={itemCount}
+        ctaLabel={ctaLabel}
+        onCta={checkout}
+        busy={busy}
+        note={t("Захиалгыг баталгаажуулсны дараа хүргэлтийн үнийг тооцож холбогдоно.")}
+      />
 
       {/* Төлбөрийн боломжууд */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", opacity: 0.75 }}>
