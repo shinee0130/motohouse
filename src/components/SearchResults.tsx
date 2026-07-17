@@ -30,7 +30,6 @@ export function SearchResults({ q, gear, motos }: { q: string; gear: GearItem[];
 
   return (
     <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(20px,4vw,40px);animation:mhfade .4s both;min-height:50vh;")}>
-      <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.24em;color:#E10613;")}>SEARCH</div>
       <h1 style={sx("font:800 clamp(24px,4vw,36px) Montserrat;color:#fff;margin-top:6px;text-transform:uppercase;")}>
         {q ? <>&ldquo;{q}&rdquo;</> : t("Хайлт")}
       </h1>

@@ -19,7 +19,6 @@ export function TourList({ tours }: { tours: Tour[] }) {
   return (
     <div style={sx("max-width:1280px;margin:0 auto;padding:0 clamp(20px,4vw,40px) clamp(32px,5vw,56px);")}>
       <div style={{ animation: "mhfade .5s both" }}>
-        <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.24em;color:#E10613;")}>{t("BOOK A TOUR")}</div>
         <h2 style={sx("font:800 clamp(24px,4vw,36px) Montserrat;color:#fff;margin-top:6px;text-transform:uppercase;")}>
           {t("Захиалах аяллууд")}
         </h2>
