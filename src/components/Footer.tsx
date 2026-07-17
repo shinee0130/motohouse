@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n";
 
 // Хөгжүүлэгчийн portfolio холбоос — дараа portfolio хийхэд энд URL-ээ оруулбал
 // footer доорх "Scott" автоматаар тухайн хаяг руу үсэрдэг линк болно.
-const DEV_PORTFOLIO = "";
+const DEV_PORTFOLIO = "https://www.instagram.com/_shinee999/";
 
 export function Footer() {
   const { t } = useI18n();
