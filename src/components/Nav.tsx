@@ -171,7 +171,7 @@ export function Nav() {
       {/* ===== (1+2) STICKY HEADER ===== */}
       <div style={sx("position:sticky;top:0;z-index:50;background:#070708;border-bottom:1px solid #1c1c1f;")}>
         {/* (1) Үндсэн мөр: цэс + лого + хайлт + хэрэгслүүд */}
-        <div style={sx(wrap + "height:66px;display:flex;align-items:center;gap:14px;")}>
+        <div className="mh-hd-row1" style={sx(wrap + "height:66px;display:flex;align-items:center;gap:14px;")}>
           <button
             onClick={() => setOpen(true)}
             aria-label={t("Цэс нээх")}
@@ -216,7 +216,7 @@ export function Nav() {
                 style={sx("display:flex;align-items:center;justify-content:center;background:none;border:none;padding:0;cursor:pointer;")}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                <img className="mh-hd-avatar" src={`/assets/tiers/${user!.tier ?? "rookie"}.png`} alt="" style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
               </button>
               {acctOpen && (
                 <>

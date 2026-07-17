@@ -187,6 +187,27 @@ a {
   }
 }
 
+/* Header нарийн дэлгэцэд багтах — лого viewport-аас хамаарч масштаблана,
+   avatar жижигрэнэ. Ингэснээр цэс+лого+сагс+avatar халихгүй багтана. */
+@media (max-width: 560px) {
+  .mh-hd-brand img {
+    height: auto !important;
+    max-width: min(190px, 42vw) !important;
+  }
+  .mh-hd-avatar {
+    width: 44px !important;
+    height: 44px !important;
+  }
+  .mh-hd-row1 {
+    gap: 9px !important;
+  }
+}
+@media (max-width: 360px) {
+  .mh-hd-brand img {
+    max-width: 38vw !important;
+  }
+}
+
 /* HERO — зураг өөрийн харьцаагаар (16:9) бүтнээр харагдана.
    Desktop: текст зураг дээр давхарлана. Mobile: зураг банер + текст доор нь. */
 .mh-hero-media {
