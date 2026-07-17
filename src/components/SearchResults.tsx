@@ -33,7 +33,6 @@ export function SearchResults({ q, gear, motos }: { q: string; gear: GearItem[];
       <h1 style={sx("font:800 clamp(24px,4vw,36px) Montserrat;color:#fff;margin-top:6px;text-transform:uppercase;")}>
         {q ? <>&ldquo;{q}&rdquo;</> : t("Хайлт")}
       </h1>
-      {q && <div style={sx("font:500 14px Roboto;color:#8A8F98;margin-top:8px;")}>{total} {t("илэрц олдлоо")}</div>}
 
       {!q && (
         <div style={sx("padding:60px 20px;text-align:center;font:500 15px Roboto;color:#8A8F98;")}>

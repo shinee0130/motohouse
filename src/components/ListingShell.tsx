@@ -48,7 +48,6 @@ export function CheckRow({ label, count, checked, onToggle }: { label: string; c
 interface ShellProps {
   title: string;
   count: number;        // шүүсний дараах тоо
-  countLabel: string;   // "бараа олдлоо" гэх мэт (аль хэдийн орчуулсан)
   sidebar: ReactNode;   // FilterGroup-ууд
   toolbar?: ReactNode;  // sort select г.м (баруун дээд)
   onClear?: () => void; // бүх шүүлтүүр цэвэрлэх
@@ -56,7 +55,7 @@ interface ShellProps {
   children: ReactNode;  // grid
 }
 
-export function ListingShell({ title, count, countLabel, sidebar, toolbar, onClear, activeCount = 0, children }: ShellProps) {
+export function ListingShell({ title, count, sidebar, toolbar, onClear, activeCount = 0, children }: ShellProps) {
   const { t } = useI18n();
   const [drawer, setDrawer] = useState(false); // mobile шүүлтүүр
 
@@ -83,9 +82,9 @@ export function ListingShell({ title, count, countLabel, sidebar, toolbar, onCle
     <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(24px,4vw,44px) clamp(20px,4vw,40px);animation:mhfade .4s both;")}>
       <h1 style={sx("font:800 clamp(28px,4.6vw,42px) Montserrat;color:#fff;text-transform:uppercase;")}>{title}</h1>
 
-      {/* toolbar: тоо + эрэмбэ + mobile шүүлтүүр товч */}
+      {/* toolbar: эрэмбэ + mobile шүүлтүүр товч */}
       <div style={sx("display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:18px;")}>
-        <div style={sx("font:500 13px 'JetBrains Mono';color:#8A8F98;")}>{count} {countLabel}</div>
+        <div />
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <button
             className="mh-ls-filterbtn"

@@ -273,6 +273,10 @@ export function Nav() {
 
         {/* Mobile utility controls — хайлтны доор үргэлж харагдана */}
         <div className="mh-hd-mobile-tools">
+          <div className="mh-hd-mobile-switches">
+            <LanguageToggle compact />
+            <CurrencySwitch compact />
+          </div>
           {!loggedIn && (
             <button
               onClick={() => authModal.open("login")}
@@ -282,10 +286,6 @@ export function Nav() {
               {t("Нэвтрэх")}
             </button>
           )}
-          <div className="mh-hd-mobile-switches">
-            <LanguageToggle compact />
-            <CurrencySwitch compact />
-          </div>
         </div>
 
         {/* (2) Ангиллын мөр */}

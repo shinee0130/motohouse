@@ -142,7 +142,6 @@ export function GearClient({
     <ListingShell
       title={t(title)}
       count={list.length}
-      countLabel={t("бараа олдлоо")}
       sidebar={sidebar}
       toolbar={toolbar}
       onClear={clearAll}

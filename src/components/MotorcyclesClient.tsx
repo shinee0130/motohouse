@@ -133,7 +133,6 @@ export function MotorcyclesClient({ motos, initialBrand }: { motos: Moto[]; init
     <ListingShell
       title="Motorcycles"
       count={list.length}
-      countLabel={t("мотоцикл олдлоо")}
       sidebar={sidebar}
       toolbar={toolbar}
       onClear={clearAll}
