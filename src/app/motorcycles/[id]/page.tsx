@@ -33,9 +33,14 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
       style={sx("max-width:1280px;margin:0 auto;padding:clamp(24px,4vw,44px) clamp(20px,4vw,40px);")}
     >
       <div style={{ animation: "mhfade .5s both" }}>
-        <Link href="/motorcycles" style={sx("font:600 13px Montserrat;color:#8A8F98;cursor:pointer;")}>
-          ← <T>Жагсаалт руу</T>
-        </Link>
+        {/* breadcrumb (RevZilla маягийн) */}
+        <div style={sx("font:500 12px Roboto;color:#8A8F98;")}>
+          <Link href="/motorcycles" style={{ cursor: "pointer" }}>Motorcycles</Link>
+          <span style={{ margin: "0 8px", color: "#3a3a3f" }}>/</span>
+          <Link href={`/motorcycles?brand=${encodeURIComponent(m.brand)}`} style={{ cursor: "pointer" }}>{m.brand}</Link>
+          <span style={{ margin: "0 8px", color: "#3a3a3f" }}>/</span>
+          <span style={{ color: "#C8C8C8" }}>{m.model}</span>
+        </div>
 
         <div
           className="mh-moto-detail"
@@ -48,17 +53,32 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
 
           {/* info */}
           <div>
-            <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.2em;color:#E10613;")}>{m.brand}</div>
-            <h1 style={sx("font:800 clamp(28px,4vw,40px) Montserrat;color:#fff;margin-top:6px;")}>{m.model}</h1>
-            {m.salePrice ? (
-              <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap", marginTop: 10 }}>
-                <span style={sx("font:600 18px Montserrat;color:#6b7280;text-decoration:line-through;")}><Price amount={m.price} /></span>
-                <span style={sx("font:800 30px Montserrat;color:#E10613;")}><Price amount={m.salePrice} /></span>
-                <span style={sx("font:700 11px Montserrat;letter-spacing:.05em;color:#fff;background:#E10613;padding:5px 10px;border-radius:6px;")}><T>ХЯМДРАЛ</T></span>
+            {/* брэнд — тухайн брэндийн жагсаалт руу */}
+            <Link href={`/motorcycles?brand=${encodeURIComponent(m.brand)}`}
+              style={sx("font:700 13px Montserrat;letter-spacing:.08em;color:#E10613;text-transform:uppercase;cursor:pointer;")}>
+              {m.brand}
+            </Link>
+            <h1 style={sx("font:800 clamp(26px,3.6vw,38px)/1.12 Montserrat;color:#fff;margin-top:8px;")}>{m.model}</h1>
+            <div style={{ marginTop: 10 }}>
+              <span style={sx(`font:700 11px Montserrat;letter-spacing:.05em;padding:5px 11px;border-radius:6px;${m.status === "Available" ? "color:#22c55e;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);" : m.status === "Sold" ? "color:#ef4444;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);" : "color:#f59e0b;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);"}`)}>
+                <T>{statusLabel(m.status)}</T>
+              </span>
+            </div>
+
+            {/* үнэ + хэмнэлт (gear-тэй ижил блок) */}
+            <div style={sx("margin-top:16px;background:#111113;border:1px solid #262626;border-radius:14px;padding:16px 18px;")}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
+                <span style={sx("font:800 30px Montserrat;color:#fff;")}><Price amount={m.salePrice ?? m.price} /></span>
+                {m.salePrice && (
+                  <span style={sx("font:400 16px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={m.price} /></span>
+                )}
               </div>
-            ) : (
-              <div style={sx("font:800 30px Montserrat;color:#E10613;margin-top:10px;")}><Price amount={m.price} /></div>
-            )}
+              {m.salePrice && (
+                <div style={sx("font:700 13px Montserrat;color:#22c55e;margin-top:6px;")}>
+                  <T>Та хэмнэж байна</T>: <Price amount={m.price - m.salePrice} /> (-{Math.round((1 - m.salePrice / m.price) * 100)}%)
+                </div>
+              )}
+            </div>
 
             <div
               style={sx(
@@ -93,8 +113,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
           )}
         >
           <div>
-            <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.22em;color:#E10613;")}>PERFORMANCE</div>
-            <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;margin-top:4px;")}>Performance</h2>
+            <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;")}>Performance</h2>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12, marginTop: 16 }}>
               <div style={sx(STAT)}>
                 <div style={sx(STAT_LBL)}><T>МОРИНЫ ХҮЧ</T></div>
@@ -123,8 +142,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
             </div>
           </div>
           <div>
-            <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.22em;color:#E10613;")}>EXTRAS</div>
-            <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;margin-top:4px;")}><T>Нэмэлт тоног</T></h2>
+            <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;")}><T>Нэмэлт тоног</T></h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 16 }}>
               <MotoExtras extras={m.extras} extrasEn={m.extrasEn} />
             </div>

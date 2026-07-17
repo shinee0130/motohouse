@@ -584,6 +584,10 @@ export const EN: Record<string, string> = {
   "14 хоногийн дотор солих, буцаах боломжтой": "14-day exchange & return policy",
   "QPay · SocialPay · Карт — онлайнаар шууд төлнө": "QPay · SocialPay · Card — pay online instantly",
   "Хамт авах": "Complete the look",
+  "Uniqcenter дэлгүүрт очиж бодитоор үзэх боломжтой": "See it in person at our Uniqcenter store",
+  "Гааль, бүртгэлийн бичиг баримтад зөвлөгөө өгнө": "We advise on customs and registration paperwork",
+  "Сонирхсон бол бид тантай холбогдож нөхцөлийг танилцуулна": "Express interest and we'll contact you with the details",
+  "Хүсэлт илгээгдлээ — бид тантай удахгүй холбогдоно.": "Request sent — we'll contact you soon.",
 
   // Listing (шүүлтүүр, эрэмбэ)
   "Шүүлтүүр": "Filters",

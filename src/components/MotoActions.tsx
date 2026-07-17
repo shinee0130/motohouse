@@ -1,5 +1,8 @@
 "use client";
 
+// Мотоциклын CTA — "Сонирхож байна" хүсэлт + хадгалах + perks жагсаалт (RevZilla маягийн).
+// Мотоцикл өндөр үнэтэй тул онлайн төлбөрөөр биш, сонирхлын хүсэлтээр холбогдоно.
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/sx";
@@ -38,26 +41,41 @@ export function MotoActions({ id, name, price }: { id: number; name: string; pri
 
   return (
     <>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 22 }}>
+      <div style={{ marginTop: 22 }}>
         <button
           onClick={order}
           disabled={busy}
-          style={sx(`background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.05em;padding:14px 26px;border:none;border-radius:10px;text-transform:uppercase;cursor:pointer;${busy ? "opacity:.6;" : ""}`)}
+          style={sx(`width:100%;background:#E10613;color:#fff;font:700 15px Montserrat;letter-spacing:.04em;padding:17px;border:none;border-radius:12px;text-transform:uppercase;cursor:pointer;${busy ? "opacity:.6;" : ""}`)}
         >
           {busy ? t("Илгээж байна…") : user ? t("Сонирхож байна") : t("Нэвтэрч захиалах")}
         </button>
         <button
           onClick={toggleSave}
-          style={sx(`display:flex;align-items:center;gap:8px;font:700 14px Montserrat;letter-spacing:.05em;padding:14px 22px;border-radius:10px;cursor:pointer;background:${saved ? "rgba(225,6,19,.12)" : "transparent"};border:1px solid ${saved ? "#E10613" : "#444"};color:${saved ? "#E10613" : "#fff"};`)}
+          style={sx(`width:100%;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;font:700 14px Montserrat;letter-spacing:.04em;padding:15px;border-radius:12px;cursor:pointer;text-transform:uppercase;background:${saved ? "rgba(225,6,19,.12)" : "#111113"};border:1px solid ${saved ? "#E10613" : "#333"};color:${saved ? "#E10613" : "#fff"};`)}
         >
           {saved ? `♥ ${t("Хадгалсан")}` : `♡ ${t("Хадгалах")}`}
         </button>
       </div>
       {orderId && (
         <div style={sx("font:500 13px Roboto;color:#22c55e;margin-top:12px;")}>
-          ✓ {t("Захиалга")} #{orderId} {t("үүслээ.")} <Link href="/account/orders" style={{ color: "#22c55e", textDecoration: "underline" }}>{t("Миний захиалга")}</Link>
+          ✓ {t("Хүсэлт илгээгдлээ — бид тантай удахгүй холбогдоно.")} <Link href="/account/orders" style={{ color: "#22c55e", textDecoration: "underline" }}>{t("Миний захиалга")}</Link>
         </div>
       )}
+
+      {/* Давуу талууд (gear-ийн perks-тэй ижил загвар) */}
+      <div style={sx("margin-top:18px;background:#0B0B0D;border:1px solid #262626;border-radius:14px;padding:6px 16px;")}>
+        {[
+          { icon: "🏍", text: "Uniqcenter дэлгүүрт очиж бодитоор үзэх боломжтой" },
+          { icon: "📋", text: "Гааль, бүртгэлийн бичиг баримтад зөвлөгөө өгнө" },
+          { icon: "🛡", text: "Баталгаат оригинал бараа" },
+          { icon: "💬", text: "Сонирхсон бол бид тантай холбогдож нөхцөлийг танилцуулна" },
+        ].map((p, i, arr) => (
+          <div key={p.text} style={sx(`display:flex;align-items:center;gap:11px;padding:10px 0;${i < arr.length - 1 ? "border-bottom:1px solid #151517;" : ""}`)}>
+            <span style={{ fontSize: 16, flexShrink: 0 }} aria-hidden="true">{p.icon}</span>
+            <span style={sx("font:500 13px Roboto;color:#C8C8C8;")}>{t(p.text)}</span>
+          </div>
+        ))}
+      </div>
     </>
   );
 }

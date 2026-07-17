@@ -33,9 +33,9 @@ function toggleSet(s: Set<string>, v: string): Set<string> {
   return n;
 }
 
-export function MotorcyclesClient({ motos }: { motos: Moto[] }) {
+export function MotorcyclesClient({ motos, initialBrand }: { motos: Moto[]; initialBrand?: string }) {
   const { t } = useI18n();
-  const [brands, setBrands] = useState<Set<string>>(new Set());
+  const [brands, setBrands] = useState<Set<string>>(() => (initialBrand ? new Set([initialBrand]) : new Set()));
   const [statuses, setStatuses] = useState<Set<string>>(new Set());
   const [price, setPrice] = useState<string | null>(null);
   const [cc, setCc] = useState<string | null>(null);
