@@ -216,6 +216,16 @@ a {
   .mh-card-price {
     font-size: 14px !important;
   }
+  /* хямдралтай картын үнэ 2 баганат нарийн дэлгэцэд багтахгүй тасардаг —
+     хуучин үнийг доош нугалж, жижигрүүлнэ */
+  .mh-pricerow {
+    flex-wrap: wrap;
+    gap: 2px 8px !important;
+  }
+  .mh-oldprice {
+    font-size: 11px !important;
+    flex-basis: 100%;
+  }
 }
 
 /* Нүүрний категори — hover дээр өнгө тодорч, cursor холдоход бүдэг (зөвхөн hover-тэй төхөөрөмжид) */

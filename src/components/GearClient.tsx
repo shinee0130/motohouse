@@ -233,9 +233,9 @@ export function GearClient({
                   <span style={sx("font:700 12px Montserrat;letter-spacing:.08em;color:#E10613;")}>{"★★★★★".slice(0, g.rating)}</span>
                   {g.reviews > 0 && <span style={sx("font:400 11px Roboto;color:#6b7280;")}>({g.reviews})</span>}
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 9 }}>
+                <div className="mh-pricerow" style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 9 }}>
                   {g.oldPrice > g.price && (
-                    <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={g.oldPrice} /></span>
+                    <span className="mh-oldprice" style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={g.oldPrice} /></span>
                   )}
                   <span className="mh-card-price" style={sx("font:800 16px Montserrat;color:#fff;")}><Price amount={g.price} /></span>
                 </div>

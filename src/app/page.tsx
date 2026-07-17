@@ -77,9 +77,9 @@ export default async function HomePage() {
               {g.brand.toUpperCase()} · <T>{g.category}</T>
             </div>
             <div className="mh-card-title" style={sx("font:700 15px Montserrat;color:#fff;margin-top:4px;")}><Loc mn={g.name} en={g.nameEn} /></div>
-            <div style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 10 }}>
+            <div className="mh-pricerow" style={{ display: "flex", alignItems: "center", gap: 9, marginTop: 10 }}>
               {g.oldPrice > g.price && (
-                <span style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={g.oldPrice} /></span>
+                <span className="mh-oldprice" style={sx("font:400 13px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={g.oldPrice} /></span>
               )}
               <span className="mh-card-price" style={sx("font:800 16px Montserrat;color:#fff;")}><Price amount={g.price} /></span>
             </div>
