@@ -76,7 +76,7 @@ export function TextField({
 // Дугаартай гарчигтай section (mobile-first, тод heading).
 export function Section({ index, title, children }: { index: number; title: string; children: ReactNode }) {
   return (
-    <section style={sx("padding:16px 0 18px;border-top:1px solid #1c1c1f;")}>
+    <section style={sx("padding:16px 0 18px;")}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
         <span style={sx("width:22px;height:22px;border-radius:6px;background:#E10613;color:#fff;font:800 11px Montserrat;display:flex;align-items:center;justify-content:center;flex:none;")}>{index}</span>
         <h3 style={sx("font:700 13px Montserrat;letter-spacing:.06em;color:#fff;text-transform:uppercase;")}>{title}</h3>

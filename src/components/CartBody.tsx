@@ -195,7 +195,7 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
       {/* Барааны жагсаалт */}
       <div style={sx("overflow:hidden;")}>
         {items.map((it) => (
-          <div key={`${it.id}-${it.meta ?? ""}`} style={sx("display:flex;align-items:center;gap:14px;padding:0 0 14px;border-bottom:1px solid #1c1c1f;flex-wrap:wrap;")}>
+          <div key={`${it.id}-${it.meta ?? ""}`} style={sx("display:flex;align-items:center;gap:14px;padding:0 0 14px;flex-wrap:wrap;")}>
             <div style={sx("width:56px;height:56px;border-radius:10px;overflow:hidden;background:#fff;flex-shrink:0;")}>
               {it.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
