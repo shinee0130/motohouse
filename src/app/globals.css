@@ -108,9 +108,15 @@ a {
   }
 }
 
-/* header дэх хэл/валют солигч — жижиг дэлгэц дээр нуух (sidebar дотор байгаа) */
-@media (max-width: 560px) {
+/* header дэх хэл/валют солигч — mobile үед drawer дотор үлдээнэ */
+@media (max-width: 760px) {
   .mh-nav-switches {
+    display: none !important;
+  }
+  .mh-hd-brand img {
+    height: 32px !important;
+  }
+  .mh-hd-login {
     display: none !important;
   }
 }

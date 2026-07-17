@@ -115,7 +115,13 @@ export function Nav() {
   const loggedIn = ready && !!user;
 
   // Хуудас солигдоход sidebar хаана
-  useEffect(() => { setOpen(false); setAcctOpen(false); }, [pathname]);
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      setOpen(false);
+      setAcctOpen(false);
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [pathname]);
 
   // Сагсны тоог сонсох
   useEffect(() => {
@@ -176,7 +182,7 @@ export function Nav() {
             <span style={{ width: 17, height: 2, background: "#fff", display: "block" }} />
           </button>
 
-          <Link href="/" style={{ cursor: "pointer", display: "flex", alignItems: "center", flexShrink: 0 }}>
+          <Link href="/" className="mh-hd-brand" style={{ cursor: "pointer", display: "flex", alignItems: "center", flexShrink: 0 }}>
             <Brand height={42} />
           </Link>
 
@@ -252,6 +258,7 @@ export function Nav() {
           ) : (
             <button
               onClick={() => authModal.open("login")}
+              className="mh-hd-login"
               style={sx("background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.06em;padding:11px 20px;border:none;border-radius:9px;text-transform:uppercase;cursor:pointer;white-space:nowrap;flex-shrink:0;")}
             >
               {t("Нэвтрэх")}
