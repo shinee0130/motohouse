@@ -26,22 +26,6 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-function Accordion({ title, children, open: openDefault = false }: { title: string; children: React.ReactNode; open?: boolean }) {
-  const [open, setOpen] = useState(openDefault);
-  return (
-    <div style={sx("border-bottom:1px solid #1c1c1f;")}>
-      <button
-        onClick={() => setOpen((v) => !v)}
-        style={sx("width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;cursor:pointer;padding:18px 0;color:#fff;font:700 15px Montserrat;text-align:left;")}
-      >
-        {title}
-        <span style={{ color: "#E10613", transform: open ? "rotate(180deg)" : "none", transition: "transform .2s" }}>⌄</span>
-      </button>
-      {open && <div style={{ paddingBottom: 18 }}>{children}</div>}
-    </div>
-  );
-}
-
 export function GearDetail({
   item,
   related,
@@ -65,6 +49,7 @@ export function GearDetail({
   const imgs = item.images ?? [];
   const [saved, setSavedState] = useState(false);
   const [cartMsg, setCartMsg] = useState(false);
+  const [qty, setQty] = useState(1);
   const sale = item.oldPrice > item.price ? Math.round((1 - item.price / item.oldPrice) * 100) : 0;
 
   useEffect(() => {
@@ -82,7 +67,7 @@ export function GearDetail({
       id: item.id, name: item.name, price: item.price,
       image: item.images?.[0],
       meta: [size, color].filter(Boolean).join(" · ") || undefined,
-    });
+    }, qty);
   }
 
   // Шууд худалдан авах — сагсанд хийгээд checkout цонхыг шууд нээнэ.
@@ -136,36 +121,48 @@ export function GearDetail({
           </div>
         </div>
 
-        {/* ===== INFO ===== */}
+        {/* ===== INFO (RevZilla маягийн дараалал) ===== */}
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {/* брэнд — тухайн брэндийн жагсаалт руу */}
+          <Link href={`${baseHref}?brand=${encodeURIComponent(item.brand)}`}
+            style={sx("font:700 13px Montserrat;letter-spacing:.08em;color:#E10613;text-transform:uppercase;cursor:pointer;")}>
+            {item.brand}
+          </Link>
+
+          <h1 style={sx("font:800 clamp(25px,3.4vw,36px)/1.15 Montserrat;color:#fff;margin-top:8px;")}>{loc(item.name, item.nameEn)}</h1>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
             <Stars rating={item.rating} />
             <span style={sx("font:600 13px Montserrat;color:#fff;")}>{item.rating.toFixed(1)}</span>
-            <span style={sx("font:500 13px Roboto;color:#8A8F98;text-decoration:underline;")}>{item.reviews} сэтгэгдэл</span>
+            <span style={sx("font:500 13px Roboto;color:#8A8F98;text-decoration:underline;")}>{item.reviews} {t("сэтгэгдэл")}</span>
+            {item.bestSeller && (
+              <span style={sx("font:700 10px Montserrat;letter-spacing:.08em;color:#0B0B0D;background:#f5c518;padding:4px 9px;border-radius:5px;")}>
+                BEST SELLER
+              </span>
+            )}
           </div>
 
-          {item.bestSeller && (
-            <span style={sx("display:inline-block;margin-top:14px;font:700 11px Montserrat;letter-spacing:.08em;color:#fff;background:#E10613;padding:5px 11px;border-radius:5px;")}>
-              BEST SELLER
-            </span>
-          )}
-
-          <h1 style={sx("font:800 clamp(26px,3.5vw,38px) Montserrat;color:#fff;margin-top:14px;")}>{loc(item.name, item.nameEn)}</h1>
-          <div style={sx("font:500 14px Roboto;color:#8A8F98;margin-top:4px;")}>{item.brand} · {t(item.category)}</div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18 }}>
-            <span style={sx("font:800 28px Montserrat;color:#fff;")}><Price amount={item.price} /></span>
-            {item.oldPrice > item.price && (
-              <span style={sx("font:400 16px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={item.oldPrice} /></span>
+          {/* үнэ + хэмнэлт */}
+          <div style={sx("margin-top:18px;background:#111113;border:1px solid #262626;border-radius:14px;padding:16px 18px;")}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <span style={sx("font:800 30px Montserrat;color:#fff;")}><Price amount={item.price} /></span>
+              {item.oldPrice > item.price && (
+                <span style={sx("font:400 16px Roboto;color:#8A8F98;text-decoration:line-through;")}><Price amount={item.oldPrice} /></span>
+              )}
+              <button
+                onClick={toggleSave}
+                aria-label={t("Хадгалах")}
+                title={saved ? t("Хадгалснаас хасах") : t("Хадгалах")}
+                style={sx(`margin-left:auto;width:44px;height:44px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;background:${saved ? "rgba(225,6,19,.12)" : "#0B0B0D"};border:1px solid ${saved ? "#E10613" : "#2a2a2d"};color:${saved ? "#E10613" : "#8A8F98"};`)}
+              >
+                {saved ? "♥" : "♡"}
+              </button>
+            </div>
+            {sale > 0 && (
+              <div style={sx("font:700 13px Montserrat;color:#22c55e;margin-top:6px;")}>
+                {t("Та хэмнэж байна")}: <Price amount={item.oldPrice - item.price} /> (-{sale}%)
+              </div>
             )}
-            <button
-              onClick={toggleSave}
-              aria-label={t("Хадгалах")}
-              title={saved ? t("Хадгалснаас хасах") : t("Хадгалах")}
-              style={sx(`margin-left:auto;width:44px;height:44px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;background:${saved ? "rgba(225,6,19,.12)" : "#111113"};border:1px solid ${saved ? "#E10613" : "#262626"};color:${saved ? "#E10613" : "#8A8F98"};`)}
-            >
-              {saved ? "♥" : "♡"}
-            </button>
           </div>
 
           {/* colors */}
@@ -213,13 +210,22 @@ export function GearDetail({
             </div>
           )}
 
-          {/* CTA */}
-          <button
-            onClick={buyNow}
-            style={sx("width:100%;margin-top:26px;background:#E10613;color:#fff;font:700 15px Montserrat;letter-spacing:.04em;padding:17px;border:none;border-radius:12px;text-transform:uppercase;cursor:pointer;")}
-          >
-            ⚡ {t("Шууд худалдан авах")}
-          </button>
+          {/* CTA — тоо ширхэг + худалдан авах */}
+          <div style={{ display: "flex", gap: 10, marginTop: 24, alignItems: "stretch" }}>
+            <div style={sx("display:flex;align-items:center;gap:2px;background:#111113;border:1px solid #333;border-radius:12px;padding:0 6px;flex-shrink:0;")}>
+              <button onClick={() => setQty((v) => Math.max(1, v - 1))} aria-label="−"
+                style={sx("width:36px;height:100%;background:none;border:none;color:#fff;font:700 17px Montserrat;cursor:pointer;")}>−</button>
+              <span style={sx("font:700 15px Montserrat;color:#fff;min-width:24px;text-align:center;")}>{qty}</span>
+              <button onClick={() => setQty((v) => Math.min(99, v + 1))} aria-label="+"
+                style={sx("width:36px;height:100%;background:none;border:none;color:#fff;font:700 17px Montserrat;cursor:pointer;")}>+</button>
+            </div>
+            <button
+              onClick={buyNow}
+              style={sx("flex:1;background:#E10613;color:#fff;font:700 15px Montserrat;letter-spacing:.04em;padding:17px;border:none;border-radius:12px;text-transform:uppercase;cursor:pointer;")}
+            >
+              ⚡ {t("Шууд худалдан авах")}
+            </button>
+          </div>
           <button
             onClick={() => {
               intoCart();
@@ -235,54 +241,61 @@ export function GearDetail({
               ✓ {t("Сагсанд нэмэгдлээ.")} <Link href="/cart" style={{ color: "#22c55e", textDecoration: "underline" }}>{t("Сагс үзэх")}</Link>
             </div>
           )}
-          <div style={sx("font:400 12px Roboto;color:#8A8F98;text-align:center;margin-top:12px;")}>
-            {t("Төлбөрөө QPay, SocialPay эсвэл картаар шууд онлайнаар төлнө. Хүргэлтийн үнийг захиалга баталгаажсаны дараа тооцно.")}
-          </div>
-          <div style={sx("background:#0B0B0D;border:1px solid #262626;border-radius:14px;padding:14px;margin-top:14px;")}>
-            <div style={sx("font:700 11px 'JetBrains Mono';letter-spacing:.12em;color:#E10613;text-transform:uppercase;")}>{t("Төлбөрийн боломжууд")}</div>
-            <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:7px;")}>
-              {t("QPay, SocialPay болон банкны карт (Visa, Mastercard) дэмжинэ.")}
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 7, marginTop: 10 }}>
+          {/* Давуу талууд — RevZilla-ийн perks жагсаалт */}
+          <div style={sx("margin-top:18px;background:#0B0B0D;border:1px solid #262626;border-radius:14px;padding:6px 16px;")}>
+            {[
+              { icon: "🚚", text: "УБ хот дотор 1–2 хоногт хүргэнэ, олон улс руу илгээнэ" },
+              { icon: "↩️", text: "14 хоногийн дотор солих, буцаах боломжтой" },
+              { icon: "🛡", text: "Баталгаат оригинал бараа" },
+              { icon: "💳", text: "QPay · SocialPay · Карт — онлайнаар шууд төлнө" },
+            ].map((p) => (
+              <div key={p.text} style={sx("display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid #151517;")}>
+                <span style={{ fontSize: 16, flexShrink: 0 }} aria-hidden="true">{p.icon}</span>
+                <span style={sx("font:500 13px Roboto;color:#C8C8C8;")}>{t(p.text)}</span>
+              </div>
+            ))}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 7, padding: "10px 0" }}>
               {PAYMENT_METHODS.map((method) => (
-                <span key={method} style={sx("font:700 10px Montserrat;color:#C8C8C8;border:1px solid #333;background:#111113;border-radius:999px;padding:6px 9px;")}>
+                <span key={method} style={sx("font:700 10px Montserrat;color:#C8C8C8;border:1px solid #333;background:#111113;border-radius:999px;padding:5px 9px;")}>
                   {method}
                 </span>
               ))}
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* accordions */}
-          <div style={{ marginTop: 28 }}>
-            <Accordion title={t("Тайлбар")} open>
-              <p style={sx("font:400 14px/1.7 Roboto;color:#A3A3A3;")}>{loc(item.desc, item.descEn)}</p>
-            </Accordion>
-            <Accordion title={t("Онцлог")}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-                {loc(item.features, item.featuresEn).map((f) => (
-                  <div key={f} style={{ display: "flex", alignItems: "center", gap: 11 }}>
-                    <span style={sx("width:6px;height:6px;border-radius:50%;background:#E10613;flex-shrink:0;")} />
-                    <span style={sx("font:500 14px Roboto;color:#C8C8C8;")}>{f}</span>
-                  </div>
-                ))}
-              </div>
-            </Accordion>
-            <Accordion title={t("Хүргэлт & буцаалт")}>
-              <p style={sx("font:400 14px/1.7 Roboto;color:#A3A3A3;")}>
-                {t("УБ хот доторх хүргэлт 1–2 хоног. Барааг задлаагүй, гэмтээгүй тохиолдолд 14 хоногийн дотор солих/буцаах боломжтой.")}
-              </p>
-            </Accordion>
-            <div style={sx("font:500 12px 'JetBrains Mono';color:#8A8F98;padding:16px 0;letter-spacing:.04em;")}>
-              SKU: {item.sku}
+      {/* ===== ТАЙЛБАР + ОНЦЛОГ (бүтэн өргөн, RevZilla-ийн description хэсэг шиг) ===== */}
+      <div style={sx("margin-top:clamp(36px,5vw,56px);background:#111113;border:1px solid #262626;border-radius:18px;padding:clamp(22px,3.4vw,36px);")}>
+        <h2 style={sx("font:800 20px Montserrat;color:#fff;text-transform:uppercase;")}>{t("Тайлбар")}</h2>
+        <p style={sx("font:400 15px/1.75 Roboto;color:#A3A3A3;margin-top:14px;max-width:860px;")}>{loc(item.desc, item.descEn)}</p>
+
+        {loc(item.features, item.featuresEn).length > 0 && (
+          <>
+            <h3 style={sx("font:800 15px Montserrat;color:#fff;text-transform:uppercase;margin-top:26px;")}>{t("Онцлог")}</h3>
+            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px 28px;margin-top:14px;")}>
+              {loc(item.features, item.featuresEn).map((f) => (
+                <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 11 }}>
+                  <span style={sx("width:6px;height:6px;border-radius:50%;background:#E10613;flex-shrink:0;margin-top:7px;")} />
+                  <span style={sx("font:500 14px/1.55 Roboto;color:#C8C8C8;")}>{f}</span>
+                </div>
+              ))}
             </div>
-          </div>
+          </>
+        )}
+
+        <div style={sx("display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:26px;padding-top:16px;border-top:1px solid #1c1c1f;")}>
+          <span style={sx("font:500 12px 'JetBrains Mono';color:#8A8F98;letter-spacing:.04em;")}>SKU: {item.sku}</span>
+          <span style={sx("font:400 12px Roboto;color:#6b7280;")}>
+            {t("УБ хот доторх хүргэлт 1–2 хоног. Барааг задлаагүй, гэмтээгүй тохиолдолд 14 хоногийн дотор солих/буцаах боломжтой.")}
+          </span>
         </div>
       </div>
 
       {/* ===== COMPLETE THE LOOK ===== */}
       {related.length > 0 && (
         <div style={{ marginTop: "clamp(40px,6vw,64px)" }}>
-          <h2 style={sx("font:800 20px Montserrat;color:#fff;text-transform:uppercase;")}>Хамт авах</h2>
+          <h2 style={sx("font:800 20px Montserrat;color:#fff;text-transform:uppercase;")}>{t("Хамт авах")}</h2>
           <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;margin-top:18px;")}>
             {related.map((g) => (
               <GearMini key={g.id} g={g} baseHref={baseHref} />

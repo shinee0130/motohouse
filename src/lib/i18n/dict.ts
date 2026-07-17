@@ -577,6 +577,14 @@ export const EN: Record<string, string> = {
   // Order summary / CTA
   "бараа": "items",
   "Шууд худалдан авах": "Buy now",
+  // Барааны дэлгэрэнгүй (RevZilla маягийн)
+  "сэтгэгдэл": "reviews",
+  "Та хэмнэж байна": "You save",
+  "УБ хот дотор 1–2 хоногт хүргэнэ, олон улс руу илгээнэ": "1–2 day delivery in UB, international shipping available",
+  "14 хоногийн дотор солих, буцаах боломжтой": "14-day exchange & return policy",
+  "QPay · SocialPay · Карт — онлайнаар шууд төлнө": "QPay · SocialPay · Card — pay online instantly",
+  "Хамт авах": "Complete the look",
+
   // Listing (шүүлтүүр, эрэмбэ)
   "Шүүлтүүр": "Filters",
   "Цэвэрлэх": "Clear",
