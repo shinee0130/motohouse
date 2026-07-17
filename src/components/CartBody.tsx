@@ -28,7 +28,12 @@ import { SavedAddressSelector } from "@/components/checkout/SavedAddressSelector
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 
 // Bonum терминал дээр бодитоор идэвхтэй хэрэгслүүд (QPAY + E_COMMERCE картын суваг)
-const PAYMENT_METHODS = ["QPay", "SocialPay", "Visa", "Mastercard"];
+const PAYMENT_METHODS = [
+  { name: "QPay", src: "/assets/payments/qpay.png", width: 26 },
+  { name: "SocialPay", src: "/assets/payments/socialpay.png", width: 76 },
+  { name: "Visa", src: "/assets/payments/visa.png", width: 34 },
+  { name: "Mastercard", src: "/assets/payments/mastercard.png", width: 54 },
+];
 
 export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
   const { user } = useAuth();
@@ -286,7 +291,10 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
       {/* Төлбөрийн боломжууд */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", opacity: 0.75 }}>
         {PAYMENT_METHODS.map((m) => (
-          <span key={m} style={sx("font:700 9px Montserrat;color:#C8C8C8;border:1px solid #2a2a2d;background:#0d0d0f;border-radius:999px;padding:5px 8px;")}>{m}</span>
+          <span key={m.name} title={m.name} style={sx("height:30px;min-width:42px;display:flex;align-items:center;justify-content:center;border:1px solid #2a2a2d;background:#fff;border-radius:6px;padding:4px 7px;")}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={m.src} alt={m.name} style={{ width: m.width, height: 20, objectFit: "contain", display: "block" }} />
+          </span>
         ))}
       </div>
     </div>
