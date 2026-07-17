@@ -143,17 +143,12 @@ export function CountryPicker({
                           aria-selected={active}
                           onMouseEnter={() => setHi(i)}
                           onClick={() => pick(c.code)}
-                          style={sx(`display:flex;align-items:center;gap:11px;padding:11px 10px;border-radius:9px;cursor:pointer;background:${hot ? "#232327" : "transparent"};`)}
+                          style={sx(`display:flex;align-items:center;gap:11px;padding:11px 10px;border-radius:9px;cursor:pointer;background:${active ? "rgba(225,6,19,.18)" : hot ? "#232327" : "transparent"};`)}
                         >
                           <span style={{ fontSize: 20, lineHeight: 1 }} aria-hidden="true">{c.flag}</span>
                           <span style={sx(`flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:${active ? "700" : "500"} 14px Roboto;color:${active ? "#fff" : "#D4D4D4"};`)}>{name(c)}</span>
                           <span style={sx("font:600 11px 'JetBrains Mono';color:#8A8F98;")}>{c.code}</span>
                           <span style={sx("font:600 12px 'JetBrains Mono';color:#C8C8C8;min-width:44px;text-align:right;")}>+{c.callingCode}</span>
-                          {active && (
-                            <svg width="14" height="14" viewBox="0 0 14 14" style={{ flexShrink: 0 }} aria-hidden="true">
-                              <path d="M2.5 7.5l3 3 6-7" fill="none" stroke="#E10613" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          )}
                         </div>
                       );
                     })}
