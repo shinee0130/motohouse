@@ -271,6 +271,23 @@ export function Nav() {
           <SearchBar />
         </div>
 
+        {/* Mobile utility controls — хайлтны доор үргэлж харагдана */}
+        <div className="mh-hd-mobile-tools">
+          {!loggedIn && (
+            <button
+              onClick={() => authModal.open("login")}
+              aria-label={t("Нэвтрэх")}
+              style={sx("background:#E10613;color:#fff;font:700 11px Montserrat;letter-spacing:.04em;padding:9px 13px;border:none;border-radius:8px;text-transform:uppercase;cursor:pointer;white-space:nowrap;")}
+            >
+              {t("Нэвтрэх")}
+            </button>
+          )}
+          <div className="mh-hd-mobile-switches">
+            <LanguageToggle compact />
+            <CurrencySwitch compact />
+          </div>
+        </div>
+
         {/* (2) Ангиллын мөр */}
         <div style={sx("border-top:1px solid #141416;")}>
           <nav className="mh-hd-cats" aria-label={t("Ангилал")}

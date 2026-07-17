@@ -125,6 +125,9 @@ a {
 .mh-hd-search-mobile {
   display: none;
 }
+.mh-hd-mobile-tools {
+  display: none;
+}
 @media (max-width: 760px) {
   .mh-hd-search-desktop {
     display: none !important;
@@ -135,6 +138,19 @@ a {
   /* давуу талын мөр жижиг дэлгэцэд нуугдана */
   .mh-hd-benefits {
     display: none !important;
+  }
+  .mh-hd-mobile-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 14px 10px;
+  }
+  .mh-hd-mobile-switches {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
   }
 }
 /* ангиллын мөр — mobile дээр хажуу тийш гүйлгэнэ, scrollbar нуух */
