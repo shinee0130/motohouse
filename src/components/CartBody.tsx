@@ -291,7 +291,7 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
       {/* Төлбөрийн боломжууд */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6, justifyContent: "center", opacity: 0.75 }}>
         {PAYMENT_METHODS.map((m) => (
-          <span key={m.name} title={m.name} style={sx("height:30px;min-width:42px;display:flex;align-items:center;justify-content:center;border:1px solid #2a2a2d;background:#fff;border-radius:6px;padding:4px 7px;")}>
+          <span key={m.name} title={m.name} style={sx("height:30px;min-width:42px;display:flex;align-items:center;justify-content:center;padding:4px 7px;")}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={m.src} alt={m.name} style={{ width: m.width, height: 20, objectFit: "contain", display: "block" }} />
           </span>
