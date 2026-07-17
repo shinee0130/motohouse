@@ -15,8 +15,8 @@ import {
 interface Group { label: string; items: CountryOption[] }
 
 export function CountryPicker({
-  value, onChange, ariaLabel,
-}: { value: string; onChange: (code: string) => void; ariaLabel?: string }) {
+  value, onChange, ariaLabel, compact = false,
+}: { value: string; onChange: (code: string) => void; ariaLabel?: string; compact?: boolean }) {
   const { t, loc } = useI18n();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -37,7 +37,15 @@ export function CountryPicker({
   // навигацийн flat жагсаалт
   const flat = useMemo(() => groups.flatMap((g) => g.items), [groups]);
 
-  useEffect(() => { if (open) { setQuery(""); setHi(0); setTimeout(() => searchRef.current?.focus(), 30); } }, [open]);
+  useEffect(() => {
+    if (!open) return;
+    const id = window.setTimeout(() => {
+      setQuery("");
+      setHi(0);
+      searchRef.current?.focus();
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [open]);
   useEffect(() => {
     if (open && listRef.current) listRef.current.querySelector<HTMLElement>(`[data-i="${hi}"]`)?.scrollIntoView({ block: "nearest" });
   }, [open, hi]);
@@ -62,13 +70,19 @@ export function CountryPicker({
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={ariaLabel || t("Хүргэлтийн улс")}
-        style={sx("display:flex;align-items:center;gap:10px;width:100%;min-height:44px;background:#050505;border:1px solid #262626;border-radius:10px;padding:11px 13px;color:#fff;font:500 15px Roboto;cursor:pointer;text-align:left;")}
+        style={sx(`display:flex;align-items:center;gap:${compact ? 7 : 10}px;width:${compact ? "104px" : "100%"};min-height:44px;background:#050505;border:1px solid #262626;border-radius:10px;padding:11px ${compact ? 10 : 13}px;color:#fff;font:500 15px Roboto;cursor:pointer;text-align:left;`)}
       >
         {selected ? (
           <>
             <span style={{ fontSize: 20, lineHeight: 1 }} aria-hidden="true">{selected.flag}</span>
-            <span style={sx("flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{name(selected)}</span>
-            <span style={sx("font:600 12px 'JetBrains Mono';color:#8A8F98;")}>{selected.code} · +{selected.callingCode}</span>
+            {compact ? (
+              <span style={sx("flex:1;font:600 13px 'JetBrains Mono';color:#C8C8C8;white-space:nowrap;")}>+{selected.callingCode}</span>
+            ) : (
+              <>
+                <span style={sx("flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;")}>{name(selected)}</span>
+                <span style={sx("font:600 12px 'JetBrains Mono';color:#8A8F98;")}>{selected.code} · +{selected.callingCode}</span>
+              </>
+            )}
           </>
         ) : (
           <span style={sx("flex:1;color:#8A8F98;")}>{t("Улс сонгох…")}</span>

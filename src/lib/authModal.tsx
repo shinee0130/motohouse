@@ -8,6 +8,8 @@ import { useI18n } from "@/lib/i18n";
 import { AUTH_INPUT, AUTH_LABEL, AUTH_BTN } from "@/components/AuthShell";
 import { PasswordInput } from "@/components/PasswordInput";
 import { Brand } from "@/components/Brand";
+import { CountryPicker } from "@/components/checkout/CountryPicker";
+import { callingCodeOf, isValidPhone, toE164 } from "@/lib/checkout";
 
 type Mode = "login" | "register" | "forgot" | "reset";
 type Ctx = { open: (mode?: Mode) => void; close: () => void };
@@ -108,7 +110,6 @@ function LoginForm({ t, refresh, close, toRegister, toForgot }: { t: (s: string)
   return (
     <>
       <h2 style={sx("font:800 24px Montserrat;color:#fff;")}>{t("Нэвтрэх")}</h2>
-      <p style={sx("font:400 13px Roboto;color:#8A8F98;margin-top:6px;margin-bottom:20px;")}>{t("И-мэйл, нууц үгээрээ нэвтэрнэ үү.")}</p>
       <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <div>
           <label style={sx(AUTH_LABEL)}>{t("И-мэйл")}</label>
@@ -136,6 +137,7 @@ function RegisterForm({ t, toLogin }: { t: (s: string) => string; toLogin: () =>
   const [lastName, setLastName] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [countryCode, setCountryCode] = useState("MN");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -149,19 +151,21 @@ function RegisterForm({ t, toLogin }: { t: (s: string) => string; toLogin: () =>
     if (!lastName.trim()) return setError(t("Овгоо оруулна уу."));
     if (!name.trim()) return setError(t("Нэрээ оруулна уу."));
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) return setError(t("И-мэйл хаягаа зөв оруулна уу."));
-    if (phone.replace(/\D/g, "").length !== 8) return setError(t("Утасны дугаар 8 оронтой байх ёстой."));
+    const calling = callingCodeOf(countryCode);
+    if (!isValidPhone(calling, phone)) return setError(t("Утасны дугаар буруу байна."));
+    const e164 = toE164(calling, phone);
     if (password.length < 6) return setError(t("Нууц үг дор хаяж 6 тэмдэгт."));
     if (password !== confirm) return setError(t("Нууц үг таарахгүй байна."));
     setBusy(true);
     try {
-      const { data: phoneTaken } = await supabase.rpc("phone_taken", { p: phone.replace(/\D/g, "") });
+      const { data: phoneTaken } = await supabase.rpc("phone_taken", { p: e164 });
       if (phoneTaken) { setError(t("Энэ утасны дугаар өөр бүртгэлд ашиглагдсан байна.")); return; }
       const fn = name.trim(), ln = lastName.trim();
       const { error: err } = await supabase.auth.signUp({
         email: email.trim(), password,
         options: {
           emailRedirectTo: `${window.location.origin}/account`,
-          data: { first_name: fn, last_name: ln, phone: phone.replace(/\D/g, ""), name: `${ln} ${fn}`.trim() },
+          data: { first_name: fn, last_name: ln, phone: e164, phone_country: countryCode, name: `${ln} ${fn}`.trim() },
         },
       });
       if (err) {
@@ -212,7 +216,7 @@ function RegisterForm({ t, toLogin }: { t: (s: string) => string; toLogin: () =>
         <div>
           <label style={sx(AUTH_LABEL)}>{t("Утасны дугаар")}</label>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={sx("background:#050505;border:1px solid #262626;border-radius:10px;padding:14px 12px;color:#8A8F98;font:500 15px Roboto;flex-shrink:0;")}>+976</span>
+            <CountryPicker compact value={countryCode} onChange={setCountryCode} ariaLabel={t("Улсын код")} />
             <input className="mh-input" type="tel" inputMode="numeric" placeholder="8800 0000" value={phone} onChange={(e) => setPhone(e.target.value)} style={sx(AUTH_INPUT)} />
           </div>
         </div>
