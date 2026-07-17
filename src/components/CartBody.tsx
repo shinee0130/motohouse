@@ -58,16 +58,21 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
 
   useEffect(() => {
     const load = () => setItems(getCart());
-    load(); setReady(true);
+    const initial = window.setTimeout(() => { load(); setReady(true); }, 0);
     window.addEventListener(CART_EVENT, load);
-    return () => window.removeEventListener(CART_EVENT, load);
+    return () => {
+      window.clearTimeout(initial);
+      window.removeEventListener(CART_EVENT, load);
+    };
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (!user) return;
+    const initial = window.setTimeout(() => {
       setRecipientName((n) => n || user.name || "");
       setPhone((p) => p || user.phone || "");
-    }
+    }, 0);
+    return () => window.clearTimeout(initial);
   }, [user]);
 
   const total = items.reduce((s, x) => s + x.price * x.qty, 0);
@@ -170,7 +175,7 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
 
   if (items.length === 0) {
     return (
-      <div style={sx("background:#111113;border:1px solid #262626;border-radius:18px;padding:44px 24px;text-align:center;")}>
+      <div style={sx("padding:44px 0;text-align:center;")}>
         <div style={sx("font:600 16px Montserrat;color:#C8C8C8;")}>{t("Сагс хоосон байна")} 🛒</div>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 20, flexWrap: "wrap" }}>
           <Link href="/gear" onClick={onNavigate} style={sx("background:#E10613;color:#fff;font:700 13px Montserrat;padding:12px 22px;border-radius:10px;cursor:pointer;")}>{t("Дагалдах хэрэгсэл үзэх")}</Link>
@@ -188,9 +193,9 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div ref={formRef} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
       {/* Барааны жагсаалт */}
-      <div style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;")}>
+      <div style={sx("overflow:hidden;")}>
         {items.map((it) => (
-          <div key={`${it.id}-${it.meta ?? ""}`} style={sx("display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid #1c1c1f;flex-wrap:wrap;")}>
+          <div key={`${it.id}-${it.meta ?? ""}`} style={sx("display:flex;align-items:center;gap:14px;padding:0 0 14px;border-bottom:1px solid #1c1c1f;flex-wrap:wrap;")}>
             <div style={sx("width:56px;height:56px;border-radius:10px;overflow:hidden;background:#fff;flex-shrink:0;")}>
               {it.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -220,7 +225,7 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
 
       {/* Хадгалсан хаяг (нэвтэрсэн, хүргэлт) — байхгүй бол өөрөө нуугдана */}
       {user && delivery && (
-        <div style={sx("background:#111113;border:1px solid #262626;border-radius:16px;padding:14px 16px;")}>
+        <div style={sx("padding:14px 0;")}>
           <SavedAddressSelector selectedId={selectedSavedId} onPick={pickSaved} reloadKey={reloadKey} />
         </div>
       )}

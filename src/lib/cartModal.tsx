@@ -54,12 +54,9 @@ function CartModal({ close }: { close: () => void }) {
         <button onClick={close} aria-label={t("Хаах")}
           style={sx("position:absolute;top:16px;right:16px;background:none;border:1px solid #262626;border-radius:8px;width:34px;height:34px;color:#8A8F98;font:600 15px Montserrat;cursor:pointer;z-index:1;")}>✕</button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 22, paddingRight: 44 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 8, marginBottom: 22, paddingRight: 44 }}>
           <Brand height={34} />
-          <div>
-            <div style={sx("font:500 11px 'JetBrains Mono';letter-spacing:.2em;color:#E10613;")}>CART</div>
-            <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;line-height:1.1;")}>{t("Миний сагс")}</h2>
-          </div>
+          <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;line-height:1.1;")}>{t("Миний сагс")}</h2>
         </div>
 
         <CartBody onNavigate={close} />

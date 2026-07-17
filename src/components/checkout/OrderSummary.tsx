@@ -18,7 +18,7 @@ interface Props {
 export function OrderSummary({ total, itemCount, ctaLabel, onCta, busy, note }: Props) {
   const { t } = useI18n();
   return (
-    <div style={sx("background:#0c0c0e;border:1px solid #262626;border-radius:16px;padding:14px 16px 16px;")}>
+    <div style={sx("padding:14px 0 16px;border-top:1px solid #1c1c1f;")}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
         <div>
           <div style={sx("font:600 11px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;")}>{t("НИЙТ ДҮН")}</div>
