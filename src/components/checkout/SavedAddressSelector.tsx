@@ -3,11 +3,11 @@
 // Хадгалсан хаягаас сонгох — нэвтэрсэн хэрэглэгчид. Сонгоход form автоматаар бөглөгдөнө.
 
 import { useEffect, useState } from "react";
-import { sx } from "@/lib/sx";
+import { sx } from "@/lib/ui/sx";
 import { useI18n } from "@/lib/i18n";
-import { useConfirm } from "@/lib/confirm";
-import { countryByCode } from "@/lib/countries";
-import { listAddresses, deleteAddress, type SavedAddress } from "@/lib/addresses";
+import { useConfirm } from "@/lib/ui/confirm";
+import { countryByCode } from "@/lib/reference/countries";
+import { listAddresses, deleteAddress, type SavedAddress } from "@/lib/commerce/addresses";
 
 interface Props {
   selectedId: string | null; // сонгосон хаягийн id, эсвэл null (шинэ)

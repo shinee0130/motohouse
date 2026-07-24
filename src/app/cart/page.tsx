@@ -1,8 +1,8 @@
 "use client";
 
-import { sx } from "@/lib/sx";
+import { sx } from "@/lib/ui/sx";
 import { useI18n } from "@/lib/i18n";
-import { CartBody } from "@/components/CartBody";
+import { CartBody } from "@/components/cart/CartBody";
 
 export default function CartPage() {
   const { t } = useI18n();

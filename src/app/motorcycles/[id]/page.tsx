@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { sx } from "@/lib/sx";
-import { Slot } from "@/components/Slot";
-import { MotoGallery } from "@/components/MotoGallery";
-import { MotoActions } from "@/components/MotoActions";
-import { statusLabel } from "@/lib/data";
-import { Price } from "@/lib/currency";
-import { getMotos, similarOf } from "@/lib/queries";
+import { sx } from "@/lib/ui/sx";
+import { Slot } from "@/components/ui/Slot";
+import { MotoGallery } from "@/components/motorcycles/MotoGallery";
+import { MotoActions } from "@/components/motorcycles/MotoActions";
+import { statusLabel } from "@/lib/db/data";
+import { Price } from "@/lib/reference/currency";
+import { getMotos, similarOf } from "@/lib/db/queries";
 import { T, Loc } from "@/lib/i18n";
-import { MotoExtras } from "@/components/MotoExtras";
+import { MotoExtras } from "@/components/motorcycles/MotoExtras";
 
 // Admin засвар шууд харагдахаар — DB-ээс амьд уншина
 export const dynamic = "force-dynamic";

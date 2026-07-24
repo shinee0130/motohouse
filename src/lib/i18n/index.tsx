@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { EN, tFor, type Lang } from "./dict";
-import { sx } from "@/lib/sx";
+import { sx } from "@/lib/ui/sx";
 
 const STORAGE_KEY = "motohouse.lang";
 const COOKIE_KEY = "motohouse_lang";

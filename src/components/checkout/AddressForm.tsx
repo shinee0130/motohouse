@@ -3,12 +3,12 @@
 // Бүтэцлэсэн хаягийн form — сонгосон улсаас хамааран талбар/label/required өөрчлөгдөнө.
 // line1 талбарт AddressAutocomplete (provider байвал), бусад нь энгийн TextField.
 
-import { sx } from "@/lib/sx";
+import { sx } from "@/lib/ui/sx";
 import { useI18n } from "@/lib/i18n";
 import { TextField } from "./fields";
 import { AddressAutocomplete } from "./AddressAutocomplete";
-import { addressSchema, type AddrFieldKey, type AddressValue } from "@/lib/checkout";
-import type { AddressDetails } from "@/lib/addressAutocomplete";
+import { addressSchema, type AddrFieldKey, type AddressValue } from "@/lib/commerce/checkout";
+import type { AddressDetails } from "@/lib/commerce/addressAutocomplete";
 
 interface Props {
   countryCode: string;

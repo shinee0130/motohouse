@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { sx } from "@/lib/sx";
-import { fmt } from "@/lib/data";
-import { orderBadge, type Order } from "@/lib/account";
-import { getMotos, getGearAll, getEvents, getOrders } from "@/lib/queries";
-import { getProfiles } from "@/lib/admin";
+import { sx } from "@/lib/ui/sx";
+import { fmt } from "@/lib/db/data";
+import { orderBadge, type Order } from "@/lib/commerce/account";
+import { getMotos, getGearAll, getEvents, getOrders } from "@/lib/db/queries";
+import { getProfiles } from "@/lib/db/admin";
 
 const CARD = "background:#111113;border:1px solid #262626;border-radius:16px;padding:22px;";
 

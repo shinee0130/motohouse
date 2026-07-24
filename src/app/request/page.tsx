@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { sx } from "@/lib/sx";
-import { useAuth } from "@/lib/auth";
-import { useAuthModal } from "@/lib/authModal";
+import { sx } from "@/lib/ui/sx";
+import { useAuth } from "@/lib/auth/auth";
+import { useAuthModal } from "@/lib/auth/authModal";
 import { useI18n } from "@/lib/i18n";
-import { createOrderRequest, uploadRequestImage } from "@/lib/admin";
-import { Select } from "@/components/Select";
+import { createOrderRequest, uploadRequestImage } from "@/lib/db/admin";
+import { Select } from "@/components/ui/Select";
 
 const CATEGORIES = ["Мотоцикл сэлбэг", "Дагалдах хэрэгсэл (каск, хувцас)", "Мотоцикл", "Бусад"];
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:10px;padding:12px 14px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";

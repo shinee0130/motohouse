@@ -1,5 +1,5 @@
-import { MotorcyclesClient } from "@/components/MotorcyclesClient";
-import { getMotos } from "@/lib/queries";
+import { MotorcyclesClient } from "@/components/motorcycles/MotorcyclesClient";
+import { getMotos } from "@/lib/db/queries";
 
 // Admin засвар шууд харагдахаар — DB-ээс амьд уншина (cache-гүй)
 export const dynamic = "force-dynamic";

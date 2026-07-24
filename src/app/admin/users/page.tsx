@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { sx } from "@/lib/sx";
-import { Select } from "@/components/Select";
-import { fmt } from "@/lib/data";
-import { getProfiles, setUserRole, type Profile } from "@/lib/admin";
-import { useConfirm } from "@/lib/confirm";
+import { sx } from "@/lib/ui/sx";
+import { Select } from "@/components/ui/Select";
+import { fmt } from "@/lib/db/data";
+import { getProfiles, setUserRole, type Profile } from "@/lib/db/admin";
+import { useConfirm } from "@/lib/ui/confirm";
 
 const ROLES = [
   { value: "customer", label: "Хэрэглэгч" },

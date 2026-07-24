@@ -2,9 +2,9 @@
 
 // Авах хэлбэр — Хүргэлтээр авах / Дэлгүүрээс очиж авах. Pickup үед салбарын хаяг+цаг харагдана.
 
-import { sx } from "@/lib/sx";
+import { sx } from "@/lib/ui/sx";
 import { useI18n } from "@/lib/i18n";
-import type { DeliveryMethod } from "@/lib/checkout";
+import type { DeliveryMethod } from "@/lib/commerce/checkout";
 
 const STORE_MAP = "https://www.google.com/maps/search/?api=1&query=47.8993424,106.9309956";
 

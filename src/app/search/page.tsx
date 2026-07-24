@@ -1,5 +1,5 @@
-import { getGearAll, getMotos } from "@/lib/queries";
-import { SearchResults } from "@/components/SearchResults";
+import { getGearAll, getMotos } from "@/lib/db/queries";
+import { SearchResults } from "@/components/listing/SearchResults";
 
 export const dynamic = "force-dynamic";
 

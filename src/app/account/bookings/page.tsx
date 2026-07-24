@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { sx } from "@/lib/sx";
-import { Price } from "@/lib/currency";
-import { useAuth } from "@/lib/auth";
+import { sx } from "@/lib/ui/sx";
+import { Price } from "@/lib/reference/currency";
+import { useAuth } from "@/lib/auth/auth";
 import { useI18n } from "@/lib/i18n";
-import { getMyTourBookings, type TourBooking } from "@/lib/queries";
+import { getMyTourBookings, type TourBooking } from "@/lib/db/queries";
 
 function bkBadge(status: string): string {
   const b = "font:700 11px Montserrat;letter-spacing:.04em;padding:5px 11px;border-radius:6px;display:inline-block;";
