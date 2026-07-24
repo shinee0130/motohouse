@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { sx } from "@/lib/sx";
-import { MotoCard } from "@/components/MotoCard";
-import { Slot } from "@/components/Slot";
-import { badge, isPart, type GearItem } from "@/lib/data";
-import { Price } from "@/lib/currency";
-import { getMotos, getGearAll, getEvents, getSettings } from "@/lib/queries";
+import { sx } from "@/lib/ui/sx";
+import { MotoCard } from "@/components/motorcycles/MotoCard";
+import { Slot } from "@/components/ui/Slot";
+import { badge, isPart, type GearItem } from "@/lib/db/data";
+import { Price } from "@/lib/reference/currency";
+import { getMotos, getGearAll, getEvents, getSettings } from "@/lib/db/queries";
 import { T, Loc } from "@/lib/i18n";
-import { NewsletterInput } from "@/components/NewsletterInput";
-import { Poster } from "@/components/Poster";
+import { NewsletterInput } from "@/components/layout/NewsletterInput";
+import { Poster } from "@/components/layout/Poster";
 
 // Бодит лого байгаа брэндүүд — marquee-д зургаар, бусад нь текстээр.
 const BRAND_LOGOS: Record<string, string> = {

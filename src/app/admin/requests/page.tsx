@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { sx } from "@/lib/sx";
-import { Select } from "@/components/Select";
-import { getOrderRequests, type OrderRequest } from "@/lib/queries";
-import { updateOrderRequest } from "@/lib/admin";
+import { sx } from "@/lib/ui/sx";
+import { Select } from "@/components/ui/Select";
+import { getOrderRequests, type OrderRequest } from "@/lib/db/queries";
+import { updateOrderRequest } from "@/lib/db/admin";
 
 const STATUSES = ["Шинэ", "Хянаж буй", "Үнэ өгсөн", "Хаагдсан"];
 type Filter = "all" | "open" | "quoted";

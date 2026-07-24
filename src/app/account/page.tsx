@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { sx } from "@/lib/sx";
-import { Price } from "@/lib/currency";
-import { orderBadge, type Order } from "@/lib/account";
-import { useAuth } from "@/lib/auth";
-import { getUserOrders, getSavedItems } from "@/lib/queries";
+import { sx } from "@/lib/ui/sx";
+import { Price } from "@/lib/reference/currency";
+import { orderBadge, type Order } from "@/lib/commerce/account";
+import { useAuth } from "@/lib/auth/auth";
+import { getUserOrders, getSavedItems } from "@/lib/db/queries";
 
 const CARD = "background:#111113;border:1px solid #262626;border-radius:16px;padding:22px;";
 

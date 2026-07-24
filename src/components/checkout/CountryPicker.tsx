@@ -5,12 +5,12 @@
 // Cart modal-ийн дээр гарна (z-index өндөр).
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { sx } from "@/lib/sx";
+import { sx } from "@/lib/ui/sx";
 import { useI18n } from "@/lib/i18n";
 import {
   POPULAR_COUNTRIES, REGION_ORDER, REGION_LABEL, countriesByRegion, searchCountries,
   countryByCode, type CountryOption,
-} from "@/lib/countries";
+} from "@/lib/reference/countries";
 
 interface Group { label: string; items: CountryOption[] }
 

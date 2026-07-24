@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { sx } from "@/lib/sx";
-import { Price } from "@/lib/currency";
-import { orderBadge, paymentBadge, paymentLabel, type Order } from "@/lib/account";
-import { useAuth } from "@/lib/auth";
+import { sx } from "@/lib/ui/sx";
+import { Price } from "@/lib/reference/currency";
+import { orderBadge, paymentBadge, paymentLabel, type Order } from "@/lib/commerce/account";
+import { useAuth } from "@/lib/auth/auth";
 import { useI18n } from "@/lib/i18n";
-import { getUserOrders } from "@/lib/queries";
-import { OrderTimeline } from "@/components/OrderTimeline";
+import { getUserOrders } from "@/lib/db/queries";
+import { OrderTimeline } from "@/components/cart/OrderTimeline";
 
 export default function OrdersPage() {
   const { user } = useAuth();

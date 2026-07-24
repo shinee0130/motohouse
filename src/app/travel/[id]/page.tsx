@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { getTour } from "@/lib/queries";
-import { TourDetail } from "@/components/TourDetail";
+import { getTour } from "@/lib/db/queries";
+import { TourDetail } from "@/components/travel/TourDetail";
 
 export const dynamic = "force-dynamic";
 

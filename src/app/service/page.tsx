@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { sx } from "@/lib/sx";
-import { SERVICES } from "@/lib/data";
-import { useAuth } from "@/lib/auth";
-import { useAuthModal } from "@/lib/authModal";
-import { createBooking } from "@/lib/admin";
-import { supabase } from "@/lib/supabase";
-import { Calendar } from "@/components/Calendar";
+import { sx } from "@/lib/ui/sx";
+import { SERVICES } from "@/lib/db/data";
+import { useAuth } from "@/lib/auth/auth";
+import { useAuthModal } from "@/lib/auth/authModal";
+import { createBooking } from "@/lib/db/admin";
+import { supabase } from "@/lib/db/supabase";
+import { Calendar } from "@/components/ui/Calendar";
 import { useI18n } from "@/lib/i18n";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:13px 15px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";

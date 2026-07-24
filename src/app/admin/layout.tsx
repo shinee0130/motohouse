@@ -3,9 +3,9 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { sx } from "@/lib/sx";
-import { useAuth } from "@/lib/auth";
-import { useAuthModal } from "@/lib/authModal";
+import { sx } from "@/lib/ui/sx";
+import { useAuth } from "@/lib/auth/auth";
+import { useAuthModal } from "@/lib/auth/authModal";
 
 const MENU = [
   { label: "Хяналтын самбар", href: "/admin" },

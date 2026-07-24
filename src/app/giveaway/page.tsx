@@ -1,5 +1,5 @@
-import { EventsGrid } from "@/components/EventsGrid";
-import { getEvents } from "@/lib/queries";
+import { EventsGrid } from "@/components/events/EventsGrid";
+import { getEvents } from "@/lib/db/queries";
 
 export const dynamic = "force-dynamic";
 

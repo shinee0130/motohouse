@@ -4,10 +4,10 @@
 // E.164 форматад хадгална (+<code><national>). Улс солиход үндэсний дугаарыг хадгална.
 
 import { useEffect, useId, useRef, useState } from "react";
-import { sx } from "@/lib/sx";
+import { sx } from "@/lib/ui/sx";
 import { useI18n } from "@/lib/i18n";
-import { countryByCode } from "@/lib/countries";
-import { callingCodeOf, digitsOnly, splitE164, toE164 } from "@/lib/checkout";
+import { countryByCode } from "@/lib/reference/countries";
+import { callingCodeOf, digitsOnly, splitE164, toE164 } from "@/lib/commerce/checkout";
 
 interface Props {
   value: string;          // E.164 (+976...)

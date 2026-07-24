@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MOTO HOUSE
 
-## Getting Started
+**RIDE. POWER. LIVE.** — Монголд суурилсан мотоцикл, riding gear, сэлбэг, засвар үйлчилгээ
+болон олон улсын захиалгын онлайн платформ.
 
-First, run the development server:
+🔗 Prod: [motohouse.mn](https://motohouse.mn)
+
+## Технологи
+
+| Давхарга | Технологи |
+|----------|-----------|
+| Framework | Next.js 16 (App Router) + React 19 |
+| Хэл | TypeScript |
+| Загвар | Tailwind CSS 4 |
+| Backend / DB | Supabase (Postgres, Auth, Storage, Edge Functions) |
+| Төлбөр | Bonum PSP |
+| Имэйл | Resend |
+| Hosting | Vercel |
+
+> ⚠️ Энэ төслийн Next.js хувилбар нь өөрчлөгдсөн API-тай. Код бичихээс өмнө
+> `node_modules/next/dist/docs/` доторх холбогдох зааврыг уншина уу (`AGENTS.md`-г үз).
+
+## Эхлүүлэх
+
+Node 24+ шаардлагатай.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Дараа нь [http://localhost:3000](http://localhost:3000)-г нээнэ.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Орчны хувьсагч (`.env.local`)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+NEXT_PUBLIC_SUPABASE_URL=<supabase-project-url>
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<supabase-anon-key>
+```
 
-## Learn More
+`NEXT_PUBLIC_*` түлхүүрүүд нийтийн (browser bundle-д ордог) бөгөөд RLS-ээр хамгаалагдсан.
 
-To learn more about Next.js, take a look at the following resources:
+## Ажлын урсгал (dev / prod)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Энэ төсөл **2 орчинтой**. **Бүх хөгжүүлэлт `dev` салбар дээр** явагдана; `main` (prod)
+руу зөвхөн **эзний зөвшөөрсөн PR-ээр** л код ордог.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Орчин | Салбар | Хаяг |
+|-------|--------|------|
+| **PROD** | `main` 🔒 | https://motohouse.mn |
+| **DEV** | `dev` | https://motohouse-git-dev-shinee0130s-projects.vercel.app |
 
-## Deploy on Vercel
+- `main` **түгжээтэй** — шууд push боломжгүй. `dev → main` PR нээж, кодын эзэн
+  (@shinee0130) approve хийж merge → Vercel prod-руу автомат деплой.
+- `dev` рүү push бүрт dev preview хаяг автоматаар шинэчлэгдэнэ.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+📄 Дэлгэрэнгүй: [docs/WORKFLOW.md](docs/WORKFLOW.md)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Скриптүүд
+
+```bash
+npm run dev     # хөгжүүлэлтийн сервер
+npm run build   # production build
+npm run start   # build-ийг ажиллуулах
+npm run lint    # ESLint
+```

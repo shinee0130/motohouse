@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { sx } from "@/lib/sx";
-import { Slot } from "@/components/Slot";
-import { badge } from "@/lib/data";
-import { getEvent, getParticipants } from "@/lib/queries";
-import { EventParticipate } from "@/components/EventParticipate";
+import { sx } from "@/lib/ui/sx";
+import { Slot } from "@/components/ui/Slot";
+import { badge } from "@/lib/db/data";
+import { getEvent, getParticipants } from "@/lib/db/queries";
+import { EventParticipate } from "@/components/events/EventParticipate";
 
 export const dynamic = "force-dynamic";
 

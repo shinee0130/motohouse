@@ -2,8 +2,8 @@
 
 // Захиалгын дүн + үндсэн CTA. Sticky байрлуулалтыг эцэг (CartBody) хийнэ.
 
-import { sx } from "@/lib/sx";
-import { Price } from "@/lib/currency";
+import { sx } from "@/lib/ui/sx";
+import { Price } from "@/lib/reference/currency";
 import { useI18n } from "@/lib/i18n";
 
 interface Props {

@@ -4,10 +4,10 @@
 // Санал сонговол боломжтой талбаруудыг (line1/city/state/postal/country) буцаана.
 
 import { useEffect, useRef, useState } from "react";
-import { sx } from "@/lib/sx";
+import { sx } from "@/lib/ui/sx";
 import { useI18n } from "@/lib/i18n";
 import { TextField } from "./fields";
-import { getAddressProvider, type AddressDetails, type AddressSuggestion } from "@/lib/addressAutocomplete";
+import { getAddressProvider, type AddressDetails, type AddressSuggestion } from "@/lib/commerce/addressAutocomplete";
 
 interface Props {
   label: string;

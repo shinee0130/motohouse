@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { sx } from "@/lib/sx";
-import { useAuth } from "@/lib/auth";
-import { AUTH_INPUT, AUTH_LABEL } from "@/components/AuthShell";
-import { PasswordInput } from "@/components/PasswordInput";
-import { supabase } from "@/lib/supabase";
+import { sx } from "@/lib/ui/sx";
+import { useAuth } from "@/lib/auth/auth";
+import { AUTH_INPUT, AUTH_LABEL } from "@/components/auth/AuthShell";
+import { PasswordInput } from "@/components/ui/PasswordInput";
+import { supabase } from "@/lib/db/supabase";
 import { useI18n } from "@/lib/i18n";
 
 const CARD = "background:#111113;border:1px solid #262626;border-radius:16px;padding:clamp(18px,3vw,26px);max-width:520px;";

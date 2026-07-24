@@ -1,6 +1,6 @@
-import { GearClient } from "@/components/GearClient";
-import { getGearAll } from "@/lib/queries";
-import { isPart } from "@/lib/data";
+import { GearClient } from "@/components/gear/GearClient";
+import { getGearAll } from "@/lib/db/queries";
+import { isPart } from "@/lib/db/data";
 
 export const dynamic = "force-dynamic";
 

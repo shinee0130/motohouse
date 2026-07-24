@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AuthProvider } from "@/lib/auth";
-import { Nav } from "@/components/Nav";
-import { Footer } from "@/components/Footer";
+import { AuthProvider } from "@/lib/auth/auth";
+import { Nav } from "@/components/layout/Nav";
+import { Footer } from "@/components/layout/Footer";
 import { I18nProvider } from "@/lib/i18n";
-import { CurrencyProvider } from "@/lib/currency";
-import { getRates } from "@/lib/fx";
-import { AuthModalProvider } from "@/lib/authModal";
-import { CartModalProvider } from "@/lib/cartModal";
-import { ConfirmProvider } from "@/lib/confirm";
+import { CurrencyProvider } from "@/lib/reference/currency";
+import { getRates } from "@/lib/reference/fx";
+import { AuthModalProvider } from "@/lib/auth/authModal";
+import { CartModalProvider } from "@/lib/commerce/cartModal";
+import { ConfirmProvider } from "@/lib/ui/confirm";
 
 const SITE_DESC =
   "Монголд суурилсан мотоцикл, riding gear, сэлбэг, засвар үйлчилгээ болон олон улсын захиалга нийлүүлэлтийн платформ.";

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { sx } from "@/lib/sx";
-import { getSettingsMap, updateSetting, uploadSiteImage } from "@/lib/admin";
-import { useConfirm } from "@/lib/confirm";
+import { sx } from "@/lib/ui/sx";
+import { getSettingsMap, updateSetting, uploadSiteImage } from "@/lib/db/admin";
+import { useConfirm } from "@/lib/ui/confirm";
 
 const SLOTS = [
   { key: "hero", label: "Hero (нүүрний том зураг)" },

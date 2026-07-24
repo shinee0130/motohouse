@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import { GearDetail } from "@/components/GearDetail";
-import { isPart } from "@/lib/data";
-import { getGearAll, relatedOf } from "@/lib/queries";
+import { GearDetail } from "@/components/gear/GearDetail";
+import { isPart } from "@/lib/db/data";
+import { getGearAll, relatedOf } from "@/lib/db/queries";
 
 export const dynamic = "force-dynamic";
 

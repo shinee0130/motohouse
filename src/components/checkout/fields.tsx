@@ -4,7 +4,7 @@
 // touch-friendly (≥44px), MOTO HOUSE загвартай. Бүх section эдгээрийг ашиглана.
 
 import { useId, type ReactNode } from "react";
-import { sx } from "@/lib/sx";
+import { sx } from "@/lib/ui/sx";
 
 export const F_LABEL = "font:600 12px Montserrat;letter-spacing:.02em;color:#C8C8C8;margin-bottom:6px;display:flex;align-items:center;gap:4px;";
 export const F_INPUT = "width:100%;min-height:44px;background:#050505;border:1px solid #262626;border-radius:10px;padding:12px 14px;color:#fff;font:400 15px Roboto;outline:none;";

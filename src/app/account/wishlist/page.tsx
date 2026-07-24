@@ -2,13 +2,13 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { sx } from "@/lib/sx";
-import { Slot } from "@/components/Slot";
-import { statusLabel, type GearItem, type Moto } from "@/lib/data";
-import { Price } from "@/lib/currency";
-import { useAuth } from "@/lib/auth";
-import { getSavedItems } from "@/lib/queries";
-import { setSaved } from "@/lib/admin";
+import { sx } from "@/lib/ui/sx";
+import { Slot } from "@/components/ui/Slot";
+import { statusLabel, type GearItem, type Moto } from "@/lib/db/data";
+import { Price } from "@/lib/reference/currency";
+import { useAuth } from "@/lib/auth/auth";
+import { getSavedItems } from "@/lib/db/queries";
+import { setSaved } from "@/lib/db/admin";
 import { useI18n } from "@/lib/i18n";
 
 export default function WishlistPage() {

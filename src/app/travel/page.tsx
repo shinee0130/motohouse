@@ -1,6 +1,6 @@
-import { TravelMapClient } from "@/components/TravelMapClient";
-import { TourList } from "@/components/TourList";
-import { getTours, getRideRoutes } from "@/lib/queries";
+import { TravelMapClient } from "@/components/travel/TravelMapClient";
+import { TourList } from "@/components/travel/TourList";
+import { getTours, getRideRoutes } from "@/lib/db/queries";
 
 export const dynamic = "force-dynamic";
 
