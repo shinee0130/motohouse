@@ -1,12 +1,7 @@
-import { notFound } from "next/navigation";
-import { getTour } from "@/lib/db/queries";
-import { TourDetail } from "@/components/travel/TourDetail";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-export default async function TourPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const tour = await getTour(Number(id));
-  if (!tour) notFound();
-  return <TourDetail tour={tour} />;
+// Аялал coming soon үед detail хуудсыг /travel руу шилжүүлнэ.
+// Сэргээх: git түүхээс өмнөх getTour + TourDetail хувилбарыг буцаа.
+export default function TourPage() {
+  redirect("/travel");
 }
