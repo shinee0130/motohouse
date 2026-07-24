@@ -234,6 +234,50 @@ export async function getMyTourBookings(phone: string): Promise<TourBooking[]> {
   return (data ?? []).map(mapTourBooking);
 }
 
+// ---- Photographers (Зурагчид) ----
+export interface PhotographerWork {
+  id: number; photographerId: number; kind: string; url: string;
+  thumb?: string; caption?: string; captionEn?: string; sort: number;
+}
+export interface Photographer {
+  id: number; name: string; nameEn?: string; specialty?: string; specialtyEn?: string;
+  tags: string[]; avatar?: string; bio?: string; bioEn?: string; price?: string;
+  instagram?: string; facebook?: string; tiktok?: string; youtube?: string;
+  sort: number; active: boolean; works?: PhotographerWork[];
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapWork(r: any): PhotographerWork {
+  return { id: r.id, photographerId: r.photographer_id, kind: r.kind ?? "photo", url: r.url,
+    thumb: r.thumb ?? undefined, caption: r.caption ?? undefined, captionEn: r.caption_en ?? undefined, sort: r.sort ?? 0 };
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapPhotographer(r: any): Photographer {
+  return {
+    id: r.id, name: r.name, nameEn: r.name_en ?? undefined, specialty: r.specialty ?? undefined, specialtyEn: r.specialty_en ?? undefined,
+    tags: r.tags ?? [], avatar: r.avatar ?? undefined, bio: r.bio ?? undefined, bioEn: r.bio_en ?? undefined, price: r.price ?? undefined,
+    instagram: r.instagram ?? undefined, facebook: r.facebook ?? undefined, tiktok: r.tiktok ?? undefined, youtube: r.youtube ?? undefined,
+    sort: r.sort ?? 0, active: r.active ?? true,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    works: r.photographer_works ? (r.photographer_works as any[]).map(mapWork).sort((a, b) => a.sort - b.sort) : undefined,
+  };
+}
+// Нийтэд — зөвхөн идэвхтэй (RLS ч active-аар шүүнэ)
+export async function getPhotographers(): Promise<Photographer[]> {
+  const { data, error } = await supabase.from("photographers").select("*").eq("active", true).order("sort");
+  if (error) throw error;
+  return (data ?? []).map(mapPhotographer);
+}
+// Admin — бүгд
+export async function getAllPhotographers(): Promise<Photographer[]> {
+  const { data } = await supabase.from("photographers").select("*").order("sort");
+  return (data ?? []).map(mapPhotographer);
+}
+// Дэлгэрэнгүй + портфолио (works)
+export async function getPhotographer(id: number): Promise<Photographer | null> {
+  const { data } = await supabase.from("photographers").select("*, photographer_works(*)").eq("id", id).maybeSingle();
+  return data ? mapPhotographer(data) : null;
+}
+
 // ---- Saved (Хадгалсан) ----
 export async function getSavedItems(phone: string): Promise<{ gear: GearItem[]; motos: Moto[] }> {
   const { data } = await supabase.from("saved").select("*").eq("user_phone", phone).order("created_at", { ascending: false });

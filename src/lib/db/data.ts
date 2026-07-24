@@ -103,24 +103,8 @@ export interface EventItem {
 }
 
 // ===== Зураг авалт (photoshoot) =====
-// PLACEHOLDER — эзэн дараа жинхэнэ нэр/зураг/үнээр солино.
-export interface Photographer {
-  id: string; // тогтвортой түлхүүр (захиалгад хадгалагдана)
-  name: string;
-  nameEn?: string;
-  specialty: string; // чиглэл (MN)
-  specialtyEn?: string;
-  tags: string[]; // "Зураг" | "Reel" | "Видео"
-  image?: string; // профайл / жишээ ажил (Storage URL, одоохондоо хоосон)
-  price?: string; // үнэ (сонголт, текстээр)
-}
-
-export const PHOTOGRAPHERS: Photographer[] = [
-  { id: "ph1", name: "Зурагчин 1", nameEn: "Photographer 1", specialty: "Мотоциклын студи ба гадаа зураг", specialtyEn: "Studio & outdoor moto photography", tags: ["Зураг"] },
-  { id: "ph2", name: "Зурагчин 2", nameEn: "Photographer 2", specialty: "Reel ба богино видео контент", specialtyEn: "Reels & short-form video", tags: ["Reel", "Видео"] },
-  { id: "ph3", name: "Зурагчин 3", nameEn: "Photographer 3", specialty: "Экшн ба аяллын бичлэг", specialtyEn: "Action & travel filming", tags: ["Видео", "Зураг"] },
-];
-
+// Зурагчид одоо DB-д (photographers хүснэгт, queries.ts::getPhotographers).
+// Үйлчилгээний төрлүүд нь тогтмол багц хэвээр:
 export const PHOTO_SERVICES: string[] = [
   "Мотоциклын зураг", "Reel бичлэг", "Видео шут", "Экшн бичлэг", "Студи зураг",
 ];

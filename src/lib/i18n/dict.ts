@@ -255,6 +255,12 @@ export const EN: Record<string, string> = {
     "Connect with our pro team for motorcycle photos, reels and video, and book a time that works for you.",
   "1. Зурагчин сонгох": "1. Choose a photographer",
   "3. Огноо": "3. Date",
+  "Мотоциклын зураг, reel болон видео бичлэгийн мэргэжлийн багаас сонгож, цаг захиална.":
+    "Pick from our pro team for motorcycle photos, reels and video, and book a time.",
+  "Одоогоор зурагчин бүртгэгдээгүй байна.": "No photographers listed yet.",
+  "Бүх зурагчид": "All photographers",
+  "Ажлууд": "Works",
+  "тохирох үйлчилгээ, огноо, цагаа сонгоно уу.": "choose a service, date and time.",
   "2. Үйлчилгээний төрөл": "2. Service type",
   "4. Цаг": "4. Time",
   "5. Холбоо барих": "5. Contact details",

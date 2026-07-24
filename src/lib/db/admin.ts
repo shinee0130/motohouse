@@ -2,7 +2,7 @@
 
 import { supabase, SUPABASE_URL, SUPABASE_KEY } from "@/lib/db/supabase";
 import type { Moto, GearItem, EventItem } from "@/lib/db/data";
-import type { Tour, RideRoute } from "@/lib/db/queries";
+import type { Tour, RideRoute, Photographer } from "@/lib/db/queries";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -274,6 +274,46 @@ export async function getPhotoBookings(): Promise<PhotoBooking[]> {
 }
 export async function updatePhotoBookingStatus(id: number, status: string) {
   await supabase.from("photo_bookings").update({ status }).eq("id", id);
+}
+
+// ===== Зурагчид (photographers) + портфолио (works) =====
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function photographerRow(p: Partial<Photographer>): any {
+  return {
+    name: p.name, name_en: p.nameEn || null, specialty: p.specialty ?? null, specialty_en: p.specialtyEn || null,
+    tags: p.tags ?? [], avatar: p.avatar ?? null, bio: p.bio ?? null, bio_en: p.bioEn || null, price: p.price ?? null,
+    instagram: p.instagram || null, facebook: p.facebook || null, tiktok: p.tiktok || null, youtube: p.youtube || null,
+    sort: p.sort ?? 0, active: p.active ?? true,
+  };
+}
+export async function createPhotographer(p: Partial<Photographer>): Promise<number> {
+  const { data, error } = await supabase.from("photographers").insert(photographerRow(p)).select("id").single();
+  if (error) throw error;
+  return data.id as number;
+}
+export async function updatePhotographer(id: number, p: Partial<Photographer>) {
+  const { error } = await supabase.from("photographers").update(photographerRow(p)).eq("id", id);
+  if (error) throw error;
+}
+export async function deletePhotographer(id: number) {
+  const { error } = await supabase.from("photographers").delete().eq("id", id);
+  if (error) throw error;
+}
+export async function addPhotographerWork(w: {
+  photographerId: number; kind: string; url: string; thumb?: string; caption?: string; captionEn?: string; sort?: number;
+}) {
+  const { error } = await supabase.from("photographer_works").insert({
+    photographer_id: w.photographerId, kind: w.kind, url: w.url, thumb: w.thumb || null,
+    caption: w.caption || null, caption_en: w.captionEn || null, sort: w.sort ?? 0,
+  });
+  if (error) throw error;
+}
+export async function deletePhotographerWork(id: number) {
+  const { error } = await supabase.from("photographer_works").delete().eq("id", id);
+  if (error) throw error;
+}
+export async function uploadPhotographerImage(file: File): Promise<string> {
+  return uploadTo("photographers", file);
 }
 
 // ===== Saved (Хадгалсан) =====
