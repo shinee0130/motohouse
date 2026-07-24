@@ -237,6 +237,15 @@ export function Nav() {
                         Admin panel
                       </Link>
                     )}
+                    {user!.role === "photographer" && (
+                      <Link
+                        href="/studio"
+                        onClick={() => setAcctOpen(false)}
+                        style={sx("display:block;padding:10px 12px;border-radius:8px;font:700 13px Montserrat;color:#fff;background:#E10613;margin-bottom:4px;")}
+                      >
+                        Studio
+                      </Link>
+                    )}
                     {ACCOUNT_MENU.map((m) => (
                       <Link
                         key={m.href}
@@ -411,6 +420,15 @@ export function Nav() {
                     style={sx("display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:11px;font:700 14px Montserrat;color:#E10613;")}
                   >
                     <IconCog style={{ width: 20, height: 20, flexShrink: 0 }} /> Admin panel
+                  </Link>
+                )}
+                {user!.role === "photographer" && (
+                  <Link
+                    href="/studio"
+                    onClick={() => setOpen(false)}
+                    style={sx("display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:11px;font:700 14px Montserrat;color:#E10613;")}
+                  >
+                    <IconCamera style={{ width: 20, height: 20, flexShrink: 0 }} /> Studio
                   </Link>
                 )}
                 {ACCOUNT_MENU.map((m) => (

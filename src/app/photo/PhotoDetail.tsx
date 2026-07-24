@@ -107,7 +107,7 @@ export function PhotoDetail({ p }: { p: Photographer }) {
           <p style={sx("font:400 13px Roboto;color:#8A8F98;margin:6px 0 20px;")}>
             <b style={{ color: "#fff" }}>{loc(p.name, p.nameEn)}</b> — {t("тохирох үйлчилгээ, огноо, цагаа сонгоно уу.")}
           </p>
-          <PhotoBookingForm photographerName={p.name} />
+          <PhotoBookingForm photographerName={p.name} photographerId={p.id} />
         </div>
       </div>
     </div>

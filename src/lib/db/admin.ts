@@ -262,14 +262,35 @@ export interface PhotoBooking {
   status: string; user_phone?: string; created_at?: string;
 }
 export async function createPhotoBooking(b: {
-  photographer: string; service_type: string; booking_date: string; booking_time: string;
+  photographer: string; photographer_id?: number | null; service_type: string; booking_date: string; booking_time: string;
   name: string; phone: string; moto_model?: string; note?: string; user_phone?: string;
 }) {
   const { error } = await supabase.from("photo_bookings").insert({ ...b, status: "Шинэ" });
   if (error) throw error;
 }
+
+// Admin: зурагчны account үүсгэж/холбож role='photographer' болгоно (edge function, service_role).
+export async function linkPhotographer(photographerId: number, email: string): Promise<{ userId: string; email: string }> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+  if (!token) throw new Error("Нэвтрэлт хүчингүй байна.");
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/link-photographer`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, apikey: SUPABASE_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ photographerId, email }),
+  });
+  let json: { userId?: string; email?: string; error?: string } = {};
+  try { json = await res.json(); } catch {}
+  if (!res.ok || !json.userId) throw new Error(json.error || `Алдаа (${res.status})`);
+  return { userId: json.userId, email: json.email || email };
+}
 export async function getPhotoBookings(): Promise<PhotoBooking[]> {
   const { data } = await supabase.from("photo_bookings").select("*").order("created_at", { ascending: false });
+  return (data ?? []) as PhotoBooking[];
+}
+// Нэвтэрсэн зурагчны ӨӨРИЙН захиалгууд (RLS-ээр ч зөвхөн өөрийнх нь ирнэ)
+export async function getMyPhotoBookings(photographerId: number): Promise<PhotoBooking[]> {
+  const { data } = await supabase.from("photo_bookings").select("*").eq("photographer_id", photographerId).order("created_at", { ascending: false });
   return (data ?? []) as PhotoBooking[];
 }
 export async function updatePhotoBookingStatus(id: number, status: string) {

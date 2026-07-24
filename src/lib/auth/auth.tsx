@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/lib/db/supabase";
 
-export type Role = "customer" | "admin";
+export type Role = "customer" | "admin" | "photographer";
 
 export interface User {
   name: string; // дэлгэцэнд харуулах нэр = "Овог Нэр"

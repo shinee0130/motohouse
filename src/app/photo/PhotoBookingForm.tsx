@@ -13,7 +13,7 @@ const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;pad
 const LABEL = "font:600 12px Montserrat;letter-spacing:.04em;color:#C8C8C8;margin-bottom:8px;display:block;";
 const TIMES = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
-export function PhotoBookingForm({ photographerName }: { photographerName: string }) {
+export function PhotoBookingForm({ photographerName, photographerId }: { photographerName: string; photographerId?: number }) {
   const { user } = useAuth();
   const { t } = useI18n();
   const authModal = useAuthModal();
@@ -47,7 +47,7 @@ export function PhotoBookingForm({ photographerName }: { photographerName: strin
     setBusy(true);
     try {
       await createPhotoBooking({
-        photographer: photographerName,
+        photographer: photographerName, photographer_id: photographerId ?? null,
         service_type: serviceType, booking_date: date, booking_time: time,
         name: name.trim(), phone: phone.replace(/\D/g, ""), moto_model: model.trim(),
         note: note.trim(), user_phone: user?.phone,
