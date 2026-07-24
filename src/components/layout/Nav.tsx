@@ -18,7 +18,7 @@ import { useAuthModal } from "@/lib/auth/authModal";
 import { useCartModal } from "@/lib/commerce/cartModal";
 import {
   IconHome, IconBike, IconHelmet, IconCog, IconWrench, IconRoute, IconCalendar,
-  IconTicket, IconCart, IconPackage, IconRequest, IconTruck, IconCard, IconShield,
+  IconTicket, IconCart, IconPackage, IconRequest, IconTruck, IconCard, IconShield, IconCamera,
 } from "@/components/ui/icons";
 
 const NAV = [
@@ -28,6 +28,7 @@ const NAV = [
   { label: "Сэлбэг", href: "/parts", Icon: IconPackage },
   { label: "Захиалгын хүсэлт", href: "/request", Icon: IconRequest },
   { label: "Засвар", href: "/service", Icon: IconWrench },
+  { label: "Зураг авалт", href: "/photo", Icon: IconCamera },
   { label: "Аялал", href: "/travel", Icon: IconRoute },
   { label: "Event", href: "/events", Icon: IconCalendar },
   { label: "Giveaway", href: "/giveaway", Icon: IconTicket },
@@ -40,6 +41,7 @@ const CATS = [
   { label: "Дагалдах хэрэгсэл", href: "/gear" },
   { label: "Сэлбэг", href: "/parts" },
   { label: "Засвар", href: "/service" },
+  { label: "Зураг авалт", href: "/photo" },
   { label: "Аялал", href: "/travel" },
   { label: "Event", href: "/events" },
   { label: "Giveaway", href: "/giveaway", hot: true }, // SALE шиг улаан

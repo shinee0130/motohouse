@@ -19,6 +19,7 @@ const MENU = [
   { label: "Захиалга", href: "/admin/orders" },
   { label: "Захиалгын хүсэлт", href: "/admin/requests" },
   { label: "Засварын цаг", href: "/admin/service" },
+  { label: "Зураг авалт", href: "/admin/photo" },
   { label: "Хэрэглэгчид", href: "/admin/users" },
   { label: "Home backgrounds", href: "/admin/home" },
 ];

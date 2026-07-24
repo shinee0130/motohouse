@@ -255,6 +255,27 @@ export async function updateBookingStatus(id: number, status: string) {
   await supabase.from("service_bookings").update({ status }).eq("id", id);
 }
 
+// ===== Зураг авалт захиалга (photo_bookings) =====
+export interface PhotoBooking {
+  id: number; photographer: string; service_type: string; booking_date: string; booking_time: string;
+  name: string; phone: string; moto_model?: string; note?: string;
+  status: string; user_phone?: string; created_at?: string;
+}
+export async function createPhotoBooking(b: {
+  photographer: string; service_type: string; booking_date: string; booking_time: string;
+  name: string; phone: string; moto_model?: string; note?: string; user_phone?: string;
+}) {
+  const { error } = await supabase.from("photo_bookings").insert({ ...b, status: "Шинэ" });
+  if (error) throw error;
+}
+export async function getPhotoBookings(): Promise<PhotoBooking[]> {
+  const { data } = await supabase.from("photo_bookings").select("*").order("created_at", { ascending: false });
+  return (data ?? []) as PhotoBooking[];
+}
+export async function updatePhotoBookingStatus(id: number, status: string) {
+  await supabase.from("photo_bookings").update({ status }).eq("id", id);
+}
+
 // ===== Saved (Хадгалсан) =====
 export async function setSaved(phone: string, kind: "gear" | "moto", itemId: number, on: boolean) {
   if (on) {
