@@ -43,6 +43,7 @@ export default function StudioPage() {
   const [me, setMe] = useState<Photographer | null | undefined>(undefined);
   const [f, setF] = useState<Form | null>(null);
   const [services, setServices] = useState<PhotographerService[]>([]);
+  const [dailyLimit, setDailyLimit] = useState(3);
   const [flang, setFlang] = useState<"mn" | "en">("mn");
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -55,7 +56,7 @@ export default function StudioPage() {
     (async () => {
       const p = await getMyPhotographer();
       setMe(p);
-      if (p) { setF(toForm(p)); setServices(p.services ?? []); setBookings(await getMyPhotoBookings(p.id)); }
+      if (p) { setF(toForm(p)); setServices(p.services ?? []); setDailyLimit(p.dailyLimit ?? 3); setBookings(await getMyPhotoBookings(p.id)); }
     })();
   }, [ready, user, router]);
 
@@ -72,7 +73,7 @@ export default function StudioPage() {
         name: f.name.trim(), nameEn: f.nameEn.trim(), specialty: f.specialty.trim(), specialtyEn: f.specialtyEn.trim(),
         bio: f.bio.trim(), bioEn: f.bioEn.trim(), tags: arr(f.tags), price: f.price.trim(),
         instagram: f.instagram.trim(), facebook: f.facebook.trim(), tiktok: f.tiktok.trim(), youtube: f.youtube.trim(), avatar: f.avatar,
-        services: services.filter((s) => s.name.trim()),
+        services: services.filter((s) => s.name.trim()), dailyLimit: Math.max(1, Number(dailyLimit) || 1),
       });
       await alert({ title: "Хадгалагдлаа" });
     } catch (e) { await alert({ title: "Алдаа", message: e instanceof Error ? e.message : String(e), danger: true }); }
@@ -168,6 +169,11 @@ export default function StudioPage() {
                 <div><label style={sx(LABEL)}>YouTube URL</label><input value={f.youtube} onChange={(e) => set("youtube", e.target.value)} style={sx(INPUT)} /></div>
               </div>
               <ServicesEditor value={services} onChange={setServices} />
+              <div style={{ maxWidth: 260 }}>
+                <label style={sx(LABEL)}>Өдрийн захиалгын хязгаар</label>
+                <input type="number" min={1} value={dailyLimit} onChange={(e) => setDailyLimit(Number(e.target.value))} style={sx(INPUT)} />
+                <div style={sx("font:400 11px Roboto;color:#8A8F98;margin-top:5px;")}>Нэг өдөрт хэдэн захиалга авах вэ (жишээ нь урт ажилтай бол 1).</div>
+              </div>
               <div>
                 <label style={sx(LABEL)}>Профайл зураг</label>
                 <div style={{ display: "flex", alignItems: "center", gap: 14 }}>

@@ -308,6 +308,7 @@ function photographerRow(p: Partial<Photographer>): any {
     tags: p.tags ?? [], avatar: p.avatar ?? null, bio: p.bio ?? null, bio_en: p.bioEn || null, price: p.price ?? null,
     instagram: p.instagram || null, facebook: p.facebook || null, tiktok: p.tiktok || null, youtube: p.youtube || null,
     services: p.services ?? [],
+    daily_limit: p.dailyLimit ?? 3,
     sort: p.sort ?? 0, active: p.active ?? true,
   };
 }

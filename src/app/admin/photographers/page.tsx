@@ -17,11 +17,11 @@ type Form = {
   name: string; nameEn: string; specialty: string; specialtyEn: string;
   tags: string; price: string; bio: string; bioEn: string;
   instagram: string; facebook: string; tiktok: string; youtube: string;
-  avatar: string; sort: number; active: boolean;
+  avatar: string; sort: number; active: boolean; dailyLimit: number;
 };
 const empty: Form = {
   name: "", nameEn: "", specialty: "", specialtyEn: "", tags: "", price: "", bio: "", bioEn: "",
-  instagram: "", facebook: "", tiktok: "", youtube: "", avatar: "", sort: 0, active: true,
+  instagram: "", facebook: "", tiktok: "", youtube: "", avatar: "", sort: 0, active: true, dailyLimit: 3,
 };
 const arr = (s: string) => s.split(/[,\n]/).map((x) => x.trim()).filter(Boolean);
 function toForm(p: Photographer): Form {
@@ -29,7 +29,7 @@ function toForm(p: Photographer): Form {
     name: p.name, nameEn: p.nameEn ?? "", specialty: p.specialty ?? "", specialtyEn: p.specialtyEn ?? "",
     tags: (p.tags ?? []).join(", "), price: p.price ?? "", bio: p.bio ?? "", bioEn: p.bioEn ?? "",
     instagram: p.instagram ?? "", facebook: p.facebook ?? "", tiktok: p.tiktok ?? "", youtube: p.youtube ?? "",
-    avatar: p.avatar ?? "", sort: p.sort ?? 0, active: p.active ?? true,
+    avatar: p.avatar ?? "", sort: p.sort ?? 0, active: p.active ?? true, dailyLimit: p.dailyLimit ?? 3,
   };
 }
 function fromForm(f: Form): Partial<Photographer> {
@@ -37,7 +37,7 @@ function fromForm(f: Form): Partial<Photographer> {
     name: f.name.trim(), nameEn: f.nameEn.trim(), specialty: f.specialty.trim(), specialtyEn: f.specialtyEn.trim(),
     tags: arr(f.tags), price: f.price.trim(), bio: f.bio.trim(), bioEn: f.bioEn.trim(),
     instagram: f.instagram.trim(), facebook: f.facebook.trim(), tiktok: f.tiktok.trim(), youtube: f.youtube.trim(),
-    avatar: f.avatar, sort: Number(f.sort) || 0, active: f.active,
+    avatar: f.avatar, sort: Number(f.sort) || 0, active: f.active, dailyLimit: Math.max(1, Number(f.dailyLimit) || 1),
   };
 }
 
@@ -169,6 +169,7 @@ export default function AdminPhotographers() {
               <div><label style={sx(LABEL)}>Tag (таслалаар: Зураг, Reel, Видео)</label><input value={f.tags} onChange={(e) => set("tags", e.target.value)} style={sx(INPUT)} /></div>
               <div><label style={sx(LABEL)}>Үнэ (текст, сонголт)</label><input value={f.price} onChange={(e) => set("price", e.target.value)} placeholder="ж: 150,000₮-с" style={sx(INPUT)} /></div>
               <div><label style={sx(LABEL)}>Эрэмбэ (sort)</label><input type="number" value={f.sort} onChange={(e) => set("sort", Number(e.target.value))} style={sx(INPUT)} /></div>
+              <div><label style={sx(LABEL)}>Өдрийн захиалгын хязгаар</label><input type="number" min={1} value={f.dailyLimit} onChange={(e) => set("dailyLimit", Number(e.target.value))} style={sx(INPUT)} /></div>
             </div>
 
             <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;")}>

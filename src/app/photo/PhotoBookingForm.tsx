@@ -15,9 +15,8 @@ import type { PhotographerService } from "@/lib/db/queries";
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:13px 15px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
 const LABEL = "font:600 12px Montserrat;letter-spacing:.04em;color:#C8C8C8;margin-bottom:8px;display:block;";
 const TIMES = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
-const DAY_MAX = 3;
 
-export function PhotoBookingForm({ photographerName, photographerId, services = [] }: { photographerName: string; photographerId?: number; services?: PhotographerService[] }) {
+export function PhotoBookingForm({ photographerName, photographerId, services = [], dailyLimit = 3 }: { photographerName: string; photographerId?: number; services?: PhotographerService[]; dailyLimit?: number }) {
   const { user } = useAuth();
   const { t, loc } = useI18n();
   const authModal = useAuthModal();
@@ -42,10 +41,10 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
     if (!date || !photographerId) { setDayFull(false); return; }
     let alive = true;
     supabase.rpc("photo_day_count", { pid: photographerId, d: date }).then(({ data }) => {
-      if (alive) setDayFull((data as number ?? 0) >= DAY_MAX);
+      if (alive) setDayFull((data as number ?? 0) >= (dailyLimit || 3));
     });
     return () => { alive = false; };
-  }, [date, photographerId]);
+  }, [date, photographerId, dailyLimit]);
 
   function chip(active: boolean): string {
     const b = "cursor:pointer;font:600 13px Roboto;padding:11px 14px;border-radius:10px;text-align:center;user-select:none;";
@@ -124,7 +123,7 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
         <div>
           <label style={sx(LABEL)}>{t("2. Огноо")}</label>
           <Calendar value={date} onChange={setDate} />
-          {dayFull && <div style={sx("font:500 12px Roboto;color:#f59e0b;margin-top:8px;")}>{t("Энэ өдөр дүүрсэн байна (өдөрт 3 захиалга). Өөр өдөр сонгоно уу.")}</div>}
+          {dayFull && <div style={sx("font:500 12px Roboto;color:#f59e0b;margin-top:8px;")}>{t("Энэ өдөр дүүрсэн байна. Өөр өдөр сонгоно уу.")}</div>}
         </div>
       </div>
 
