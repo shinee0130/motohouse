@@ -70,7 +70,7 @@ export default function StudioPage() {
     setBusy(true);
     try {
       await updatePhotographer(me.id, {
-        name: f.name.trim(), nameEn: f.nameEn.trim(), specialty: f.specialty.trim(), specialtyEn: f.specialtyEn.trim(),
+        name: f.name.trim(), nameEn: f.name.trim(), specialty: f.specialty.trim(), specialtyEn: f.specialtyEn.trim(),
         bio: f.bio.trim(), bioEn: f.bioEn.trim(), tags: arr(f.tags), price: f.price.trim(),
         instagram: f.instagram.trim(), facebook: f.facebook.trim(), tiktok: f.tiktok.trim(), youtube: f.youtube.trim(), avatar: f.avatar,
         services: services.filter((s) => s.name.trim()), dailyLimit: Math.max(1, Number(dailyLimit) || 1),
@@ -142,17 +142,10 @@ export default function StudioPage() {
                 ))}
               </div>
               <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;")}>
-                {flang === "mn" ? (
-                  <>
-                    <div><label style={sx(LABEL)}>Нэр *</label><input value={f.name} onChange={(e) => set("name", e.target.value)} style={sx(INPUT)} /></div>
-                    <div><label style={sx(LABEL)}>Чиглэл</label><input value={f.specialty} onChange={(e) => set("specialty", e.target.value)} style={sx(INPUT)} /></div>
-                  </>
-                ) : (
-                  <>
-                    <div><label style={sx(LABEL)}>Name (EN)</label><input value={f.nameEn} onChange={(e) => set("nameEn", e.target.value)} style={sx(INPUT)} /></div>
-                    <div><label style={sx(LABEL)}>Specialty (EN)</label><input value={f.specialtyEn} onChange={(e) => set("specialtyEn", e.target.value)} style={sx(INPUT)} /></div>
-                  </>
-                )}
+                <div><label style={sx(LABEL)}>Нэр * <span style={sx("color:#8A8F98;font-weight:400;")}>(2 хэлэнд ижил)</span></label><input value={f.name} onChange={(e) => set("name", e.target.value)} style={sx(INPUT)} /></div>
+                {flang === "mn"
+                  ? <div><label style={sx(LABEL)}>Чиглэл</label><input value={f.specialty} onChange={(e) => set("specialty", e.target.value)} style={sx(INPUT)} /></div>
+                  : <div><label style={sx(LABEL)}>Specialty (EN)</label><input value={f.specialtyEn} onChange={(e) => set("specialtyEn", e.target.value)} style={sx(INPUT)} /></div>}
               </div>
               <div>
                 <label style={sx(LABEL)}>{flang === "mn" ? "Танилцуулга" : "Bio (EN)"}</label>
