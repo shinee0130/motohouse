@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { sx } from "@/lib/ui/sx";
 import { useAuth } from "@/lib/auth/auth";
-import { getMyPhotographer, getPhotographer, type Photographer } from "@/lib/db/queries";
+import { getMyPhotographer, getPhotographer, type Photographer, type PhotographerService } from "@/lib/db/queries";
 import { updatePhotographer, uploadPhotographerImage, getMyPhotoBookings, updatePhotoBookingStatus, type PhotoBooking } from "@/lib/db/admin";
 import { WorksManager } from "@/components/admin/WorksManager";
+import { ServicesEditor } from "@/components/admin/ServicesEditor";
 import { Select } from "@/components/ui/Select";
 import { useAlert } from "@/lib/ui/confirm";
 
@@ -41,6 +42,7 @@ export default function StudioPage() {
   const alert = useAlert();
   const [me, setMe] = useState<Photographer | null | undefined>(undefined);
   const [f, setF] = useState<Form | null>(null);
+  const [services, setServices] = useState<PhotographerService[]>([]);
   const [flang, setFlang] = useState<"mn" | "en">("mn");
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -53,7 +55,7 @@ export default function StudioPage() {
     (async () => {
       const p = await getMyPhotographer();
       setMe(p);
-      if (p) { setF(toForm(p)); setBookings(await getMyPhotoBookings(p.id)); }
+      if (p) { setF(toForm(p)); setServices(p.services ?? []); setBookings(await getMyPhotoBookings(p.id)); }
     })();
   }, [ready, user, router]);
 
@@ -70,6 +72,7 @@ export default function StudioPage() {
         name: f.name.trim(), nameEn: f.nameEn.trim(), specialty: f.specialty.trim(), specialtyEn: f.specialtyEn.trim(),
         bio: f.bio.trim(), bioEn: f.bioEn.trim(), tags: arr(f.tags), price: f.price.trim(),
         instagram: f.instagram.trim(), facebook: f.facebook.trim(), tiktok: f.tiktok.trim(), youtube: f.youtube.trim(), avatar: f.avatar,
+        services: services.filter((s) => s.name.trim()),
       });
       await alert({ title: "Хадгалагдлаа" });
     } catch (e) { await alert({ title: "Алдаа", message: e instanceof Error ? e.message : String(e), danger: true }); }
@@ -164,6 +167,7 @@ export default function StudioPage() {
                 <div><label style={sx(LABEL)}>TikTok URL</label><input value={f.tiktok} onChange={(e) => set("tiktok", e.target.value)} style={sx(INPUT)} /></div>
                 <div><label style={sx(LABEL)}>YouTube URL</label><input value={f.youtube} onChange={(e) => set("youtube", e.target.value)} style={sx(INPUT)} /></div>
               </div>
+              <ServicesEditor value={services} onChange={setServices} />
               <div>
                 <label style={sx(LABEL)}>Профайл зураг</label>
                 <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -190,7 +194,7 @@ export default function StudioPage() {
               {bookings.map((b) => (
                 <div key={b.id} style={sx("display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid #1c1c1f;")}>
                   <div style={{ minWidth: 200 }}>
-                    <div style={sx("font:700 15px Montserrat;color:#fff;")}>{b.service_type}</div>
+                    <div style={sx("font:700 15px Montserrat;color:#fff;")}>{b.service_type}{b.price ? <span style={sx("font:700 13px Montserrat;color:#E10613;")}> · {b.price.toLocaleString("en-US")}₮</span> : null}</div>
                     <div style={sx("font:600 13px Roboto;color:#E10613;margin-top:3px;")}>📅 {b.booking_date} · {b.booking_time}</div>
                     <div style={sx("font:400 12px 'JetBrains Mono';color:#8A8F98;margin-top:4px;")}>{b.name} · +976 {b.phone}{b.moto_model ? ` · ${b.moto_model}` : ""}</div>
                     {b.note && <div style={sx("font:400 12px Roboto;color:#A3A3A3;margin-top:4px;")}>“{b.note}”</div>}

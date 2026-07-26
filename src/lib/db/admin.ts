@@ -257,16 +257,19 @@ export async function updateBookingStatus(id: number, status: string) {
 
 // ===== Зураг авалт захиалга (photo_bookings) =====
 export interface PhotoBooking {
-  id: number; photographer: string; service_type: string; booking_date: string; booking_time: string;
-  name: string; phone: string; moto_model?: string; note?: string;
+  id: number; photographer: string; photographer_id?: number; service_type: string; booking_date: string; booking_time: string;
+  name: string; phone: string; moto_model?: string; note?: string; price?: number;
   status: string; user_phone?: string; created_at?: string;
 }
 export async function createPhotoBooking(b: {
   photographer: string; photographer_id?: number | null; service_type: string; booking_date: string; booking_time: string;
-  name: string; phone: string; moto_model?: string; note?: string; user_phone?: string;
+  name: string; phone: string; moto_model?: string; note?: string; price?: number | null; user_phone?: string;
 }) {
   const { error } = await supabase.from("photo_bookings").insert({ ...b, status: "Шинэ" });
-  if (error) throw error;
+  if (error) {
+    if ((error.message || "").includes("PHOTO_DAY_FULL")) throw new Error("PHOTO_DAY_FULL");
+    throw error;
+  }
 }
 
 // Admin: зурагчны account үүсгэж/холбож role='photographer' болгоно (edge function, service_role).
@@ -304,6 +307,7 @@ function photographerRow(p: Partial<Photographer>): any {
     name: p.name, name_en: p.nameEn || null, specialty: p.specialty ?? null, specialty_en: p.specialtyEn || null,
     tags: p.tags ?? [], avatar: p.avatar ?? null, bio: p.bio ?? null, bio_en: p.bioEn || null, price: p.price ?? null,
     instagram: p.instagram || null, facebook: p.facebook || null, tiktok: p.tiktok || null, youtube: p.youtube || null,
+    services: p.services ?? [],
     sort: p.sort ?? 0, active: p.active ?? true,
   };
 }

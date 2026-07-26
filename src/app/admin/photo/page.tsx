@@ -54,7 +54,7 @@ export default function AdminPhoto() {
           <div key={b.id} style={sx("display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid #1c1c1f;")}>
             <div style={{ minWidth: 220 }}>
               <div style={sx("font:700 15px Montserrat;color:#fff;")}>
-                📸 {b.photographer} <span style={sx("font:500 13px Roboto;color:#8A8F98;")}>· {b.service_type}</span>
+                📸 {b.photographer} <span style={sx("font:500 13px Roboto;color:#8A8F98;")}>· {b.service_type}</span>{b.price ? <span style={sx("font:700 13px Montserrat;color:#E10613;")}> · {b.price.toLocaleString("en-US")}₮</span> : null}
               </div>
               <div style={sx("font:600 13px Roboto;color:#E10613;margin-top:3px;")}>📅 {b.booking_date} · {b.booking_time}</div>
               <div style={sx("font:400 12px 'JetBrains Mono';color:#8A8F98;margin-top:4px;")}>

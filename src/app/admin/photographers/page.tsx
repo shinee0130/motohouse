@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
-import { getAllPhotographers, getPhotographer, type Photographer, type PhotographerWork } from "@/lib/db/queries";
+import { getAllPhotographers, getPhotographer, type Photographer, type PhotographerWork, type PhotographerService } from "@/lib/db/queries";
 import { createPhotographer, updatePhotographer, deletePhotographer, uploadPhotographerImage, linkPhotographer } from "@/lib/db/admin";
 import { WorksManager } from "@/components/admin/WorksManager";
+import { ServicesEditor } from "@/components/admin/ServicesEditor";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:11px 13px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
@@ -44,6 +45,7 @@ export default function AdminPhotographers() {
   const [list, setList] = useState<Photographer[]>([]);
   const [editing, setEditing] = useState<number | "new" | null>(null);
   const [f, setF] = useState<Form>(empty);
+  const [services, setServices] = useState<PhotographerService[]>([]);
   const [flang, setFlang] = useState<"mn" | "en">("mn");
   const [works, setWorks] = useState<PhotographerWork[]>([]);
   const [busy, setBusy] = useState(false);
@@ -62,11 +64,11 @@ export default function AdminPhotographers() {
   async function openEdit(id: number) {
     const p = await getPhotographer(id);
     if (!p) return;
-    setEditing(id); setF(toForm(p)); setWorks(p.works ?? []); setFlang("mn");
+    setEditing(id); setF(toForm(p)); setServices(p.services ?? []); setWorks(p.works ?? []); setFlang("mn");
     setLinkedUserId(p.userId); setLinkEmail("");
   }
-  function openNew() { setEditing("new"); setF(empty); setWorks([]); setFlang("mn"); setLinkedUserId(undefined); setLinkEmail(""); }
-  function close() { setEditing(null); setF(empty); setWorks([]); setLinkedUserId(undefined); setLinkEmail(""); }
+  function openNew() { setEditing("new"); setF(empty); setServices([]); setWorks([]); setFlang("mn"); setLinkedUserId(undefined); setLinkEmail(""); }
+  function close() { setEditing(null); setF(empty); setServices([]); setWorks([]); setLinkedUserId(undefined); setLinkEmail(""); }
 
   async function doLink() {
     const email = linkEmail.trim();
@@ -86,8 +88,9 @@ export default function AdminPhotographers() {
     if (!f.name.trim()) { await alert({ title: "Нэр оруулна уу." }); return; }
     setBusy(true);
     try {
-      if (editing === "new") await createPhotographer(fromForm(f));
-      else if (typeof editing === "number") await updatePhotographer(editing, fromForm(f));
+      const patch = { ...fromForm(f), services: services.filter((s) => s.name.trim()) };
+      if (editing === "new") await createPhotographer(patch);
+      else if (typeof editing === "number") await updatePhotographer(editing, patch);
       await refresh();
       close();
     } catch (e) {
@@ -174,6 +177,9 @@ export default function AdminPhotographers() {
               <div><label style={sx(LABEL)}>TikTok URL</label><input value={f.tiktok} onChange={(e) => set("tiktok", e.target.value)} style={sx(INPUT)} /></div>
               <div><label style={sx(LABEL)}>YouTube URL</label><input value={f.youtube} onChange={(e) => set("youtube", e.target.value)} style={sx(INPUT)} /></div>
             </div>
+
+            {/* үйлчилгээ + үнэ */}
+            <ServicesEditor value={services} onChange={setServices} />
 
             {/* avatar */}
             <div>

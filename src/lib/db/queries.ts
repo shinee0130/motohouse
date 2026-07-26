@@ -239,10 +239,12 @@ export interface PhotographerWork {
   id: number; photographerId: number; kind: string; url: string;
   thumb?: string; caption?: string; captionEn?: string; sort: number;
 }
+export interface PhotographerService { name: string; nameEn?: string; price?: number }
 export interface Photographer {
   id: number; name: string; nameEn?: string; specialty?: string; specialtyEn?: string;
   tags: string[]; avatar?: string; bio?: string; bioEn?: string; price?: string;
   instagram?: string; facebook?: string; tiktok?: string; youtube?: string;
+  services: PhotographerService[];
   sort: number; active: boolean; userId?: string; works?: PhotographerWork[];
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -256,6 +258,7 @@ function mapPhotographer(r: any): Photographer {
     id: r.id, name: r.name, nameEn: r.name_en ?? undefined, specialty: r.specialty ?? undefined, specialtyEn: r.specialty_en ?? undefined,
     tags: r.tags ?? [], avatar: r.avatar ?? undefined, bio: r.bio ?? undefined, bioEn: r.bio_en ?? undefined, price: r.price ?? undefined,
     instagram: r.instagram ?? undefined, facebook: r.facebook ?? undefined, tiktok: r.tiktok ?? undefined, youtube: r.youtube ?? undefined,
+    services: Array.isArray(r.services) ? (r.services as PhotographerService[]) : [],
     sort: r.sort ?? 0, active: r.active ?? true, userId: r.user_id ?? undefined,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     works: r.photographer_works ? (r.photographer_works as any[]).map(mapWork).sort((a, b) => a.sort - b.sort) : undefined,
