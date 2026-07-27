@@ -17,11 +17,12 @@ type Pending = { kind: "photo" | "video"; url: string; thumb?: string; caption?:
 // дараа нь ХАДГАЛАХ товчоор нэг дор хадгална. admin ба studio-д хоёуланд.
 export function WorksManager({ photographerId, works, onChange }: { photographerId: number; works: PhotographerWork[]; onChange: () => Promise<void> }) {
   const [kind, setKind] = useState<"photo" | "video">("photo");
-  const [vurl, setVurl] = useState("");
+  const [vurl, setVurl] = useState(""); // upload хийсэн видео файлын URL
   const [vthumb, setVthumb] = useState("");
   const [vcaption, setVcaption] = useState("");
   const [pending, setPending] = useState<Pending[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [vidUploading, setVidUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const confirm = useConfirm();
   const alert = useAlert();
@@ -43,6 +44,15 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
     try { setVthumb(await uploadPhotographerImage(file)); }
     catch (e) { await alert({ title: "Upload алдаа: " + (e instanceof Error ? e.message : String(e)) }); }
     finally { setUploading(false); }
+  }
+
+  // Видео файл (mp4) storage-д upload хийж, URL-ыг барина
+  async function uploadVideoFile(file: File) {
+    if (file.size > 100 * 1024 * 1024) { await alert({ title: "Видео 100MB-аас бага байх ёстой." }); return; }
+    setVidUploading(true);
+    try { setVurl(await uploadPhotographerImage(file)); }
+    catch (e) { await alert({ title: "Видео upload алдаа: " + (e instanceof Error ? e.message : String(e)) }); }
+    finally { setVidUploading(false); }
   }
 
   function stageVideo() {
@@ -116,10 +126,17 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <div><label style={sx(LABEL)}>Reel / видео линк (Instagram, YouTube, TikTok)</label><input value={vurl} onChange={(e) => setVurl(e.target.value)} placeholder="https://…" style={sx(INPUT)} /></div>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <label style={sx(GHOST + "display:inline-block;" + (vidUploading ? "opacity:.6;pointer-events:none;" : ""))}>
+                {vidUploading ? "Ачаалж байна…" : vurl ? "Видео солих" : "Видео файл сонгох (mp4)"}
+                <input type="file" accept="video/*" hidden onChange={(e) => { const file = e.target.files?.[0]; if (file) uploadVideoFile(file); e.target.value = ""; }} />
+              </label>
+              {vurl && <span style={sx("font:600 12px Roboto;color:#22c55e;")}>✓ Видео бэлэн</span>}
+            </div>
+            <div style={sx("font:400 11px Roboto;color:#8A8F98;")}>Видео файлаа шууд оруулбал сайт дээр тоглоно (100MB хүртэл).</div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
               <label style={sx(GHOST + "display:inline-block;")}>
-                {uploading ? "Ачаалж байна…" : "Thumbnail зураг (сонголт)"}
+                {uploading ? "Ачаалж байна…" : "Нүүр зураг / poster (сонголт)"}
                 <input type="file" accept="image/*" hidden onChange={(e) => { const file = e.target.files?.[0]; if (file) stageThumb(file); }} />
               </label>
               {vthumb && (
@@ -128,7 +145,7 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
               )}
             </div>
             <div><label style={sx(LABEL)}>Гарчиг (сонголт)</label><input value={vcaption} onChange={(e) => setVcaption(e.target.value)} style={sx(INPUT)} /></div>
-            <button type="button" onClick={stageVideo} disabled={!vurl.trim()} style={sx(GHOST + "align-self:flex-start;" + (!vurl.trim() ? "opacity:.5;" : ""))}>+ Жагсаалтад нэмэх</button>
+            <button type="button" onClick={stageVideo} disabled={!vurl} style={sx(GHOST + "align-self:flex-start;" + (!vurl ? "opacity:.5;" : ""))}>+ Жагсаалтад нэмэх</button>
           </div>
         )}
 

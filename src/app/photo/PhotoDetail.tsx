@@ -16,15 +16,13 @@ const SOCIALS: { key: keyof Photographer; label: string }[] = [
 ];
 
 type Embed = { type: "iframe" | "video"; src: string; aspect: string };
-// Видео линк/файлыг сайт дээр тоглуулах хэлбэрт хөрвүүлнэ (боломжгүй бол null)
+// Видео файл/линкийг сайт дээр тоглуулах хэлбэрт хөрвүүлнэ (боломжгүй бол null → шинэ табд нээнэ)
 function videoEmbed(url: string): Embed | null {
+  // Шууд upload хийсэн видео файл — хамгийн найдвартай, сайт дээр тоглоно
+  if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(url)) return { type: "video", src: url, aspect: "9 / 16" };
+  // YouTube найдвартай embed хийгддэг
   const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([\w-]{6,})/);
   if (yt) return { type: "iframe", src: `https://www.youtube.com/embed/${yt[1]}`, aspect: "16 / 9" };
-  const ig = url.match(/instagram\.com\/(reel|reels|p|tv)\/([\w-]+)/);
-  if (ig) return { type: "iframe", src: `https://www.instagram.com/${ig[1] === "reels" ? "reel" : ig[1]}/${ig[2]}/embed`, aspect: "9 / 16" };
-  const tt = url.match(/tiktok\.com\/.*\/video\/(\d+)/) || url.match(/tiktok\.com\/embed\/v2\/(\d+)/);
-  if (tt) return { type: "iframe", src: `https://www.tiktok.com/embed/v2/${tt[1]}`, aspect: "9 / 16" };
-  if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(url)) return { type: "video", src: url, aspect: "9 / 16" };
   return null;
 }
 
