@@ -5,7 +5,16 @@ import { sx } from "@/lib/ui/sx";
 import { Select } from "@/components/ui/Select";
 import { getPhotoBookings, updatePhotoBookingStatus, type PhotoBooking } from "@/lib/db/admin";
 
-const STATUSES = ["Шинэ", "Баталгаажсан", "Дууссан", "Цуцлагдсан"];
+const STATUSES = ["Төлбөр хүлээгдэж буй", "Баталгаажсан", "Дууссан", "Цуцлагдсан"];
+
+// Төлбөрийн төлөв — badge
+function payBadge(ps?: string): { label: string; css: string } {
+  const base = "font:700 10px Montserrat;letter-spacing:.04em;padding:4px 9px;border-radius:6px;display:inline-block;";
+  if (ps === "paid") return { label: "Урьдчилгаа төлсөн", css: base + "color:#22c55e;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.35);" };
+  if (ps === "pending") return { label: "Төлбөр хүлээж буй", css: base + "color:#f59e0b;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.35);" };
+  if (ps === "failed") return { label: "Төлбөр амжилтгүй", css: base + "color:#ef4444;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);" };
+  return { label: "Төлөөгүй", css: base + "color:#8A8F98;background:#1a1a1d;border:1px solid #333;" };
+}
 
 function badge(status: string): string {
   const base = "font:700 11px Montserrat;letter-spacing:.04em;padding:5px 11px;border-radius:6px;display:inline-block;";
@@ -54,7 +63,9 @@ export default function AdminPhoto() {
           <div key={b.id} style={sx("display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid #1c1c1f;")}>
             <div style={{ minWidth: 220 }}>
               <div style={sx("font:700 15px Montserrat;color:#fff;")}>
-                📸 {b.photographer} <span style={sx("font:500 13px Roboto;color:#8A8F98;")}>· {b.service_type}</span>{b.price ? <span style={sx("font:700 13px Montserrat;color:#E10613;")}> · {b.price.toLocaleString("en-US")}₮</span> : null}
+                📸 {b.photographer} <span style={sx("font:500 13px Roboto;color:#8A8F98;")}>· {b.service_type}</span>
+                {b.price ? <span style={sx("font:700 13px Montserrat;color:#E10613;")}> · {b.price.toLocaleString("en-US")}₮</span> : null}
+                {b.deposit ? <span style={sx("font:500 11px Roboto;color:#8A8F98;")}> (урьдчилгаа {b.deposit.toLocaleString("en-US")}₮)</span> : null}
               </div>
               <div style={sx("font:600 13px Roboto;color:#E10613;margin-top:3px;")}>📅 {b.booking_date} · {b.booking_time}</div>
               <div style={sx("font:400 12px 'JetBrains Mono';color:#8A8F98;margin-top:4px;")}>
@@ -63,6 +74,7 @@ export default function AdminPhoto() {
               {b.note && <div style={sx("font:400 12px Roboto;color:#A3A3A3;margin-top:4px;")}>“{b.note}”</div>}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <span style={sx(payBadge(b.payment_status).css)}>{payBadge(b.payment_status).label}</span>
               <span style={sx(badge(b.status))}>{b.status}</span>
               <Select value={b.status} onChange={(v) => changeStatus(b.id, v)} full bg="#050505" options={STATUSES.map((s) => ({ value: s, label: s }))} />
             </div>

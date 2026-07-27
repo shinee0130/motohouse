@@ -121,14 +121,14 @@ export async function createOrder(o: {
 
 // Bonum төлбөрийн invoice үүсгэх — bonum-invoice Edge Function дуудна.
 // Дүнг сервер тал (edge function) DB-ийн захиалгаас авдаг тул энд дамжуулахгүй.
-export async function createBonumInvoice(transactionId: string): Promise<{ followUpLink: string }> {
+export async function createBonumInvoice(transactionId: string, kind: "order" | "photo" = "order"): Promise<{ followUpLink: string }> {
   const { data: { session } } = await supabase.auth.getSession();
   const token = session?.access_token;
   if (!token) throw new Error("Нэвтрэлт шаардлагатай. Дахин нэвтэрнэ үү.");
   const res = await fetch(`${SUPABASE_URL}/functions/v1/bonum-invoice`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, apikey: SUPABASE_KEY, "Content-Type": "application/json" },
-    body: JSON.stringify({ transactionId }),
+    body: JSON.stringify({ transactionId, kind }),
   });
   let json: { followUpLink?: string; error?: string } = {};
   try { json = await res.json(); } catch {}
@@ -256,20 +256,31 @@ export async function updateBookingStatus(id: number, status: string) {
 }
 
 // ===== Зураг авалт захиалга (photo_bookings) =====
+// Зураг авалтын урьдчилгааны хувь — захиалга баталгаажуулахад үүнийг төлнө.
+export const PHOTO_DEPOSIT_RATE = 0.3;
+
 export interface PhotoBooking {
   id: number; photographer: string; photographer_id?: number; service_type: string; booking_date: string; booking_time: string;
-  name: string; phone: string; moto_model?: string; note?: string; price?: number;
-  status: string; user_phone?: string; created_at?: string;
+  name: string; phone: string; moto_model?: string; note?: string; price?: number; deposit?: number;
+  status: string; payment_status?: string; paid_at?: string; transaction_id?: string;
+  user_phone?: string; created_at?: string;
 }
+// Захиалга үүсгээд transactionId буцаана (дараа нь Bonum invoice үүсгэнэ).
 export async function createPhotoBooking(b: {
   photographer: string; photographer_id?: number | null; service_type: string; booking_date: string; booking_time: string;
-  name: string; phone: string; moto_model?: string; note?: string; price?: number | null; user_phone?: string;
-}) {
-  const { error } = await supabase.from("photo_bookings").insert({ ...b, status: "Шинэ" });
+  name: string; phone: string; moto_model?: string; note?: string; price: number; user_phone?: string;
+}): Promise<string> {
+  const transactionId = `MHP-${Date.now().toString().slice(-8)}-${Math.random().toString(36).slice(2, 6)}`;
+  const deposit = Math.max(1, Math.round(b.price * PHOTO_DEPOSIT_RATE));
+  const { error } = await supabase.from("photo_bookings").insert({
+    ...b, deposit, transaction_id: transactionId,
+    status: "Төлбөр хүлээгдэж буй", payment_status: "unpaid",
+  });
   if (error) {
     if ((error.message || "").includes("PHOTO_DAY_FULL")) throw new Error("PHOTO_DAY_FULL");
     throw error;
   }
+  return transactionId;
 }
 
 // Admin: зурагчны account үүсгэж/холбож role='photographer' болгоно (edge function, service_role).

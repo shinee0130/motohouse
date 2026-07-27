@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
-import { PHOTO_SERVICES } from "@/lib/db/data";
 import { useAuth } from "@/lib/auth/auth";
 import { useAuthModal } from "@/lib/auth/authModal";
-import { createPhotoBooking } from "@/lib/db/admin";
+import { createPhotoBooking, createBonumInvoice, PHOTO_DEPOSIT_RATE } from "@/lib/db/admin";
 import { supabase } from "@/lib/db/supabase";
 import { Calendar } from "@/components/ui/Calendar";
 import { useI18n } from "@/lib/i18n";
@@ -30,11 +29,11 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [sent, setSent] = useState(false);
   const [dayFull, setDayFull] = useState(false); // тухайн өдөр 3 захиалга дүүрсэн эсэх
 
   // Зурагчны өөрийн үйлчилгээ; хоосон бол ерөнхий жагсаалт (үнэгүй)
-  const serviceList: PhotographerService[] = services.length ? services : PHOTO_SERVICES.map((n) => ({ name: n }));
+  // Зөвхөн зурагчны өөрийн үйлчилгээ (үнэтэй) — ерөнхий fallback байхгүй
+  const serviceList: PhotographerService[] = services;
 
   // Огноо солигдоход тухайн зурагчны тэр өдрийн захиалгын тоог шалгана
   useEffect(() => {
@@ -58,6 +57,7 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
     setError("");
     if (!user) { authModal.open("login"); return; }
     if (!serviceType) return setError(t("Үйлчилгээгээ сонгоно уу."));
+    if (!price || price <= 0) return setError(t("Энэ үйлчилгээнд үнэ тохируулаагүй байна. Зурагчинтай холбогдоно уу."));
     if (!date) return setError(t("Огноогоо сонгоно уу."));
     if (dayFull) return setError(t("Энэ өдөр дүүрсэн байна. Өөр өдөр сонгоно уу."));
     if (!time) return setError(t("Цагаа сонгоно уу."));
@@ -65,40 +65,26 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
     if (phone.replace(/\D/g, "").length !== 8) return setError(t("Утасны дугаар 8 оронтой байх ёстой."));
     setBusy(true);
     try {
-      await createPhotoBooking({
+      // 1) Захиалга үүсгэнэ (Төлбөр хүлээгдэж буй) → 2) Bonum invoice → 3) төлбөрийн хуудас
+      const txId = await createPhotoBooking({
         photographer: photographerName, photographer_id: photographerId ?? null, price,
         service_type: serviceType, booking_date: date, booking_time: time,
         name: name.trim(), phone: phone.replace(/\D/g, ""), moto_model: model.trim(),
         note: note.trim(), user_phone: user?.phone,
       });
-      setSent(true);
+      const { followUpLink } = await createBonumInvoice(txId, "photo");
+      window.location.href = followUpLink; // Bonum төлбөрийн хуудас
     } catch (err) {
       if (err instanceof Error && err.message === "PHOTO_DAY_FULL") {
         setDayFull(true);
         setError(t("Уучлаарай, энэ өдөр дөнгөж дүүрлээ. Өөр өдөр сонгоно уу."));
       } else {
-        setError(t("Алдаа гарлаа. Дахин оролдоно уу."));
+        setError(err instanceof Error && err.message.includes("Төлбөрийн хуудас")
+          ? t("Төлбөрийн хуудас үүсгэхэд алдаа гарлаа. Дахин оролдоно уу.")
+          : t("Алдаа гарлаа. Дахин оролдоно уу."));
       }
-    } finally { setBusy(false); }
-  }
-
-  if (sent) {
-    return (
-      <div style={sx("background:#111113;border:1px solid #262626;border-radius:18px;padding:clamp(28px,5vw,48px);text-align:center;")}>
-        <div style={sx("font:800 22px Montserrat;color:#22c55e;")}>✓ {t("Захиалга илгээгдлээ!")}</div>
-        <div style={sx("font:400 14px Roboto;color:#A3A3A3;margin-top:10px;")}>
-          <b style={{ color: "#fff" }}>{photographerName}</b> — {t(serviceType)}{price ? <> · <Price amount={price} /></> : null}<br />
-          {date} {time}<br />
-          {t("Бид удахгүй холбогдож баталгаажуулна.")}
-        </div>
-        <button
-          onClick={() => { setSent(false); setServiceType(""); setPrice(null); setDate(""); setTime(""); setModel(""); setNote(""); }}
-          style={sx("margin-top:20px;background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.05em;padding:13px 24px;border:none;border-radius:10px;cursor:pointer;")}
-        >
-          {t("Дахин захиалах")}
-        </button>
-      </div>
-    );
+      setBusy(false);
+    }
   }
 
   return (
@@ -110,14 +96,22 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
             {serviceList.map((s, i) => {
               const label = s.nameEn ? loc(s.name, s.nameEn) : t(s.name);
               const active = serviceType === s.name;
+              const priced = !!s.price && s.price > 0;
+              // Үнэгүй үйлчилгээг захиалах боломжгүй (урьдчилгаа тооцох боломжгүй)
               return (
-                <div key={i} onClick={() => { setServiceType(s.name); setPrice(s.price ?? null); }}
-                  style={sx(`cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:10px;user-select:none;${active ? "background:#E10613;color:#fff;border:1px solid #E10613;" : "background:#111113;color:#C8C8C8;border:1px solid #262626;"}`)}>
+                <div key={i} onClick={() => { if (!priced) return; setServiceType(s.name); setPrice(s.price ?? null); }}
+                  title={priced ? undefined : t("Үнэ тохируулаагүй")}
+                  style={sx(`display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:10px;user-select:none;${!priced ? "cursor:not-allowed;background:#0b0b0d;color:#4b4b50;border:1px solid #1c1c1f;" : active ? "cursor:pointer;background:#E10613;color:#fff;border:1px solid #E10613;" : "cursor:pointer;background:#111113;color:#C8C8C8;border:1px solid #262626;"}`)}>
                   <span style={sx("font:600 13px Roboto;")}>{label}</span>
-                  {s.price ? <span style={sx(`font:700 13px Montserrat;${active ? "color:#fff;" : "color:#fff;"}`)}><Price amount={s.price} /></span> : null}
+                  {priced
+                    ? <span style={sx("font:700 13px Montserrat;color:#fff;")}><Price amount={s.price as number} /></span>
+                    : <span style={sx("font:500 11px Roboto;color:#5b5b60;")}>{t("Үнэ тохируулаагүй")}</span>}
                 </div>
               );
             })}
+            {serviceList.length === 0 && (
+              <div style={sx("font:400 13px Roboto;color:#8A8F98;")}>{t("Энэ зурагчин үйлчилгээгээ хараахан тохируулаагүй байна.")}</div>
+            )}
           </div>
         </div>
         <div>
@@ -147,10 +141,23 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
           <input className="mh-input" placeholder={t("Мотоциклын модель (заавал биш)")} value={model} onChange={(e) => setModel(e.target.value)} style={sx(INPUT)} />
           <textarea className="mh-input" placeholder={t("Санаа / нэмэлт тэмдэглэл")} rows={3} value={note} onChange={(e) => setNote(e.target.value)} style={sx(INPUT + "resize:vertical;")} />
         </div>
+        {/* төлбөрийн хураангуй */}
+        {price ? (
+          <div style={sx("background:#0e0e10;border:1px solid #262626;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;")}>
+            <div style={sx("display:flex;align-items:center;justify-content:space-between;font:500 13px Roboto;color:#A3A3A3;")}>
+              <span>{t("Үйлчилгээний үнэ")}</span><span style={sx("color:#fff;font-weight:700;")}><Price amount={price} /></span>
+            </div>
+            <div style={sx("display:flex;align-items:center;justify-content:space-between;font:600 14px Roboto;color:#fff;border-top:1px solid #1c1c1f;padding-top:8px;")}>
+              <span>{t("Одоо төлөх урьдчилгаа")} ({Math.round(PHOTO_DEPOSIT_RATE * 100)}%)</span>
+              <span style={sx("color:#E10613;font:800 16px Montserrat;")}><Price amount={Math.round(price * PHOTO_DEPOSIT_RATE)} /></span>
+            </div>
+            <div style={sx("font:400 11px Roboto;color:#8A8F98;")}>{t("Үлдэгдлийг зураг авалт дээр төлнө. Урьдчилгаа төлөгдмөгц захиалга баталгаажна.")}</div>
+          </div>
+        ) : null}
         {!user && <div style={sx("font:500 12px Roboto;color:#8A8F98;")}>{t("Захиалахын тулд эхлээд нэвтэрсэн байх шаардлагатай.")}</div>}
         {error && <div style={sx("font:500 13px Roboto;color:#ef4444;")}>{error}</div>}
         <button type="submit" disabled={busy || dayFull} style={sx(`background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px;border:none;border-radius:11px;text-transform:uppercase;cursor:pointer;${busy || dayFull ? "opacity:.6;" : ""}`)}>
-          {busy ? t("Илгээж байна…") : user ? t("Захиалга илгээх") : t("Нэвтэрч захиалах")}
+          {busy ? t("Төлбөр рүү шилжиж байна…") : user ? t("Урьдчилгаа төлж захиалах") : t("Нэвтэрч захиалах")}
         </button>
       </div>
     </form>

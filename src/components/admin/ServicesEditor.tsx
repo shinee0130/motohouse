@@ -16,8 +16,11 @@ export function ServicesEditor({ value, onChange }: { value: PhotographerService
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      <label style={sx(LABEL)}>Үйлчилгээ ба үнэ (₮)</label>
-      {value.length === 0 && <div style={sx("font:400 12px Roboto;color:#8A8F98;")}>Үйлчилгээ нэмээгүй байна. Хоосон бол ерөнхий жагсаалт харагдана.</div>}
+      <label style={sx(LABEL)}>Үйлчилгээ ба үнэ (₮) <span style={sx("color:#8A8F98;font-weight:400;")}>— үнэ заавал</span></label>
+      {value.length === 0 && <div style={sx("font:400 12px Roboto;color:#f59e0b;")}>⚠️ Үйлчилгээ нэмээгүй байна. Үнэтэй үйлчилгээ нэмэхгүй бол хэрэглэгч танд захиалга өгч чадахгүй.</div>}
+      {value.some((s) => s.name.trim() && !s.price) && (
+        <div style={sx("font:400 12px Roboto;color:#f59e0b;")}>⚠️ Үнэ оруулаагүй үйлчилгээг хэрэглэгч захиалж чадахгүй.</div>
+      )}
       {value.map((s, i) => (
         <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 130px 34px", gap: 8, alignItems: "center" }}>
           <input value={s.name} onChange={(e) => update(i, { name: e.target.value })} placeholder="Нэр (MN)" style={sx(INPUT)} />
