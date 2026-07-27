@@ -19,6 +19,7 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
   const [caption, setCaption] = useState("");
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [bulk, setBulk] = useState<{ done: number; total: number } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const confirm = useConfirm();
   const alert = useAlert();
@@ -39,6 +40,21 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
       await onChange();
     } catch (e) { await alert({ title: "Алдаа: " + (e instanceof Error ? e.message : String(e)) }); }
     finally { setBusy(false); }
+  }
+
+  // Олон зургийг зэрэг оруулах — тус бүрийг upload хийж, шууд ажил болгож нэмнэ
+  async function bulkPhotos(files: FileList) {
+    const arr = Array.from(files);
+    setBulk({ done: 0, total: arr.length });
+    try {
+      for (let i = 0; i < arr.length; i++) {
+        const u = await uploadPhotographerImage(arr[i]);
+        await addPhotographerWork({ photographerId, kind: "photo", url: u, sort: works.length + i });
+        setBulk({ done: i + 1, total: arr.length });
+      }
+      await onChange();
+    } catch (e) { await alert({ title: "Upload алдаа: " + (e instanceof Error ? e.message : String(e)) }); }
+    finally { setBulk(null); }
   }
 
   async function del(w: PhotographerWork) {
@@ -77,15 +93,12 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
         </div>
 
         {kind === "photo" ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            <label style={sx(GHOST + "display:inline-block;")}>
-              {uploading ? "Ачаалж байна…" : "Зураг сонгох"}
-              <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => { const file = e.target.files?.[0]; if (file) upload(file, "url"); }} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <label style={sx(GHOST + "display:inline-block;align-self:flex-start;" + (bulk ? "opacity:.6;pointer-events:none;" : ""))}>
+              {bulk ? `Ачаалж байна… (${bulk.done}/${bulk.total})` : "Зураг сонгох (олон зэрэг болно)"}
+              <input ref={fileRef} type="file" accept="image/*" multiple hidden onChange={(e) => { const fs = e.target.files; if (fs && fs.length) bulkPhotos(fs); e.target.value = ""; }} />
             </label>
-            {url && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={url} alt="" style={{ width: 54, height: 54, objectFit: "cover", borderRadius: 8, border: "1px solid #262626" }} />
-            )}
+            <div style={sx("font:400 11px Roboto;color:#8A8F98;")}>Нэг дор олон зураг сонгож болно — сонгонгуут шууд нэмэгдэнэ.</div>
           </div>
         ) : (
           <>
@@ -100,11 +113,10 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
                 <img src={thumb} alt="" style={{ width: 54, height: 54, objectFit: "cover", borderRadius: 8, border: "1px solid #262626" }} />
               )}
             </div>
+            <div><label style={sx(LABEL)}>Гарчиг (сонголт)</label><input value={caption} onChange={(e) => setCaption(e.target.value)} style={sx(INPUT)} /></div>
+            <button onClick={add} disabled={busy} style={sx(BTN + (busy ? "opacity:.6;" : "") + "align-self:flex-start;")}>{busy ? "Нэмж байна…" : "+ Reel/видео нэмэх"}</button>
           </>
         )}
-
-        <div><label style={sx(LABEL)}>Гарчиг (сонголт)</label><input value={caption} onChange={(e) => setCaption(e.target.value)} style={sx(INPUT)} /></div>
-        <button onClick={add} disabled={busy} style={sx(BTN + (busy ? "opacity:.6;" : "") + "align-self:flex-start;")}>{busy ? "Нэмж байна…" : "+ Ажил нэмэх"}</button>
       </div>
     </div>
   );
