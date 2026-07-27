@@ -119,7 +119,6 @@ export function PhotoDetail({ p }: { p: Photographer }) {
                         <img src={w.thumb} alt={w.caption ? loc(w.caption, w.captionEn) : "reel"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       ) : isFile ? (
                         // видео файлын 1 сек дэх frame-ийг урьдчилан харуулна
-                        // eslint-disable-next-line jsx-a11y/media-has-caption
                         <video src={`${w.url}#t=1`} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
                       ) : (
                         <div style={sx("width:100%;height:100%;background:radial-gradient(circle at 50% 40%,rgba(225,6,19,.14),transparent);")} />
@@ -185,7 +184,6 @@ export function PhotoDetail({ p }: { p: Photographer }) {
                 <iframe src={vid.src} title="video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen
                   style={{ width: "100%", height: "100%", border: 0, display: "block" }} />
               ) : (
-                // eslint-disable-next-line jsx-a11y/media-has-caption
                 <video src={vid.src} controls autoPlay playsInline style={{ width: "100%", height: "100%", objectFit: "contain", background: "#000" }} />
               )}
             </div>
