@@ -22,7 +22,7 @@ export function ServicesEditor({ value, onChange }: { value: PhotographerService
         <div style={sx("font:400 12px Roboto;color:#f59e0b;")}>⚠️ Үнэ оруулаагүй үйлчилгээг хэрэглэгч захиалж чадахгүй.</div>
       )}
       {value.map((s, i) => (
-        <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 130px 34px", gap: 8, alignItems: "center" }}>
+        <div key={i} className="mh-svc-row">
           <input value={s.name} onChange={(e) => update(i, { name: e.target.value })} placeholder="Нэр (MN)" style={sx(INPUT)} />
           <input value={s.nameEn ?? ""} onChange={(e) => update(i, { nameEn: e.target.value })} placeholder="Name (EN)" style={sx(INPUT)} />
           <input type="number" inputMode="numeric" value={s.price ?? ""} onChange={(e) => update(i, { price: e.target.value === "" ? undefined : Number(e.target.value) })} placeholder="Үнэ ₮" style={sx(INPUT)} />

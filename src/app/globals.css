@@ -101,6 +101,44 @@ a {
   }
 }
 
+/* Зурагчны үйлчилгээ засварлагч — утсан дээр талбарууд босоо (4 багана хэт нарийсдаг) */
+.mh-svc-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 130px 34px;
+  gap: 8px;
+  align-items: center;
+}
+@media (max-width: 620px) {
+  .mh-svc-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .mh-svc-row > button {
+    justify-self: start;
+    width: 44px;
+  }
+}
+
+/* Admin sidebar — утсан дээр хэвтээ гүйдэг цэс (13 цэс босоо жагсвал контент хол болно) */
+@media (max-width: 760px) {
+  .mh-admin-nav {
+    flex-direction: row !important;
+    overflow-x: auto;
+    gap: 6px !important;
+    padding-bottom: 6px;
+    scrollbar-width: none;
+  }
+  .mh-admin-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .mh-admin-nav > a,
+  .mh-admin-nav > button {
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 0 !important;
+  }
+}
+
 /* мото дэлгэрэнгүй — гар утсан дээр босоо болгох */
 @media (max-width: 820px) {
   .mh-moto-detail {

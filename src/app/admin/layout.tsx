@@ -54,7 +54,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       <div style={sx("display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:24px;align-items:start;")} className="mh-account-grid">
         <aside style={sx("background:#0e0e10;border:1px solid #262626;border-radius:18px;padding:16px;")}>
-          <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <nav className="mh-admin-nav" style={{ display: "flex", flexDirection: "column", gap: 2 }}>
             {MENU.map((m) => {
               const on = m.href === "/admin" ? pathname === "/admin" : pathname.startsWith(m.href);
               return (
