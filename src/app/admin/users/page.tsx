@@ -65,7 +65,8 @@ export default function AdminUsers() {
   }, [list, q]);
 
   const admins = useMemo(() => filtered.filter((u) => u.role === "admin"), [filtered]);
-  const customers = useMemo(() => filtered.filter((u) => u.role !== "admin"), [filtered]);
+  const photographers = useMemo(() => filtered.filter((u) => u.role === "photographer"), [filtered]);
+  const customers = useMemo(() => filtered.filter((u) => u.role !== "admin" && u.role !== "photographer"), [filtered]);
 
   // хайлт өөрчлөгдвөл эхний хуудас руу
   useEffect(() => { setPage(1); }, [q]);
@@ -115,6 +116,18 @@ export default function AdminUsers() {
               </div>
               <div style={sx("background:#111113;border:1px solid #2a1416;border-radius:14px;overflow:hidden;")}>
                 {admins.map((u) => <UserRow key={u.id} u={u} onRole={changeRole} />)}
+              </div>
+            </div>
+          )}
+
+          {/* ==== Зурагчид ==== */}
+          {photographers.length > 0 && (
+            <div>
+              <div style={sx("font:700 12px 'JetBrains Mono';letter-spacing:.14em;color:#FF3742;text-transform:uppercase;margin-bottom:10px;")}>
+                Зурагчид ({photographers.length})
+              </div>
+              <div style={sx("background:#111113;border:1px solid #2a1416;border-radius:14px;overflow:hidden;")}>
+                {photographers.map((u) => <UserRow key={u.id} u={u} onRole={changeRole} />)}
               </div>
             </div>
           )}
