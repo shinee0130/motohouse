@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
 import { useI18n } from "@/lib/i18n";
@@ -120,10 +121,10 @@ export function PhotoDetail({ p }: { p: Photographer }) {
           </div>
         )}
 
-        {/* lightbox — зургийг бүтнээр том харах */}
-        {lb !== null && photos[lb] && (
+        {/* lightbox — зургийг бүтнээр том харах (portal-аар body руу, header дээгүүр) */}
+        {lb !== null && photos[lb] && typeof document !== "undefined" && createPortal(
           <div onClick={() => setLb(null)}
-            style={sx("position:fixed;inset:0;z-index:1000;background:rgba(5,5,5,.94);display:flex;align-items:center;justify-content:center;padding:24px;")}>
+            style={sx("position:fixed;inset:0;z-index:99999;background:rgba(5,5,5,.95);display:flex;align-items:center;justify-content:center;padding:16px;")}>
             <button type="button" onClick={() => setLb(null)} aria-label={t("Хаах")}
               style={sx("position:absolute;top:18px;right:20px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;font:400 22px Montserrat;cursor:pointer;line-height:1;")}>×</button>
             {photos.length > 1 && (
@@ -136,9 +137,10 @@ export function PhotoDetail({ p }: { p: Photographer }) {
             )}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={photos[lb].url} alt="" onClick={(e) => e.stopPropagation()}
-              style={{ maxWidth: "92vw", maxHeight: "88vh", objectFit: "contain", borderRadius: 8 }} />
-            {photos[lb].caption && <div style={sx("position:absolute;left:0;right:0;bottom:18px;text-align:center;font:600 14px Roboto;color:#fff;")}>{loc(photos[lb].caption as string, photos[lb].captionEn)}</div>}
-          </div>
+              style={{ maxWidth: "96vw", maxHeight: "94vh", width: "auto", height: "auto", objectFit: "contain", borderRadius: 8 }} />
+            {photos[lb].caption && <div style={sx("position:absolute;left:0;right:0;bottom:14px;text-align:center;font:600 14px Roboto;color:#fff;pointer-events:none;")}>{loc(photos[lb].caption as string, photos[lb].captionEn)}</div>}
+          </div>,
+          document.body,
         )}
 
         {/* захиалга */}
