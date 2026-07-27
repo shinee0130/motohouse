@@ -9,6 +9,8 @@ import { updatePhotographer, uploadPhotographerImage, getMyPhotoBookings, update
 import { WorksManager } from "@/components/admin/WorksManager";
 import { ServicesEditor } from "@/components/admin/ServicesEditor";
 import { Select } from "@/components/ui/Select";
+import { PasswordInput } from "@/components/ui/PasswordInput";
+import { supabase } from "@/lib/db/supabase";
 import { useAlert } from "@/lib/ui/confirm";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:11px 13px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
@@ -48,6 +50,9 @@ export default function StudioPage() {
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [bookings, setBookings] = useState<PhotoBooking[]>([]);
+  const [pw1, setPw1] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [pwBusy, setPwBusy] = useState(false);
   const [tab, setTab] = useState<"profile" | "works" | "bookings">("profile");
 
   useEffect(() => {
@@ -85,6 +90,24 @@ export default function StudioPage() {
     try { set("avatar", await uploadPhotographerImage(file)); }
     catch (e) { await alert({ title: "Upload алдаа", message: e instanceof Error ? e.message : String(e), danger: true }); }
     finally { setUploading(false); }
+  }
+
+  // Нэвтэрсэн зурагчин өөрийн нууц үгээ солино (имэйл шаардлагагүй)
+  async function changePassword() {
+    if (pw1.length < 6) { await alert({ title: "Нууц үг дор хаяж 6 тэмдэгт байх ёстой." }); return; }
+    if (pw1 !== pw2) { await alert({ title: "Нууц үг таарахгүй байна." }); return; }
+    setPwBusy(true);
+    try {
+      const { error } = await Promise.race([
+        supabase.auth.updateUser({ password: pw1 }),
+        new Promise<never>((_, rej) => setTimeout(() => rej(new Error("timeout")), 20000)),
+      ]);
+      if (error) { await alert({ title: "Алдаа", message: error.message, danger: true }); return; }
+      setPw1(""); setPw2("");
+      await alert({ title: "Нууц үг солигдлоо", message: "Дараагийн удаа шинэ нууц үгээрээ нэвтэрнэ." });
+    } catch {
+      await alert({ title: "Сүлжээ удаан байна. Дахин оролдоно уу.", danger: true });
+    } finally { setPwBusy(false); }
   }
 
   async function changeStatus(id: number, status: string) {
@@ -183,6 +206,25 @@ export default function StudioPage() {
                 </div>
               </div>
               <button onClick={save} disabled={busy} style={sx(BTN + (busy ? "opacity:.6;" : "") + "align-self:flex-start;")}>{busy ? "Хадгалж байна…" : "Хадгалах"}</button>
+            </div>
+          )}
+
+          {/* нууц үг солих — профайл табын доор */}
+          {tab === "profile" && (
+            <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px;margin-top:16px;")}>
+              <div style={sx("font:700 15px Montserrat;color:#fff;")}>Нууц үг солих</div>
+              <div style={sx("font:400 11px Roboto;color:#8A8F98;")}>Танд өгсөн түр нууц үгээ өөрийн нууц үгээр солиорой.</div>
+              <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;")}>
+                <div>
+                  <label style={sx(LABEL)}>Шинэ нууц үг (6+ тэмдэгт)</label>
+                  <PasswordInput value={pw1} onChange={setPw1} />
+                </div>
+                <div>
+                  <label style={sx(LABEL)}>Дахин оруулах</label>
+                  <PasswordInput value={pw2} onChange={setPw2} />
+                </div>
+              </div>
+              <button onClick={changePassword} disabled={pwBusy} style={sx(BTN + (pwBusy ? "opacity:.6;" : "") + "align-self:flex-start;")}>{pwBusy ? "Солиж байна…" : "Нууц үг солих"}</button>
             </div>
           )}
 
