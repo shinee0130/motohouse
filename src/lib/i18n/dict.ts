@@ -259,6 +259,7 @@ export const EN: Record<string, string> = {
     "Pick from our pro team for motorcycle photos, reels and video, and book a time.",
   "Одоогоор зурагчин бүртгэгдээгүй байна.": "No photographers listed yet.",
   "Бүх зурагчид": "All photographers",
+  "Томоор харах": "View larger",
   "1. Үйлчилгээ сонгох": "1. Choose a service",
   "Үйлчилгээгээ сонгоно уу.": "Please choose a service.",
   "Энэ өдөр дүүрсэн байна. Өөр өдөр сонгоно уу.": "This day is fully booked. Please choose another day.",

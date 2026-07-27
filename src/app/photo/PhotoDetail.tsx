@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
 import { useI18n } from "@/lib/i18n";
@@ -15,11 +16,26 @@ const SOCIALS: { key: keyof Photographer; label: string }[] = [
 
 export function PhotoDetail({ p }: { p: Photographer }) {
   const { t, loc } = useI18n();
+  const [lb, setLb] = useState<number | null>(null); // томоор харах зургийн индекс
   const initial = loc(p.name, p.nameEn).replace(/\D+/g, "") || "📸";
   const works = p.works ?? [];
   const photos = works.filter((w) => w.kind === "photo");
   const videos = works.filter((w) => w.kind === "video");
   const socialLinks = SOCIALS.map((s) => ({ ...s, url: p[s.key] as string | undefined })).filter((s) => s.url);
+
+  // Lightbox — сум, Esc товч
+  useEffect(() => {
+    if (lb === null) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setLb(null);
+      else if (e.key === "ArrowRight") setLb((i) => (i === null ? i : (i + 1) % photos.length));
+      else if (e.key === "ArrowLeft") setLb((i) => (i === null ? i : (i - 1 + photos.length) % photos.length));
+    }
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = prevOverflow; };
+  }, [lb, photos.length]);
 
   return (
     <div style={sx("max-width:1180px;margin:0 auto;padding:clamp(28px,5vw,52px) clamp(20px,4vw,40px);")}>
@@ -91,13 +107,37 @@ export function PhotoDetail({ p }: { p: Photographer }) {
 
             {photos.length > 0 && (
               <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px;")}>
-                {photos.map((w) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img key={w.id} src={w.url} alt={w.caption ? loc(w.caption, w.captionEn) : "photo"}
-                    style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", borderRadius: 14, border: "1px solid #262626", background: "#0b0b0d" }} />
+                {photos.map((w, i) => (
+                  <button key={w.id} type="button" onClick={() => setLb(i)} aria-label={t("Томоор харах")}
+                    style={{ padding: 0, border: "1px solid #262626", borderRadius: 14, overflow: "hidden", background: "#0b0b0d", cursor: "zoom-in", display: "block" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={w.url} alt={w.caption ? loc(w.caption, w.captionEn) : "photo"}
+                      style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", display: "block" }} />
+                  </button>
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* lightbox — зургийг бүтнээр том харах */}
+        {lb !== null && photos[lb] && (
+          <div onClick={() => setLb(null)}
+            style={sx("position:fixed;inset:0;z-index:1000;background:rgba(5,5,5,.94);display:flex;align-items:center;justify-content:center;padding:24px;")}>
+            <button type="button" onClick={() => setLb(null)} aria-label={t("Хаах")}
+              style={sx("position:absolute;top:18px;right:20px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;font:400 22px Montserrat;cursor:pointer;line-height:1;")}>×</button>
+            {photos.length > 1 && (
+              <>
+                <button type="button" onClick={(e) => { e.stopPropagation(); setLb((i) => (i === null ? i : (i - 1 + photos.length) % photos.length)); }} aria-label="prev"
+                  style={sx("position:absolute;left:14px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;font:400 24px Montserrat;cursor:pointer;")}>‹</button>
+                <button type="button" onClick={(e) => { e.stopPropagation(); setLb((i) => (i === null ? i : (i + 1) % photos.length)); }} aria-label="next"
+                  style={sx("position:absolute;right:14px;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;font:400 24px Montserrat;cursor:pointer;")}>›</button>
+              </>
+            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={photos[lb].url} alt="" onClick={(e) => e.stopPropagation()}
+              style={{ maxWidth: "92vw", maxHeight: "88vh", objectFit: "contain", borderRadius: 8 }} />
+            {photos[lb].caption && <div style={sx("position:absolute;left:0;right:0;bottom:18px;text-align:center;font:600 14px Roboto;color:#fff;")}>{loc(photos[lb].caption as string, photos[lb].captionEn)}</div>}
           </div>
         )}
 
