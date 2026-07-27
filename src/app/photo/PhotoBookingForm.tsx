@@ -9,6 +9,9 @@ import { supabase } from "@/lib/db/supabase";
 import { Calendar } from "@/components/ui/Calendar";
 import { useI18n } from "@/lib/i18n";
 import { Price } from "@/lib/reference/currency";
+import { CountryPicker } from "@/components/checkout/CountryPicker";
+import { InternationalPhoneInput } from "@/components/checkout/InternationalPhoneInput";
+import { callingCodeOf, isValidPhone, splitE164 } from "@/lib/commerce/checkout";
 import type { PhotographerService } from "@/lib/db/queries";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:13px 15px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
@@ -24,7 +27,8 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [name, setName] = useState(user?.name ?? "");
-  const [phone, setPhone] = useState(user?.phone ?? "");
+  const [phone, setPhone] = useState(user?.phone ?? ""); // E.164 (+976…, +46… г.м)
+  const [phoneCountry, setPhoneCountry] = useState("MN"); // утасны улс — гадаадын хэрэглэгч ч дугаараа оруулна
   const [model, setModel] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
@@ -62,14 +66,17 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
     if (dayFull) return setError(t("Энэ өдөр дүүрсэн байна. Өөр өдөр сонгоно уу."));
     if (!time) return setError(t("Цагаа сонгоно уу."));
     if (!name.trim()) return setError(t("Нэрээ оруулна уу."));
-    if (phone.replace(/\D/g, "").length !== 8) return setError(t("Утасны дугаар 8 оронтой байх ёстой."));
+    const calling = callingCodeOf(phoneCountry);
+    const { national } = splitE164(phone, calling);
+    if (!national) return setError(t("Утасны дугаараа оруулна уу."));
+    if (!isValidPhone(calling, national)) return setError(t("Утасны дугаар буруу байна."));
     setBusy(true);
     try {
       // 1) Захиалга үүсгэнэ (Төлбөр хүлээгдэж буй) → 2) Bonum invoice → 3) төлбөрийн хуудас
       const txId = await createPhotoBooking({
         photographer: photographerName, photographer_id: photographerId ?? null, price,
         service_type: serviceType, booking_date: date, booking_time: time,
-        name: name.trim(), phone: phone.replace(/\D/g, ""), moto_model: model.trim(),
+        name: name.trim(), phone, moto_model: model.trim(),
         note: note.trim(), user_phone: user?.phone,
       });
       const { followUpLink } = await createBonumInvoice(txId, "photo");
@@ -134,10 +141,11 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
           <div><label style={sx(LABEL)}>{t("4. Холбоо барих")}</label>
             <input className="mh-input" placeholder={t("Нэр")} value={name} onChange={(e) => setName(e.target.value)} style={sx(INPUT)} />
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={sx("background:#050505;border:1px solid #262626;border-radius:9px;padding:13px 12px;color:#8A8F98;font:500 14px Roboto;flex-shrink:0;")}>+976</span>
-            <input className="mh-input" type="tel" inputMode="numeric" placeholder={t("Утас")} value={phone} onChange={(e) => setPhone(e.target.value)} style={sx(INPUT)} />
+          <div>
+            <div style={sx("font:600 12px Montserrat;letter-spacing:.04em;color:#A3A3A3;margin-bottom:6px;")}>{t("Утасны улс")}</div>
+            <CountryPicker value={phoneCountry} onChange={setPhoneCountry} ariaLabel={t("Утасны улс")} />
           </div>
+          <InternationalPhoneInput label={t("Утасны дугаар")} value={phone} onChange={setPhone} countryCode={phoneCountry} required />
           <input className="mh-input" placeholder={t("Мотоциклын модель (заавал биш)")} value={model} onChange={(e) => setModel(e.target.value)} style={sx(INPUT)} />
           <textarea className="mh-input" placeholder={t("Санаа / нэмэлт тэмдэглэл")} rows={3} value={note} onChange={(e) => setNote(e.target.value)} style={sx(INPUT + "resize:vertical;")} />
         </div>

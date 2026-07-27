@@ -241,6 +241,14 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
           <TextField label={t("Хүлээн авагчийн нэр")} value={recipientName} onChange={setRecipientName} required error={errName} autoComplete="name" />
           <InternationalPhoneInput label={t("Утасны дугаар")} value={phone} onChange={setPhone} countryCode={countryCode} required error={errPhone} />
         </div>
+        {/* Дэлгүүрээс авах үед хүргэлтийн улс сонгогдохгүй тул утасны улсыг энд сонгоно
+            (эс бол гадаадын хэрэглэгч +976-д тогтож, дугаараа оруулж чадахгүй). */}
+        {!delivery && (
+          <div style={{ marginTop: 12 }}>
+            <div style={sx("font:600 12px Montserrat;letter-spacing:.04em;color:#A3A3A3;margin-bottom:6px;")}>{t("Утасны улс")}</div>
+            <CountryPicker value={countryCode} onChange={setCountryCode} ariaLabel={t("Утасны улс")} />
+          </div>
+        )}
       </Section>
 
       {delivery && (

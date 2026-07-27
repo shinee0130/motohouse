@@ -307,6 +307,18 @@ export function countryByCode(code?: string | null): CountryOption | undefined {
 
 export const DEFAULT_COUNTRY = "MN";
 
+// E.164 дугаараас (+46701234567) улсыг таана — хамгийн урт таарах утасны кодоор.
+// Олдохгүй бол undefined (дуудагч тал DEFAULT_COUNTRY-г ашиглана).
+export function countryFromE164(e164?: string | null): CountryOption | undefined {
+  const digits = (e164 ?? "").replace(/\D/g, "");
+  if (!digits) return undefined;
+  let best: CountryOption | undefined;
+  for (const c of COUNTRIES) {
+    if (digits.startsWith(c.callingCode) && (!best || c.callingCode.length > best.callingCode.length)) best = c;
+  }
+  return best;
+}
+
 // Нэр / ISO код / утасны кодоор хайх (MN, EN нэр 2уланд).
 export function searchCountries(query: string): CountryOption[] {
   const q = query.trim().toLowerCase().replace(/^\+/, "");

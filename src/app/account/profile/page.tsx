@@ -7,6 +7,10 @@ import { AUTH_INPUT, AUTH_LABEL } from "@/components/auth/AuthShell";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { supabase } from "@/lib/db/supabase";
 import { useI18n } from "@/lib/i18n";
+import { CountryPicker } from "@/components/checkout/CountryPicker";
+import { InternationalPhoneInput } from "@/components/checkout/InternationalPhoneInput";
+import { countryFromE164, DEFAULT_COUNTRY } from "@/lib/reference/countries";
+import { callingCodeOf, isValidPhone, splitE164 } from "@/lib/commerce/checkout";
 
 const CARD = "background:#111113;border:1px solid #262626;border-radius:16px;padding:clamp(18px,3vw,26px);max-width:520px;";
 const BTN = "align-self:flex-start;background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.05em;padding:14px 28px;border:none;border-radius:11px;text-transform:uppercase;cursor:pointer;margin-top:4px;";
@@ -16,7 +20,8 @@ export default function ProfilePage() {
   const { user, update } = useAuth();
   const [lastName, setLastName] = useState(user?.lastName ?? "");
   const [firstName, setFirstName] = useState(user?.firstName ?? user?.name ?? "");
-  const [phone, setPhone] = useState(user?.phone ?? "");
+  const [phone, setPhone] = useState(user?.phone ?? ""); // E.164
+  const [phoneCountry, setPhoneCountry] = useState(() => countryFromE164(user?.phone)?.code ?? DEFAULT_COUNTRY);
   const [saved, setSaved] = useState(false);
   const [err, setErr] = useState("");
 
@@ -30,11 +35,15 @@ export default function ProfilePage() {
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setErr("");
-    const ln = lastName.trim(), fn = firstName.trim(), ph = phone.replace(/\D/g, "");
+    const ln = lastName.trim(), fn = firstName.trim();
     if (!ln) return setErr(t("Овгоо оруулна уу."));
     if (!fn) return setErr(t("Нэрээ оруулна уу."));
-    if (ph && ph.length !== 8) return setErr(t("Утасны дугаар 8 оронтой байх ёстой."));
-    if (ph) {
+    // Утас E.164 хэлбэрээр хадгалагдана (аль ч улсын дугаар).
+    const calling = callingCodeOf(phoneCountry);
+    const { national } = splitE164(phone, calling);
+    const ph = national ? phone : "";
+    if (national && !isValidPhone(calling, national)) return setErr(t("Утасны дугаар буруу байна."));
+    if (ph && ph !== (user?.phone ?? "")) {
       const { data: taken } = await supabase.rpc("phone_taken", { p: ph });
       if (taken) return setErr(t("Энэ утасны дугаар өөр бүртгэлд ашиглагдсан байна."));
     }
@@ -74,12 +83,10 @@ export default function ProfilePage() {
             </div>
           </div>
           <div>
-            <label style={sx(AUTH_LABEL)}>{t("Утасны дугаар")}</label>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={sx("background:#050505;border:1px solid #262626;border-radius:10px;padding:14px 12px;color:#8A8F98;font:500 15px Roboto;flex-shrink:0;")}>+976</span>
-              <input className="mh-input" type="tel" inputMode="numeric" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="8800 0000" style={sx(AUTH_INPUT)} />
-            </div>
+            <label style={sx(AUTH_LABEL)}>{t("Утасны улс")}</label>
+            <CountryPicker value={phoneCountry} onChange={setPhoneCountry} ariaLabel={t("Утасны улс")} />
           </div>
+          <InternationalPhoneInput label={t("Утасны дугаар")} value={phone} onChange={setPhone} countryCode={phoneCountry} />
           <div>
             <label style={sx(AUTH_LABEL)}>{t("И-мэйл")}</label>
             <input value={user?.email ?? ""} readOnly style={sx(AUTH_INPUT + "color:#8A8F98;cursor:not-allowed;")} />
