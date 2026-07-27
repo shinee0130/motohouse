@@ -57,6 +57,7 @@ const PROMOS = [
 const ACCOUNT_MENU = [
   { label: "Миний бүртгэл", href: "/account" },
   { label: "Миний захиалга", href: "/account/orders" },
+  { label: "Зураг авалтын захиалга", href: "/account/photo" },
   { label: "Хадгалсан", href: "/account/wishlist" },
   { label: "Профайл", href: "/account/profile" },
 ];

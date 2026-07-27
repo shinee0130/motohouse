@@ -7,6 +7,7 @@ import { Price } from "@/lib/reference/currency";
 import { orderBadge, type Order } from "@/lib/commerce/account";
 import { useAuth } from "@/lib/auth/auth";
 import { getUserOrders, getSavedItems } from "@/lib/db/queries";
+import { getMyPhotoOrders } from "@/lib/db/admin";
 
 const CARD = "background:#111113;border:1px solid #262626;border-radius:16px;padding:22px;";
 
@@ -14,20 +15,25 @@ export default function AccountOverview() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [savedCount, setSavedCount] = useState(0);
+  const [photoCount, setPhotoCount] = useState(0);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [o, s] = await Promise.all([getUserOrders(user.phone), getSavedItems(user.phone)]);
+      const [o, s, p] = await Promise.all([
+        getUserOrders(user.phone), getSavedItems(user.phone), getMyPhotoOrders(user.phone),
+      ]);
       setOrders(o);
       setSavedCount(s.gear.length + s.motos.length);
+      setPhotoCount(p.length);
       setLoaded(true);
     })();
   }, [user]);
 
   const stats = [
     { label: "Захиалга", value: String(orders.length), href: "/account/orders" },
+    { label: "Зураг авалт", value: String(photoCount), href: "/account/photo" },
     { label: "Хадгалсан", value: String(savedCount), href: "/account/wishlist" },
     { label: "Bonus оноо", value: "1,250", href: "/account" },
   ];

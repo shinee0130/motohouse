@@ -35,6 +35,7 @@ export function Footer() {
               { href: "/gear", label: "Дагалдах хэрэгсэл" },
               { href: "/parts", label: "Сэлбэг" },
               { href: "/service", label: "Засвар" },
+              { href: "/photo", label: "Зураг авалт" },
               { href: "/travel", label: "Аялал" },
               { href: "/events", label: "Event" },
               { href: "/giveaway", label: "Giveaway" },

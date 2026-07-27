@@ -238,6 +238,21 @@ export default async function HomePage() {
             </span>
           </Link>
           <Link
+            href="/photo"
+            className="mh-card"
+            style={sx("position:relative;overflow:hidden;background:linear-gradient(120deg,#1a0d10,#111113 70%);border:1px solid #262626;border-radius:20px;padding:clamp(28px,4vw,40px);min-height:230px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;")}
+          >
+            <div style={sx("font:800 clamp(24px,3vw,32px) Montserrat;color:#fff;text-transform:uppercase;line-height:1.05;")}>
+              <T>Мотоциклын зураг{"\n"}· reel · видео</T>
+            </div>
+            <div style={sx("font:400 14px Roboto;color:#C8C8C8;margin-top:10px;max-width:360px;")}>
+              <T>Мэргэжлийн зурагчдаас сонгож, ажлыг нь үзээд цагаа онлайнаар захиалаарай.</T>
+            </div>
+            <span style={sx("align-self:flex-start;margin-top:18px;background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.06em;padding:12px 22px;border-radius:9px;text-transform:uppercase;")}>
+              <T>Зурагчид үзэх</T>
+            </span>
+          </Link>
+          <Link
             href="/gear"
             className="mh-card"
             style={sx("position:relative;overflow:hidden;background:linear-gradient(120deg,#101216,#111113 70%);border:1px solid #262626;border-radius:20px;padding:clamp(28px,4vw,40px);min-height:230px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;")}

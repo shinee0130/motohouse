@@ -260,6 +260,16 @@ export const EN: Record<string, string> = {
   "Одоогоор зурагчин бүртгэгдээгүй байна.": "No photographers listed yet.",
   "Бүх зурагчид": "All photographers",
   "Утасны улс": "Phone country",
+  "Зураг авалтын захиалга": "Photoshoot bookings",
+  "Танд зураг авалтын захиалга байхгүй байна.": "You have no photoshoot bookings yet.",
+  "Зурагчид үзэх": "Browse photographers",
+  "Шинэ захиалга": "New booking",
+  "Урьдчилгаа": "Deposit",
+  "Урьдчилгаа төлсөн": "Deposit paid",
+  "Үлдэгдэл": "Balance",
+  "Мотоциклын зураг\n· reel · видео": "Motorcycle photos\n· reels · video",
+  "Мэргэжлийн зурагчдаас сонгож, ажлыг нь үзээд цагаа онлайнаар захиалаарай.":
+    "Pick a pro photographer, browse their work, and book your slot online.",
   "Үйлчилгээний үнэ": "Service price",
   "Одоо төлөх урьдчилгаа": "Deposit due now",
   "Үлдэгдлийг зураг авалт дээр төлнө. Урьдчилгаа төлөгдмөгц захиалга баталгаажна.":

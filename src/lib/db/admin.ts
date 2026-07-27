@@ -307,6 +307,11 @@ export async function getMyPhotoBookings(photographerId: number): Promise<PhotoB
   const { data } = await supabase.from("photo_bookings").select("*").eq("photographer_id", photographerId).order("created_at", { ascending: false });
   return (data ?? []) as PhotoBooking[];
 }
+// Захиалагч хэрэглэгчийн өөрийн зураг авалтын захиалгууд
+export async function getMyPhotoOrders(userPhone: string): Promise<PhotoBooking[]> {
+  const { data } = await supabase.from("photo_bookings").select("*").eq("user_phone", userPhone).order("created_at", { ascending: false });
+  return (data ?? []) as PhotoBooking[];
+}
 export async function updatePhotoBookingStatus(id: number, status: string) {
   await supabase.from("photo_bookings").update({ status }).eq("id", id);
 }
