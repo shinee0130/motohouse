@@ -109,6 +109,7 @@ export function PhotoDetail({ p }: { p: Photographer }) {
               <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:16px;")}>
                 {videos.map((w) => {
                   const e = videoEmbed(w.url);
+                  const isFile = /\.(mp4|webm|mov|m4v)(\?|$)/i.test(w.url);
                   return (
                     <button key={w.id} type="button"
                       onClick={() => { if (e) setVid(e); else window.open(w.url, "_blank", "noopener"); }}
@@ -116,6 +117,10 @@ export function PhotoDetail({ p }: { p: Photographer }) {
                       {w.thumb ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={w.thumb} alt={w.caption ? loc(w.caption, w.captionEn) : "reel"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : isFile ? (
+                        // видео файлын 1 сек дэх frame-ийг урьдчилан харуулна
+                        // eslint-disable-next-line jsx-a11y/media-has-caption
+                        <video src={`${w.url}#t=1`} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
                       ) : (
                         <div style={sx("width:100%;height:100%;background:radial-gradient(circle at 50% 40%,rgba(225,6,19,.14),transparent);")} />
                       )}

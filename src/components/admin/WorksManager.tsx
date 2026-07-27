@@ -96,6 +96,9 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
               {(w.kind === "photo" ? w.url : w.thumb) ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={w.kind === "photo" ? w.url : (w.thumb as string)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : /\.(mp4|webm|mov|m4v)(\?|$)/i.test(w.url) ? (
+                // eslint-disable-next-line jsx-a11y/media-has-caption
+                <video src={`${w.url}#t=1`} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
                 <div style={sx("width:100%;height:100%;display:flex;align-items:center;justify-content:center;font:600 11px Roboto;color:#8A8F98;padding:8px;text-align:center;")}>{w.url.slice(0, 40)}</div>
               )}
