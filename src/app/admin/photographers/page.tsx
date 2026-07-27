@@ -1,0 +1,239 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { sx } from "@/lib/ui/sx";
+import { getAllPhotographers, getPhotographer, type Photographer, type PhotographerWork, type PhotographerService } from "@/lib/db/queries";
+import { createPhotographer, updatePhotographer, deletePhotographer, uploadPhotographerImage, linkPhotographer } from "@/lib/db/admin";
+import { WorksManager } from "@/components/admin/WorksManager";
+import { ServicesEditor } from "@/components/admin/ServicesEditor";
+import { useConfirm, useAlert } from "@/lib/ui/confirm";
+
+const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:11px 13px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
+const LABEL = "font:600 11px Montserrat;letter-spacing:.04em;color:#A3A3A3;margin-bottom:6px;display:block;";
+const BTN = "background:#E10613;color:#fff;font:700 13px Montserrat;padding:11px 18px;border:none;border-radius:9px;cursor:pointer;";
+const GHOST = "background:#111113;color:#C8C8C8;font:700 13px Montserrat;padding:11px 18px;border:1px solid #333;border-radius:9px;cursor:pointer;";
+
+type Form = {
+  name: string; nameEn: string; specialty: string; specialtyEn: string;
+  tags: string; price: string; bio: string; bioEn: string;
+  instagram: string; facebook: string; tiktok: string; youtube: string;
+  avatar: string; sort: number; active: boolean; dailyLimit: number;
+};
+const empty: Form = {
+  name: "", nameEn: "", specialty: "", specialtyEn: "", tags: "", price: "", bio: "", bioEn: "",
+  instagram: "", facebook: "", tiktok: "", youtube: "", avatar: "", sort: 0, active: true, dailyLimit: 3,
+};
+const arr = (s: string) => s.split(/[,\n]/).map((x) => x.trim()).filter(Boolean);
+function toForm(p: Photographer): Form {
+  return {
+    name: p.name, nameEn: p.nameEn ?? "", specialty: p.specialty ?? "", specialtyEn: p.specialtyEn ?? "",
+    tags: (p.tags ?? []).join(", "), price: p.price ?? "", bio: p.bio ?? "", bioEn: p.bioEn ?? "",
+    instagram: p.instagram ?? "", facebook: p.facebook ?? "", tiktok: p.tiktok ?? "", youtube: p.youtube ?? "",
+    avatar: p.avatar ?? "", sort: p.sort ?? 0, active: p.active ?? true, dailyLimit: p.dailyLimit ?? 3,
+  };
+}
+function fromForm(f: Form): Partial<Photographer> {
+  return {
+    name: f.name.trim(), nameEn: f.name.trim(), specialty: f.specialty.trim(), specialtyEn: f.specialtyEn.trim(),
+    tags: arr(f.tags), price: f.price.trim(), bio: f.bio.trim(), bioEn: f.bioEn.trim(),
+    instagram: f.instagram.trim(), facebook: f.facebook.trim(), tiktok: f.tiktok.trim(), youtube: f.youtube.trim(),
+    avatar: f.avatar, sort: Number(f.sort) || 0, active: f.active, dailyLimit: Math.max(1, Number(f.dailyLimit) || 1),
+  };
+}
+
+export default function AdminPhotographers() {
+  const [list, setList] = useState<Photographer[]>([]);
+  const [editing, setEditing] = useState<number | "new" | null>(null);
+  const [f, setF] = useState<Form>(empty);
+  const [services, setServices] = useState<PhotographerService[]>([]);
+  const [flang, setFlang] = useState<"mn" | "en">("mn");
+  const [works, setWorks] = useState<PhotographerWork[]>([]);
+  const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [linkedUserId, setLinkedUserId] = useState<string | undefined>(undefined);
+  const [linkEmail, setLinkEmail] = useState("");
+  const [linkPassword, setLinkPassword] = useState("");
+  const [linking, setLinking] = useState(false);
+  const confirm = useConfirm();
+  const alert = useAlert();
+
+  async function refresh() { setList(await getAllPhotographers()); }
+  useEffect(() => { refresh(); }, []);
+
+  function set<K extends keyof Form>(k: K, v: Form[K]) { setF((p) => ({ ...p, [k]: v })); }
+
+  async function openEdit(id: number) {
+    const p = await getPhotographer(id);
+    if (!p) return;
+    setEditing(id); setF(toForm(p)); setServices(p.services ?? []); setWorks(p.works ?? []); setFlang("mn");
+    setLinkedUserId(p.userId); setLinkEmail(""); setLinkPassword("");
+  }
+  function openNew() { setEditing("new"); setF(empty); setServices([]); setWorks([]); setFlang("mn"); setLinkedUserId(undefined); setLinkEmail(""); setLinkPassword(""); }
+  function close() { setEditing(null); setF(empty); setServices([]); setWorks([]); setLinkedUserId(undefined); setLinkEmail(""); setLinkPassword(""); }
+
+  async function doLink() {
+    const email = linkEmail.trim();
+    if (typeof editing !== "number") return;
+    if (!/^\S+@\S+\.\S+$/.test(email)) { await alert({ title: "Зөв имэйл оруулна уу." }); return; }
+    if (linkPassword.length < 6) { await alert({ title: "Нууц үг дор хаяж 6 тэмдэгт байх ёстой." }); return; }
+    setLinking(true);
+    try {
+      const r = await linkPhotographer(editing, email, linkPassword);
+      setLinkedUserId(r.userId); setLinkEmail(""); setLinkPassword("");
+      await alert({ title: "Аккаунт бэлэн боллоо", message: `${r.email} — энэ имэйл + нууц үгээр нэвтэрч /studio-д өөрийн хэсгээ удирдана.` });
+    } catch (e) {
+      await alert({ title: "Холбоход алдаа", message: e instanceof Error ? e.message : String(e), danger: true });
+    } finally { setLinking(false); }
+  }
+
+  async function save() {
+    if (!f.name.trim()) { await alert({ title: "Нэр оруулна уу." }); return; }
+    setBusy(true);
+    try {
+      const patch = { ...fromForm(f), services: services.filter((s) => s.name.trim()) };
+      if (editing === "new") await createPhotographer(patch);
+      else if (typeof editing === "number") await updatePhotographer(editing, patch);
+      await refresh();
+      close();
+    } catch (e) {
+      await alert({ title: "Хадгалахад алдаа: " + (e instanceof Error ? e.message : String(e)) });
+    } finally { setBusy(false); }
+  }
+
+  async function remove(p: Photographer) {
+    if (!(await confirm({ title: `"${p.name}"-г устгах уу? Портфолио бүхэлдээ устана.`, danger: true }))) return;
+    await deletePhotographer(p.id); await refresh();
+  }
+
+  async function uploadAvatar(file: File) {
+    setUploading(true);
+    try { set("avatar", await uploadPhotographerImage(file)); }
+    catch (e) { await alert({ title: "Upload алдаа: " + (e instanceof Error ? e.message : String(e)) }); }
+    finally { setUploading(false); }
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+        <div style={sx("font:700 18px Montserrat;color:#fff;")}>Зурагчид</div>
+        {editing === null && <button onClick={openNew} style={sx(BTN)}>+ Зурагчин нэмэх</button>}
+      </div>
+
+      {editing === null ? (
+        <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;")}>
+          {list.map((p) => (
+            <div key={p.id} style={sx("display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid #1c1c1f;")}>
+              <div style={sx("width:46px;height:46px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#0b0b0d;border:1px solid #262626;display:flex;align-items:center;justify-content:center;font:800 16px Montserrat;color:#E10613;")}>
+                {p.avatar ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={p.avatar} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (p.name.replace(/\D+/g, "") || "📸")}
+              </div>
+              <div style={{ flex: 1, minWidth: 160 }}>
+                <div style={sx("font:700 15px Montserrat;color:#fff;")}>{p.name} {!p.active && <span style={sx("font:600 10px Montserrat;color:#8A8F98;")}>(нуугдсан)</span>}</div>
+                <div style={sx("font:400 12px Roboto;color:#8A8F98;")}>{p.specialty} · {(p.tags ?? []).join(", ")}</div>
+              </div>
+              <button onClick={() => openEdit(p.id)} style={sx(GHOST)}>Засах</button>
+              <button onClick={() => remove(p)} style={sx("background:transparent;color:#ef4444;font:700 13px Montserrat;padding:11px 14px;border:1px solid rgba(239,68,68,.4);border-radius:9px;cursor:pointer;")}>Устгах</button>
+            </div>
+          ))}
+          {list.length === 0 && <div style={sx("padding:30px;text-align:center;font:400 14px Roboto;color:#8A8F98;")}>Зурагчин алга. “+ Зурагчин нэмэх”.</div>}
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+          {/* үндсэн форм */}
+          <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px;")}>
+            <div style={{ display: "flex", gap: 8 }}>
+              {(["mn", "en"] as const).map((l) => (
+                <button key={l} onClick={() => setFlang(l)} style={sx(`cursor:pointer;font:700 12px Montserrat;padding:7px 15px;border-radius:8px;${flang === l ? "background:#E10613;border:1px solid #E10613;color:#fff;" : "background:#050505;border:1px solid #333;color:#C8C8C8;"}`)}>{l.toUpperCase()}</button>
+              ))}
+            </div>
+
+            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;")}>
+              <div><label style={sx(LABEL)}>Нэр * <span style={sx("color:#8A8F98;font-weight:400;")}>(2 хэлэнд ижил)</span></label><input value={f.name} onChange={(e) => set("name", e.target.value)} style={sx(INPUT)} /></div>
+              {flang === "mn"
+                ? <div><label style={sx(LABEL)}>Чиглэл</label><input value={f.specialty} onChange={(e) => set("specialty", e.target.value)} style={sx(INPUT)} /></div>
+                : <div><label style={sx(LABEL)}>Specialty (EN)</label><input value={f.specialtyEn} onChange={(e) => set("specialtyEn", e.target.value)} style={sx(INPUT)} /></div>}
+            </div>
+            <div>
+              <label style={sx(LABEL)}>{flang === "mn" ? "Танилцуулга (био)" : "Bio (EN)"}</label>
+              <textarea value={flang === "mn" ? f.bio : f.bioEn} onChange={(e) => set(flang === "mn" ? "bio" : "bioEn", e.target.value)} rows={3} style={sx(INPUT + "resize:vertical;")} />
+            </div>
+
+            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;")}>
+              <div><label style={sx(LABEL)}>Tag (таслалаар: Зураг, Reel, Видео)</label><input value={f.tags} onChange={(e) => set("tags", e.target.value)} style={sx(INPUT)} /></div>
+              <div><label style={sx(LABEL)}>Үнэ (текст, сонголт)</label><input value={f.price} onChange={(e) => set("price", e.target.value)} placeholder="ж: 150,000₮-с" style={sx(INPUT)} /></div>
+              <div><label style={sx(LABEL)}>Эрэмбэ (sort)</label><input type="number" value={f.sort} onChange={(e) => set("sort", Number(e.target.value))} style={sx(INPUT)} /></div>
+              <div><label style={sx(LABEL)}>Өдрийн захиалгын хязгаар</label><input type="number" min={1} value={f.dailyLimit} onChange={(e) => set("dailyLimit", Number(e.target.value))} style={sx(INPUT)} /></div>
+            </div>
+
+            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;")}>
+              <div><label style={sx(LABEL)}>Instagram URL</label><input value={f.instagram} onChange={(e) => set("instagram", e.target.value)} style={sx(INPUT)} /></div>
+              <div><label style={sx(LABEL)}>Facebook URL</label><input value={f.facebook} onChange={(e) => set("facebook", e.target.value)} style={sx(INPUT)} /></div>
+              <div><label style={sx(LABEL)}>TikTok URL</label><input value={f.tiktok} onChange={(e) => set("tiktok", e.target.value)} style={sx(INPUT)} /></div>
+              <div><label style={sx(LABEL)}>YouTube URL</label><input value={f.youtube} onChange={(e) => set("youtube", e.target.value)} style={sx(INPUT)} /></div>
+            </div>
+
+            {/* үйлчилгээ + үнэ */}
+            <ServicesEditor value={services} onChange={setServices} />
+
+            {/* avatar */}
+            <div>
+              <label style={sx(LABEL)}>Профайл зураг</label>
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <div style={sx("width:64px;height:64px;border-radius:12px;overflow:hidden;background:#0b0b0d;border:1px solid #262626;flex-shrink:0;")}>
+                  {f.avatar && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={f.avatar} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  )}
+                </div>
+                <label style={sx(GHOST + "display:inline-block;")}>
+                  {uploading ? "Ачаалж байна…" : "Зураг сонгох"}
+                  <input type="file" accept="image/*" hidden onChange={(e) => { const file = e.target.files?.[0]; if (file) uploadAvatar(file); }} />
+                </label>
+                {f.avatar && <button onClick={() => set("avatar", "")} style={sx("background:transparent;color:#8A8F98;font:600 12px Montserrat;border:none;cursor:pointer;")}>Арилгах</button>}
+              </div>
+            </div>
+
+            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+              <input type="checkbox" checked={f.active} onChange={(e) => set("active", e.target.checked)} />
+              <span style={sx("font:600 13px Roboto;color:#C8C8C8;")}>Идэвхтэй (сайт дээр харагдана)</span>
+            </label>
+
+            <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+              <button onClick={save} disabled={busy} style={sx(BTN + (busy ? "opacity:.6;" : ""))}>{busy ? "Хадгалж байна…" : "Хадгалах"}</button>
+              <button onClick={close} style={sx(GHOST)}>Болих</button>
+            </div>
+          </div>
+
+          {/* аккаунт холболт — зөвхөн хадгалсан зурагчинд */}
+          {typeof editing === "number" && (
+            <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px;")}>
+              <div style={sx("font:700 15px Montserrat;color:#fff;")}>Зурагчны аккаунт</div>
+              {linkedUserId ? (
+                <div style={sx("font:500 13px Roboto;color:#22c55e;")}>✓ Аккаунт холбогдсон. Тухайн хүн имэйлээрээ нэвтэрч <b style={{ color: "#fff" }}>/studio</b>-д өөрийн профайл, портфолио, захиалгаа удирдана.</div>
+              ) : (
+                <div style={sx("font:400 13px Roboto;color:#8A8F98;")}>Имэйл оруулж аккаунт үүсгэвэл энэ зурагчин /studio-оос зөвхөн ӨӨРИЙН хэсгээ засах эрхтэй болно (admin биш).</div>
+              )}
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <input value={linkEmail} onChange={(e) => setLinkEmail(e.target.value)} placeholder="Имэйл (нэвтрэх нэр) — жинхэнэ шуудан байх шаардлагагүй" style={sx(INPUT + "min-width:280px;flex:1;")} />
+                <input value={linkPassword} onChange={(e) => setLinkPassword(e.target.value)} placeholder="Нууц үг (6+ тэмдэгт)" style={sx(INPUT + "min-width:180px;")} />
+                <button onClick={doLink} disabled={linking} style={sx(BTN + (linking ? "opacity:.6;" : ""))}>{linking ? "Үүсгэж байна…" : linkedUserId ? "Нууц үг шинэчлэх" : "Аккаунт үүсгэх"}</button>
+              </div>
+              <div style={sx("font:400 11px Roboto;color:#8A8F98;")}>Имэйл нь зөвхөн нэвтрэх нэр болно (баталгаажуулах имэйл илгээхгүй). Нууц үгээ зурагчинд дамжуулаарай.</div>
+            </div>
+          )}
+
+          {/* портфолио — зөвхөн хадгалсан зурагчинд */}
+          {typeof editing === "number" ? (
+            <WorksManager photographerId={editing} works={works} onChange={async () => { const p = await getPhotographer(editing); setWorks(p?.works ?? []); }} />
+          ) : (
+            <div style={sx("background:#0e0e10;border:1px dashed #333;border-radius:14px;padding:18px;font:400 13px Roboto;color:#8A8F98;")}>
+              Портфолио (зураг/reel) нэмэхийн тулд эхлээд зурагчнаа <b style={{ color: "#fff" }}>хадгалаад</b>, дараа нь “Засах”-аар нээнэ үү.
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

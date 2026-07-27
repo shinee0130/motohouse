@@ -41,6 +41,15 @@ export function IconWrench({ style }: { style?: CSSProperties }) {
   );
 }
 
+export function IconCamera({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" style={base(style)}>
+      <path d="M3 8.5A1.5 1.5 0 0 1 4.5 7h2L8 5h8l1.5 2h2A1.5 1.5 0 0 1 21 8.5v9A1.5 1.5 0 0 1 19.5 19h-15A1.5 1.5 0 0 1 3 17.5z" />
+      <circle cx="12" cy="13" r="3.2" />
+    </svg>
+  );
+}
+
 export function IconShield({ style }: { style?: CSSProperties }) {
   return (
     <svg viewBox="0 0 24 24" style={base(style)}>

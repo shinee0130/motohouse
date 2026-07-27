@@ -18,7 +18,7 @@ import { useAuthModal } from "@/lib/auth/authModal";
 import { useCartModal } from "@/lib/commerce/cartModal";
 import {
   IconHome, IconBike, IconHelmet, IconCog, IconWrench, IconRoute, IconCalendar,
-  IconTicket, IconCart, IconPackage, IconRequest, IconTruck, IconCard, IconShield,
+  IconTicket, IconCart, IconPackage, IconRequest, IconTruck, IconCard, IconShield, IconCamera,
 } from "@/components/ui/icons";
 
 const NAV = [
@@ -28,6 +28,7 @@ const NAV = [
   { label: "Сэлбэг", href: "/parts", Icon: IconPackage },
   { label: "Захиалгын хүсэлт", href: "/request", Icon: IconRequest },
   { label: "Засвар", href: "/service", Icon: IconWrench },
+  { label: "Зураг авалт", href: "/photo", Icon: IconCamera },
   { label: "Аялал", href: "/travel", Icon: IconRoute },
   { label: "Event", href: "/events", Icon: IconCalendar },
   { label: "Giveaway", href: "/giveaway", Icon: IconTicket },
@@ -40,6 +41,7 @@ const CATS = [
   { label: "Дагалдах хэрэгсэл", href: "/gear" },
   { label: "Сэлбэг", href: "/parts" },
   { label: "Засвар", href: "/service" },
+  { label: "Зураг авалт", href: "/photo" },
   { label: "Аялал", href: "/travel" },
   { label: "Event", href: "/events" },
   { label: "Giveaway", href: "/giveaway", hot: true }, // SALE шиг улаан
@@ -235,6 +237,15 @@ export function Nav() {
                         Admin panel
                       </Link>
                     )}
+                    {user!.role === "photographer" && (
+                      <Link
+                        href="/studio"
+                        onClick={() => setAcctOpen(false)}
+                        style={sx("display:block;padding:10px 12px;border-radius:8px;font:700 13px Montserrat;color:#fff;background:#E10613;margin-bottom:4px;")}
+                      >
+                        Studio
+                      </Link>
+                    )}
                     {ACCOUNT_MENU.map((m) => (
                       <Link
                         key={m.href}
@@ -409,6 +420,15 @@ export function Nav() {
                     style={sx("display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:11px;font:700 14px Montserrat;color:#E10613;")}
                   >
                     <IconCog style={{ width: 20, height: 20, flexShrink: 0 }} /> Admin panel
+                  </Link>
+                )}
+                {user!.role === "photographer" && (
+                  <Link
+                    href="/studio"
+                    onClick={() => setOpen(false)}
+                    style={sx("display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:11px;font:700 14px Montserrat;color:#E10613;")}
+                  >
+                    <IconCamera style={{ width: 20, height: 20, flexShrink: 0 }} /> Studio
                   </Link>
                 )}
                 {ACCOUNT_MENU.map((m) => (

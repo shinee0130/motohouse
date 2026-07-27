@@ -42,17 +42,16 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<supabase-anon-key>
 
 ## Ажлын урсгал (dev / prod)
 
-Энэ төсөл **2 орчинтой**. **Бүх хөгжүүлэлт `dev` салбар дээр** явагдана; `main` (prod)
-руу зөвхөн **эзний зөвшөөрсөн PR-ээр** л код ордог.
+Энэ төсөл **2 салбартай**. **Бүх хөгжүүлэлт `dev` салбар дээр** явагдаж, тогтвортой
+болсны дараа `main` (prod) руу гардаг.
 
 | Орчин | Салбар | Хаяг |
 |-------|--------|------|
-| **PROD** | `main` 🔒 | https://motohouse.mn |
-| **DEV** | `dev` | https://motohouse-git-dev-shinee0130s-projects.vercel.app |
+| **DEV** (staging) | `dev` | https://motohouse-git-dev-shinee0130s-projects.vercel.app |
+| **PROD** | `main` | https://motohouse.mn |
 
-- `main` **түгжээтэй** — шууд push боломжгүй. `dev → main` PR нээж, кодын эзэн
-  (@shinee0130) approve хийж merge → Vercel prod-руу автомат деплой.
-- `dev` рүү push бүрт dev preview хаяг автоматаар шинэчлэгдэнэ.
+- `dev` рүү push бүрт dev preview хаяг автоматаар шинэчлэгдэнэ — энд шалгана.
+- Тогтвортой бол `dev`-ийг `main` руу merge → Vercel prod-руу автомат деплой.
 
 📄 Дэлгэрэнгүй: [docs/WORKFLOW.md](docs/WORKFLOW.md)
 

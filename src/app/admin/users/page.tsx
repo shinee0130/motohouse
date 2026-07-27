@@ -9,6 +9,7 @@ import { useConfirm } from "@/lib/ui/confirm";
 
 const ROLES = [
   { value: "customer", label: "Хэрэглэгч" },
+  { value: "photographer", label: "Зурагчин" },
   { value: "admin", label: "Админ" },
 ];
 const TIERS: Record<string, { label: string; color: string; min: number }> = {

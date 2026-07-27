@@ -102,6 +102,13 @@ export interface EventItem {
   prizeEn?: string;
 }
 
+// ===== Зураг авалт (photoshoot) =====
+// Зурагчид одоо DB-д (photographers хүснэгт, queries.ts::getPhotographers).
+// Үйлчилгээний төрлүүд нь тогтмол багц хэвээр:
+export const PHOTO_SERVICES: string[] = [
+  "Мотоциклын зураг", "Reel бичлэг", "Видео шут", "Экшн бичлэг", "Студи зураг",
+];
+
 // ---- helpers ----
 
 export function fmt(n: number): string {

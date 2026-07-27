@@ -11,6 +11,16 @@ import { Brand } from "@/components/layout/Brand";
 import { CountryPicker } from "@/components/checkout/CountryPicker";
 import { callingCodeOf, isValidPhone, toE164 } from "@/lib/commerce/checkout";
 
+// Supabase дуудлага хааяа огт хариу өгөхгүй өлгийдвөл (сүлжээ саатах) товч мөнхөд
+// "SIGNING IN…" дээр гацдаг байсан — доорх timeout нь тодорхой хугацааны дараа алдаа шидэж,
+// finally-д busy-г арилгана.
+function withTimeout<T>(p: PromiseLike<T>, ms = 20000): Promise<T> {
+  return Promise.race([
+    p as Promise<T>,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error("timeout")), ms)),
+  ]);
+}
+
 type Mode = "login" | "register" | "forgot" | "reset";
 type Ctx = { open: (mode?: Mode) => void; close: () => void };
 const AuthModalContext = createContext<Ctx | null>(null);
@@ -94,7 +104,7 @@ function LoginForm({ t, refresh, close, toRegister, toForgot }: { t: (s: string)
     if (!password) return setError(t("Нууц үгээ оруулна уу."));
     setBusy(true);
     try {
-      const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      const { error: err } = await withTimeout(supabase.auth.signInWithPassword({ email: email.trim(), password }));
       if (err) {
         const m = err.message.toLowerCase();
         setError(m.includes("not confirmed")
@@ -102,8 +112,11 @@ function LoginForm({ t, refresh, close, toRegister, toForgot }: { t: (s: string)
           : t("И-мэйл эсвэл нууц үг буруу байна."));
         return;
       }
-      await refresh();
+      // refresh-ийг блоклохгүй — onAuthStateChange (AuthProvider) хэрэглэгчийг автоматаар шинэчилнэ.
+      refresh();
       close();
+    } catch {
+      setError(t("Сүлжээ удаан байна. Дахин оролдоно уу."));
     } finally { setBusy(false); }
   }
 
@@ -158,16 +171,16 @@ function RegisterForm({ t, toLogin }: { t: (s: string) => string; toLogin: () =>
     if (password !== confirm) return setError(t("Нууц үг таарахгүй байна."));
     setBusy(true);
     try {
-      const { data: phoneTaken } = await supabase.rpc("phone_taken", { p: e164 });
+      const { data: phoneTaken } = await withTimeout(supabase.rpc("phone_taken", { p: e164 }));
       if (phoneTaken) { setError(t("Энэ утасны дугаар өөр бүртгэлд ашиглагдсан байна.")); return; }
       const fn = name.trim(), ln = lastName.trim();
-      const { error: err } = await supabase.auth.signUp({
+      const { error: err } = await withTimeout(supabase.auth.signUp({
         email: email.trim(), password,
         options: {
           emailRedirectTo: `${window.location.origin}/account`,
           data: { first_name: fn, last_name: ln, phone: e164, phone_country: countryCode, name: `${ln} ${fn}`.trim() },
         },
-      });
+      }));
       if (err) {
         const m = err.message.toLowerCase();
         if (m.includes("already") || m.includes("registered")) setError(t("Энэ и-мэйл аль хэдийн бүртгэлтэй байна."));
@@ -176,6 +189,8 @@ function RegisterForm({ t, toLogin }: { t: (s: string) => string; toLogin: () =>
         return;
       }
       setDone(true);
+    } catch {
+      setError(t("Сүлжээ удаан байна. Дахин оролдоно уу."));
     } finally { setBusy(false); }
   }
 
@@ -252,14 +267,16 @@ function ForgotForm({ t, toLogin }: { t: (s: string) => string; toLogin: () => v
     setBusy(true);
     try {
       // Бүртгэлгүй имэйл бол шууд анхааруулна
-      const { data: exists } = await supabase.rpc("email_taken", { e: email.trim() });
+      const { data: exists } = await withTimeout(supabase.rpc("email_taken", { e: email.trim() }));
       if (!exists) { setError(t("Энэ и-мэйл бүртгэлгүй байна.")); return; }
       // recovery линк нүүр рүү авчирна — тэнд PASSWORD_RECOVERY эвент reset modal-ыг нээнэ
-      const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      const { error: err } = await withTimeout(supabase.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: `${window.location.origin}/`,
-      });
+      }));
       if (err) { setError(err.message); return; }
       setSent(true);
+    } catch {
+      setError(t("Сүлжээ удаан байна. Дахин оролдоно уу."));
     } finally { setBusy(false); }
   }
 
@@ -308,11 +325,13 @@ function ResetForm({ t, refresh, close }: { t: (s: string) => string; refresh: (
     if (pw !== pw2) return setError(t("Нууц үг таарахгүй байна."));
     setBusy(true);
     try {
-      const { error: err } = await supabase.auth.updateUser({ password: pw });
+      const { error: err } = await withTimeout(supabase.auth.updateUser({ password: pw }));
       if (err) { setError(err.message); return; }
       setDone(true);
-      await refresh();
+      refresh();
       setTimeout(close, 1200);
+    } catch {
+      setError(t("Сүлжээ удаан байна. Дахин оролдоно уу."));
     } finally { setBusy(false); }
   }
 
