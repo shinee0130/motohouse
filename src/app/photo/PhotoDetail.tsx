@@ -15,9 +15,23 @@ const SOCIALS: { key: keyof Photographer; label: string }[] = [
   { key: "youtube", label: "YouTube" },
 ];
 
+type Embed = { type: "iframe" | "video"; src: string; aspect: string };
+// Видео линк/файлыг сайт дээр тоглуулах хэлбэрт хөрвүүлнэ (боломжгүй бол null)
+function videoEmbed(url: string): Embed | null {
+  const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/)|youtu\.be\/)([\w-]{6,})/);
+  if (yt) return { type: "iframe", src: `https://www.youtube.com/embed/${yt[1]}`, aspect: "16 / 9" };
+  const ig = url.match(/instagram\.com\/(reel|reels|p|tv)\/([\w-]+)/);
+  if (ig) return { type: "iframe", src: `https://www.instagram.com/${ig[1] === "reels" ? "reel" : ig[1]}/${ig[2]}/embed`, aspect: "9 / 16" };
+  const tt = url.match(/tiktok\.com\/.*\/video\/(\d+)/) || url.match(/tiktok\.com\/embed\/v2\/(\d+)/);
+  if (tt) return { type: "iframe", src: `https://www.tiktok.com/embed/v2/${tt[1]}`, aspect: "9 / 16" };
+  if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(url)) return { type: "video", src: url, aspect: "9 / 16" };
+  return null;
+}
+
 export function PhotoDetail({ p }: { p: Photographer }) {
   const { t, loc } = useI18n();
   const [lb, setLb] = useState<number | null>(null); // томоор харах зургийн индекс
+  const [vid, setVid] = useState<Embed | null>(null); // сайт дээр тоглуулах видео
   const initial = loc(p.name, p.nameEn).replace(/\D+/g, "") || "📸";
   const works = p.works ?? [];
   const photos = works.filter((w) => w.kind === "photo");
@@ -37,6 +51,15 @@ export function PhotoDetail({ p }: { p: Photographer }) {
     document.body.style.overflow = "hidden";
     return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = prevOverflow; };
   }, [lb, photos.length]);
+
+  useEffect(() => {
+    if (!vid) return;
+    function onKey(e: KeyboardEvent) { if (e.key === "Escape") setVid(null); }
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", onKey); document.body.style.overflow = prev; };
+  }, [vid]);
 
   return (
     <div style={sx("max-width:1180px;margin:0 auto;padding:clamp(28px,5vw,52px) clamp(20px,4vw,40px);")}>
@@ -86,23 +109,27 @@ export function PhotoDetail({ p }: { p: Photographer }) {
 
             {videos.length > 0 && (
               <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:16px;")}>
-                {videos.map((w) => (
-                  <a key={w.id} href={w.url} target="_blank" rel="noopener noreferrer"
-                    style={sx("position:relative;display:block;aspect-ratio:9/16;max-height:340px;border-radius:14px;overflow:hidden;background:#0b0b0d;border:1px solid #262626;text-decoration:none;")}>
-                    {w.thumb ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={w.thumb} alt={w.caption ? loc(w.caption, w.captionEn) : "reel"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                    ) : (
-                      <div style={sx("width:100%;height:100%;background:radial-gradient(circle at 50% 40%,rgba(225,6,19,.14),transparent);")} />
-                    )}
-                    <div style={sx("position:absolute;inset:0;display:flex;align-items:center;justify-content:center;")}>
-                      <div style={sx("width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;")}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z" /></svg>
+                {videos.map((w) => {
+                  const e = videoEmbed(w.url);
+                  return (
+                    <button key={w.id} type="button"
+                      onClick={() => { if (e) setVid(e); else window.open(w.url, "_blank", "noopener"); }}
+                      style={{ padding: 0, cursor: "pointer", ...sx("position:relative;display:block;aspect-ratio:9/16;max-height:340px;border-radius:14px;overflow:hidden;background:#0b0b0d;border:1px solid #262626;width:100%;") }}>
+                      {w.thumb ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={w.thumb} alt={w.caption ? loc(w.caption, w.captionEn) : "reel"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <div style={sx("width:100%;height:100%;background:radial-gradient(circle at 50% 40%,rgba(225,6,19,.14),transparent);")} />
+                      )}
+                      <div style={sx("position:absolute;inset:0;display:flex;align-items:center;justify-content:center;")}>
+                        <div style={sx("width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;")}>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z" /></svg>
+                        </div>
                       </div>
-                    </div>
-                    {w.caption && <div style={sx("position:absolute;left:0;right:0;bottom:0;padding:10px 12px;font:600 12px Roboto;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.8));")}>{loc(w.caption, w.captionEn)}</div>}
-                  </a>
-                ))}
+                      {w.caption && <div style={sx("position:absolute;left:0;right:0;bottom:0;padding:10px 12px;font:600 12px Roboto;color:#fff;text-align:left;background:linear-gradient(transparent,rgba(0,0,0,.8));")}>{loc(w.caption, w.captionEn)}</div>}
+                    </button>
+                  );
+                })}
               </div>
             )}
 
@@ -139,6 +166,26 @@ export function PhotoDetail({ p }: { p: Photographer }) {
             <img src={photos[lb].url} alt="" onClick={(e) => e.stopPropagation()}
               style={{ maxWidth: "96vw", maxHeight: "94vh", width: "auto", height: "auto", objectFit: "contain", borderRadius: 8 }} />
             {photos[lb].caption && <div style={sx("position:absolute;left:0;right:0;bottom:14px;text-align:center;font:600 14px Roboto;color:#fff;pointer-events:none;")}>{loc(photos[lb].caption as string, photos[lb].captionEn)}</div>}
+          </div>,
+          document.body,
+        )}
+
+        {/* видео player — сайт дээр шууд тоглоно (portal-аар body руу) */}
+        {vid && typeof document !== "undefined" && createPortal(
+          <div onClick={() => setVid(null)}
+            style={sx("position:fixed;inset:0;z-index:99999;background:rgba(5,5,5,.95);display:flex;align-items:center;justify-content:center;padding:16px;")}>
+            <button type="button" onClick={() => setVid(null)} aria-label={t("Хаах")}
+              style={sx("position:absolute;top:18px;right:20px;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;font:400 22px Montserrat;cursor:pointer;line-height:1;z-index:1;")}>×</button>
+            <div onClick={(e) => e.stopPropagation()}
+              style={{ ...sx("position:relative;background:#000;border-radius:10px;overflow:hidden;"), width: "min(94vw, 900px)", aspectRatio: vid.aspect, maxHeight: "88vh" }}>
+              {vid.type === "iframe" ? (
+                <iframe src={vid.src} title="video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen
+                  style={{ width: "100%", height: "100%", border: 0, display: "block" }} />
+              ) : (
+                // eslint-disable-next-line jsx-a11y/media-has-caption
+                <video src={vid.src} controls autoPlay playsInline style={{ width: "100%", height: "100%", objectFit: "contain", background: "#000" }} />
+              )}
+            </div>
           </div>,
           document.body,
         )}
