@@ -71,9 +71,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const u = await loadUser();
       if (mounted) { setUser(u); setReady(true); }
     })();
-    const { data: sub } = supabase.auth.onAuthStateChange(async () => {
-      const u = await loadUser();
-      if (mounted) setUser(u);
+    // ⚠️ onAuthStateChange-ийн callback дотор ШУУД await хийж supabase дуудвал
+    // supabase-js-ийн auth lock түгжигдэж, signInWithPassword promise хэзээ ч
+    // resolve болохгүй ("SIGNING IN…" дээр мөнхөд гацна). Тиймээс callback-ийг
+    // синхрон байлгаж, ажлыг lock-оос гаргаад дараагийн task-д гүйцэтгэнэ.
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) { if (mounted) setUser(null); return; }
+      setTimeout(async () => {
+        const u = await loadUser();
+        if (mounted) setUser(u);
+      }, 0);
     });
     return () => { mounted = false; sub.subscription.unsubscribe(); };
   }, []);
