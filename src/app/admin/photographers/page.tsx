@@ -52,6 +52,7 @@ export default function AdminPhotographers() {
   const [uploading, setUploading] = useState(false);
   const [linkedUserId, setLinkedUserId] = useState<string | undefined>(undefined);
   const [linkEmail, setLinkEmail] = useState("");
+  const [linkPassword, setLinkPassword] = useState("");
   const [linking, setLinking] = useState(false);
   const confirm = useConfirm();
   const alert = useAlert();
@@ -65,20 +66,21 @@ export default function AdminPhotographers() {
     const p = await getPhotographer(id);
     if (!p) return;
     setEditing(id); setF(toForm(p)); setServices(p.services ?? []); setWorks(p.works ?? []); setFlang("mn");
-    setLinkedUserId(p.userId); setLinkEmail("");
+    setLinkedUserId(p.userId); setLinkEmail(""); setLinkPassword("");
   }
-  function openNew() { setEditing("new"); setF(empty); setServices([]); setWorks([]); setFlang("mn"); setLinkedUserId(undefined); setLinkEmail(""); }
-  function close() { setEditing(null); setF(empty); setServices([]); setWorks([]); setLinkedUserId(undefined); setLinkEmail(""); }
+  function openNew() { setEditing("new"); setF(empty); setServices([]); setWorks([]); setFlang("mn"); setLinkedUserId(undefined); setLinkEmail(""); setLinkPassword(""); }
+  function close() { setEditing(null); setF(empty); setServices([]); setWorks([]); setLinkedUserId(undefined); setLinkEmail(""); setLinkPassword(""); }
 
   async function doLink() {
     const email = linkEmail.trim();
     if (typeof editing !== "number") return;
     if (!/^\S+@\S+\.\S+$/.test(email)) { await alert({ title: "Зөв имэйл оруулна уу." }); return; }
+    if (linkPassword.length < 6) { await alert({ title: "Нууц үг дор хаяж 6 тэмдэгт байх ёстой." }); return; }
     setLinking(true);
     try {
-      const r = await linkPhotographer(editing, email);
-      setLinkedUserId(r.userId); setLinkEmail("");
-      await alert({ title: "Аккаунт холбогдлоо", message: `${r.email} — энэ имэйлээр нэвтэрч /studio-д өөрийн хэсгээ удирдана.` });
+      const r = await linkPhotographer(editing, email, linkPassword);
+      setLinkedUserId(r.userId); setLinkEmail(""); setLinkPassword("");
+      await alert({ title: "Аккаунт бэлэн боллоо", message: `${r.email} — энэ имэйл + нууц үгээр нэвтэрч /studio-д өөрийн хэсгээ удирдана.` });
     } catch (e) {
       await alert({ title: "Холбоход алдаа", message: e instanceof Error ? e.message : String(e), danger: true });
     } finally { setLinking(false); }
@@ -214,9 +216,11 @@ export default function AdminPhotographers() {
                 <div style={sx("font:400 13px Roboto;color:#8A8F98;")}>Имэйл оруулж аккаунт үүсгэвэл энэ зурагчин /studio-оос зөвхөн ӨӨРИЙН хэсгээ засах эрхтэй болно (admin биш).</div>
               )}
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                <input value={linkEmail} onChange={(e) => setLinkEmail(e.target.value)} placeholder="zuragchin@gmail.com" style={sx(INPUT + "max-width:320px;")} />
-                <button onClick={doLink} disabled={linking} style={sx(BTN + (linking ? "opacity:.6;" : ""))}>{linking ? "Холбож байна…" : linkedUserId ? "Дахин холбох" : "Аккаунт үүсгэж холбох"}</button>
+                <input value={linkEmail} onChange={(e) => setLinkEmail(e.target.value)} placeholder="Имэйл (нэвтрэх нэр) — жинхэнэ шуудан байх шаардлагагүй" style={sx(INPUT + "min-width:280px;flex:1;")} />
+                <input value={linkPassword} onChange={(e) => setLinkPassword(e.target.value)} placeholder="Нууц үг (6+ тэмдэгт)" style={sx(INPUT + "min-width:180px;")} />
+                <button onClick={doLink} disabled={linking} style={sx(BTN + (linking ? "opacity:.6;" : ""))}>{linking ? "Үүсгэж байна…" : linkedUserId ? "Нууц үг шинэчлэх" : "Аккаунт үүсгэх"}</button>
               </div>
+              <div style={sx("font:400 11px Roboto;color:#8A8F98;")}>Имэйл нь зөвхөн нэвтрэх нэр болно (баталгаажуулах имэйл илгээхгүй). Нууц үгээ зурагчинд дамжуулаарай.</div>
             </div>
           )}
 

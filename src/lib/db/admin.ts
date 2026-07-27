@@ -273,14 +273,14 @@ export async function createPhotoBooking(b: {
 }
 
 // Admin: зурагчны account үүсгэж/холбож role='photographer' болгоно (edge function, service_role).
-export async function linkPhotographer(photographerId: number, email: string): Promise<{ userId: string; email: string }> {
+export async function linkPhotographer(photographerId: number, email: string, password?: string): Promise<{ userId: string; email: string }> {
   const { data: { session } } = await supabase.auth.getSession();
   const token = session?.access_token;
   if (!token) throw new Error("Нэвтрэлт хүчингүй байна.");
   const res = await fetch(`${SUPABASE_URL}/functions/v1/link-photographer`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, apikey: SUPABASE_KEY, "Content-Type": "application/json" },
-    body: JSON.stringify({ photographerId, email }),
+    body: JSON.stringify({ photographerId, email, password }),
   });
   let json: { userId?: string; email?: string; error?: string } = {};
   try { json = await res.json(); } catch {}
