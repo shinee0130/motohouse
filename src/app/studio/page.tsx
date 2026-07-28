@@ -249,7 +249,7 @@ export default function StudioPage() {
                       {b.price ? <span style={sx("font:700 13px Montserrat;color:#E10613;")}> · {b.price.toLocaleString("en-US")}₮</span> : null}
                       {b.deposit ? <span style={sx("font:500 11px Roboto;color:#8A8F98;")}> (урьдчилгаа {b.deposit.toLocaleString("en-US")}₮)</span> : null}
                     </div>
-                    <div style={sx("font:600 13px Roboto;color:#E10613;margin-top:3px;")}>📅 {b.booking_date} · {b.booking_time}</div>
+                    <div style={sx("font:600 13px Roboto;color:#E10613;margin-top:3px;")}>📅 {b.booking_date}</div>
                     <div style={sx("font:400 12px 'JetBrains Mono';color:#8A8F98;margin-top:4px;")}>{b.name} · +976 {b.phone}{b.moto_model ? ` · ${b.moto_model}` : ""}</div>
                     {b.note && <div style={sx("font:400 12px Roboto;color:#A3A3A3;margin-top:4px;")}>“{b.note}”</div>}
                   </div>

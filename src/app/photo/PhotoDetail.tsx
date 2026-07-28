@@ -193,11 +193,11 @@ export function PhotoDetail({ p }: { p: Photographer }) {
 
         {/* захиалга */}
         <div style={{ marginTop: 44 }}>
-          <div style={sx("font:800 18px Montserrat;color:#fff;text-transform:uppercase;")}>{t("Цаг захиалах")}</div>
+          <div style={sx("font:800 18px Montserrat;color:#fff;text-transform:uppercase;")}>{t("Өдөр захиалах")}</div>
           <p style={sx("font:400 13px Roboto;color:#8A8F98;margin:6px 0 20px;")}>
-            <b style={{ color: "#fff" }}>{loc(p.name, p.nameEn)}</b> — {t("тохирох үйлчилгээ, огноо, цагаа сонгоно уу.")}
+            <b style={{ color: "#fff" }}>{loc(p.name, p.nameEn)}</b> — {t("тохирох үйлчилгээ, огноогоо сонгоно уу.")}
           </p>
-          <PhotoBookingForm photographerName={p.name} photographerId={p.id} services={p.services} dailyLimit={p.dailyLimit} />
+          <PhotoBookingForm photographerName={p.name} photographerId={p.id} services={p.services} />
         </div>
       </div>
     </div>

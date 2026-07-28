@@ -260,24 +260,24 @@ export async function updateBookingStatus(id: number, status: string) {
 export const PHOTO_DEPOSIT_RATE = 0.3;
 
 export interface PhotoBooking {
-  id: number; photographer: string; photographer_id?: number; service_type: string; booking_date: string; booking_time: string;
+  id: number; photographer: string; photographer_id?: number; service_type: string; booking_date: string; booking_time?: string;
   name: string; phone: string; moto_model?: string; note?: string; price?: number; deposit?: number;
   status: string; payment_status?: string; paid_at?: string; transaction_id?: string;
   user_phone?: string; created_at?: string;
 }
 // Захиалга үүсгээд transactionId буцаана (дараа нь Bonum invoice үүсгэнэ).
 export async function createPhotoBooking(b: {
-  photographer: string; photographer_id?: number | null; service_type: string; booking_date: string; booking_time: string;
+  photographer: string; photographer_id?: number | null; service_type: string; booking_date: string;
   name: string; phone: string; moto_model?: string; note?: string; price: number; user_phone?: string;
 }): Promise<string> {
   const transactionId = `MHP-${Date.now().toString().slice(-8)}-${Math.random().toString(36).slice(2, 6)}`;
   const deposit = Math.max(1, Math.round(b.price * PHOTO_DEPOSIT_RATE));
   const { error } = await supabase.from("photo_bookings").insert({
-    ...b, deposit, transaction_id: transactionId,
+    ...b, booking_time: "Өдөр", deposit, transaction_id: transactionId,
     status: "Төлбөр хүлээгдэж буй", payment_status: "unpaid",
   });
   if (error) {
-    if ((error.message || "").includes("PHOTO_DAY_FULL")) throw new Error("PHOTO_DAY_FULL");
+    if (error.code === "23505" || (error.message || "").includes("PHOTO_DAY_FULL")) throw new Error("PHOTO_DAY_FULL");
     throw error;
   }
   return transactionId;

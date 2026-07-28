@@ -16,16 +16,14 @@ import type { PhotographerService } from "@/lib/db/queries";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:13px 15px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
 const LABEL = "font:600 12px Montserrat;letter-spacing:.04em;color:#C8C8C8;margin-bottom:8px;display:block;";
-const TIMES = ["10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"];
 
-export function PhotoBookingForm({ photographerName, photographerId, services = [], dailyLimit = 3 }: { photographerName: string; photographerId?: number; services?: PhotographerService[]; dailyLimit?: number }) {
+export function PhotoBookingForm({ photographerName, photographerId, services = [] }: { photographerName: string; photographerId?: number; services?: PhotographerService[] }) {
   const { user } = useAuth();
   const { t, loc } = useI18n();
   const authModal = useAuthModal();
   const [serviceType, setServiceType] = useState("");
   const [price, setPrice] = useState<number | null>(null);
   const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
   const [name, setName] = useState(user?.name ?? "");
   const [phone, setPhone] = useState(user?.phone ?? ""); // E.164 (+976…, +46… г.м)
   const [phoneCountry, setPhoneCountry] = useState("MN"); // утасны улс — гадаадын хэрэглэгч ч дугаараа оруулна
@@ -33,7 +31,7 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [dayFull, setDayFull] = useState(false); // тухайн өдөр 3 захиалга дүүрсэн эсэх
+  const [dayFull, setDayFull] = useState(false); // тухайн зурагчин тэр өдөр захиалгатай эсэх
 
   // Зурагчны өөрийн үйлчилгээ; хоосон бол ерөнхий жагсаалт (үнэгүй)
   // Зөвхөн зурагчны өөрийн үйлчилгээ (үнэтэй) — ерөнхий fallback байхгүй
@@ -44,17 +42,10 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
     if (!date || !photographerId) { setDayFull(false); return; }
     let alive = true;
     supabase.rpc("photo_day_count", { pid: photographerId, d: date }).then(({ data }) => {
-      if (alive) setDayFull((data as number ?? 0) >= (dailyLimit || 3));
+      if (alive) setDayFull(Number(data ?? 0) >= 1);
     });
     return () => { alive = false; };
-  }, [date, photographerId, dailyLimit]);
-
-  function chip(active: boolean): string {
-    const b = "cursor:pointer;font:600 13px Roboto;padding:11px 14px;border-radius:10px;text-align:center;user-select:none;";
-    return active
-      ? b + "background:#E10613;color:#fff;border:1px solid #E10613;"
-      : b + "background:#111113;color:#C8C8C8;border:1px solid #262626;";
-  }
+  }, [date, photographerId]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -64,7 +55,6 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
     if (!price || price <= 0) return setError(t("Энэ үйлчилгээнд үнэ тохируулаагүй байна. Зурагчинтай холбогдоно уу."));
     if (!date) return setError(t("Огноогоо сонгоно уу."));
     if (dayFull) return setError(t("Энэ өдөр дүүрсэн байна. Өөр өдөр сонгоно уу."));
-    if (!time) return setError(t("Цагаа сонгоно уу."));
     if (!name.trim()) return setError(t("Нэрээ оруулна уу."));
     const calling = callingCodeOf(phoneCountry);
     const { national } = splitE164(phone, calling);
@@ -75,7 +65,7 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
       // 1) Захиалга үүсгэнэ (Төлбөр хүлээгдэж буй) → 2) Bonum invoice → 3) төлбөрийн хуудас
       const txId = await createPhotoBooking({
         photographer: photographerName, photographer_id: photographerId ?? null, price,
-        service_type: serviceType, booking_date: date, booking_time: time,
+        service_type: serviceType, booking_date: date,
         name: name.trim(), phone, moto_model: model.trim(),
         note: note.trim(), user_phone: user?.phone,
       });
@@ -129,16 +119,8 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-        <div>
-          <label style={sx(LABEL)}>{t("3. Цаг")}</label>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(72px,1fr))", gap: 8 }}>
-            {TIMES.map((slot) => (
-              <div key={slot} onClick={() => setTime(slot)} style={sx(chip(time === slot))}>{slot}</div>
-            ))}
-          </div>
-        </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div><label style={sx(LABEL)}>{t("4. Холбоо барих")}</label>
+          <div><label style={sx(LABEL)}>{t("3. Холбоо барих")}</label>
             <input className="mh-input" placeholder={t("Нэр")} value={name} onChange={(e) => setName(e.target.value)} style={sx(INPUT)} />
           </div>
           <div>

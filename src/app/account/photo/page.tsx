@@ -52,7 +52,7 @@ export default function MyPhotoBookingsPage() {
               <div style={{ minWidth: 210 }}>
                 <div style={sx("font:700 15px Montserrat;color:#fff;")}>📸 {b.photographer}</div>
                 <div style={sx("font:500 13px Roboto;color:#C8C8C8;margin-top:3px;")}>{t(b.service_type)}</div>
-                <div style={sx("font:600 13px Roboto;color:#E10613;margin-top:3px;")}>📅 {b.booking_date} · {b.booking_time}</div>
+                <div style={sx("font:600 13px Roboto;color:#E10613;margin-top:3px;")}>📅 {b.booking_date}</div>
                 {b.note && <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:4px;")}>“{b.note}”</div>}
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
