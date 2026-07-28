@@ -6,6 +6,7 @@ import { sx } from "@/lib/ui/sx";
 import { Slot } from "@/components/ui/Slot";
 import { type GearItem } from "@/lib/db/data";
 import { Price } from "@/lib/reference/currency";
+import { sizeLabel } from "@/lib/commerce/sizes";
 import { useAuth } from "@/lib/auth/auth";
 import { useAuthModal } from "@/lib/auth/authModal";
 import { useCartModal } from "@/lib/commerce/cartModal";
@@ -205,10 +206,10 @@ export function GearDetail({
                     key={s}
                     onClick={() => setSize(s)}
                     style={sx(
-                      `cursor:pointer;min-width:54px;font:600 14px Montserrat;padding:11px 16px;border-radius:10px;background:${s === size ? "#fff" : "#111113"};color:${s === size ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${s === size ? "#fff" : "#262626"};`,
+                      `cursor:pointer;min-width:54px;font:600 13px Montserrat;padding:10px 12px;border-radius:10px;background:${s === size ? "#fff" : "#111113"};color:${s === size ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${s === size ? "#fff" : "#262626"};`,
                     )}
                   >
-                    {s}
+                    {sizeLabel(s)}
                   </button>
                 ))}
               </div>

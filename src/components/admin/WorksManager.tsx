@@ -7,7 +7,7 @@ import { addPhotographerWork, deletePhotographerWork, uploadPhotographerImage } 
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
 
 const BTN = "background:#E10613;color:#fff;font:700 13px Montserrat;padding:11px 18px;border:none;border-radius:9px;cursor:pointer;";
-const MAX_VIDEO = 100 * 1024 * 1024; // 100MB
+const MAX_VIDEO = 1024 * 1024 * 1024; // 1GB
 
 type Pending = { kind: "photo" | "video"; url: string };
 const isVideoUrl = (u: string) => /\.(mp4|webm|mov|m4v)(\?|$)/i.test(u);
@@ -24,7 +24,7 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
   async function stageFiles(files: FileList) {
     const arr = Array.from(files);
     const tooBig = arr.filter((f) => f.type.startsWith("video/") && f.size > MAX_VIDEO);
-    if (tooBig.length) { await alert({ title: "Видео 100MB-аас бага байх ёстой.", message: tooBig.map((f) => f.name).join(", ") }); }
+    if (tooBig.length) { await alert({ title: "Видео 1GB-аас бага байх ёстой.", message: tooBig.map((f) => f.name).join(", ") }); }
     const ok = arr.filter((f) => !(f.type.startsWith("video/") && f.size > MAX_VIDEO));
     if (!ok.length) return;
 
@@ -98,7 +98,7 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
           <input type="file" accept="image/*,video/*" multiple hidden
             onChange={(e) => { const fs = e.target.files; if (fs && fs.length) stageFiles(fs); e.target.value = ""; }} />
         </label>
-        <div style={sx("font:400 11px Roboto;color:#8A8F98;")}>Зураг, видеогоо нэг дор олноор сонгож болно (видео 100MB хүртэл). Доор нэмэгдээд, “Хадгалах” дарахад портфолиод орно.</div>
+        <div style={sx("font:400 11px Roboto;color:#8A8F98;")}>Зураг, видеогоо нэг дор олноор сонгож болно (видео 1GB хүртэл). Доор нэмэгдээд, “Хадгалах” дарахад портфолиод орно.</div>
 
         {/* хадгалахад бэлэн */}
         {pending.length > 0 && (
