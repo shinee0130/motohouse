@@ -11,8 +11,8 @@ import { useI18n } from "@/lib/i18n";
 const MENU = [
   { label: "Хяналтын самбар", href: "/account" },
   { label: "Миний захиалга", href: "/account/orders" },
+  { label: "Зураг авалтын захиалга", href: "/account/photo" },
   { label: "Миний хүсэлтүүд", href: "/account/requests" },
-  { label: "Миний аяллууд", href: "/account/bookings" },
   { label: "Хадгалсан", href: "/account/wishlist" },
   { label: "Профайл", href: "/account/profile" },
 ];

@@ -27,7 +27,6 @@ export function OrderTimeline({ order }: { order: Order }) {
       <div style={{ display: "flex", flexDirection: "column" }}>
         {steps.map((s, i) => {
           const last = i === steps.length - 1;
-          const color = s.done ? "#22c55e" : s.current ? "#E10613" : "#3a3a3f";
           return (
             <div key={s.label} style={{ display: "flex", gap: 13 }}>
               {/* зүүн талын цэг + шугам */}

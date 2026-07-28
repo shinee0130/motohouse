@@ -143,7 +143,6 @@ function ConfirmModal({ opts, onDone }: { opts: ConfirmOptions; onDone: (v: bool
 }
 
 function AlertModal({ opts, onClose }: { opts: AlertOptions; onClose: () => void }) {
-  const { t } = useI18n();
   const danger = opts.danger ?? false;
 
   useEffect(() => {

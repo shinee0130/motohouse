@@ -317,7 +317,6 @@ export async function updatePhotoBookingStatus(id: number, status: string) {
 }
 
 // ===== Зурагчид (photographers) + портфолио (works) =====
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function photographerRow(p: Partial<Photographer>): any {
   return {
     name: p.name, name_en: p.nameEn || null, specialty: p.specialty ?? null, specialty_en: p.specialtyEn || null,

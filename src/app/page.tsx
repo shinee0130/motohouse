@@ -30,7 +30,6 @@ const CATS = [
   { title: "Мотоцикл", desc: "Sport, naked, adventure төрлийн сонголтууд", href: "/motorcycles", img: "/assets/home/cat_moto.webp", setKey: "cat_moto" },
   { title: "Дагалдах хэрэгсэл", desc: "Монгол болон гадаад захиалгад нийлүүлэх riding gear", href: "/gear", img: "/assets/home/cat_gear.avif", setKey: "cat_gear" },
   { title: "Сэлбэг", desc: "Экспортод бэлтгэх боломжтой сэлбэг, consumables", href: "/parts", img: "/assets/home/cat_parts.jpg", setKey: "cat_parts" },
-  { title: "Засвар", desc: "Оношилгоо, үйлчилгээ, суурилуулалт", href: "/service", img: "/assets/home/cat_service.jpg", setKey: "cat_service" },
 ];
 
 export const dynamic = "force-dynamic";
@@ -118,7 +117,7 @@ export default async function HomePage() {
             <span style={{ color: "#E10613" }}>Live</span>
           </h1>
           <p style={sx("font:400 clamp(14px,2vw,19px)/1.6 Roboto;color:#C8C8C8;max-width:520px;margin-top:20px;")}>
-            <T>Монголд суурилсан MOTO HOUSE нь мотоцикл, хамгаалалтын хэрэгсэл, сэлбэг, засвар үйлчилгээ болон гадаад захиалгын нийлүүлэлтийг нэг дор холбодог платформ.</T>
+            <T>Монголд суурилсан MOTO HOUSE нь мотоцикл, хамгаалалтын хэрэгсэл, сэлбэг болон гадаад захиалгын нийлүүлэлтийг нэг дор холбодог платформ.</T>
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 28 }}>
             <Link href="/motorcycles" style={sx("background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px 28px;border-radius:10px;text-transform:uppercase;cursor:pointer;")}>
@@ -222,21 +221,6 @@ export default async function HomePage() {
       {/* ===== PROMO BANNERS ===== */}
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
         <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;")}>
-          <Link
-            href="/service"
-            className="mh-card"
-            style={sx("position:relative;overflow:hidden;background:linear-gradient(120deg,#2a0608,#111113 70%);border:1px solid #E10613;border-radius:20px;padding:clamp(28px,4vw,40px);min-height:230px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;")}
-          >
-            <div style={sx("font:800 clamp(24px,3vw,32px) Montserrat;color:#fff;text-transform:uppercase;line-height:1.05;")}>
-              <T>Засвар · оношилгоо{"\n"}· суурилуулалт</T>
-            </div>
-            <div style={sx("font:400 14px Roboto;color:#C8C8C8;margin-top:10px;max-width:360px;")}>
-              <T>Тос, тормоз, дугуй, цахилгаан оношилгоо болон сэлбэг суурилуулалтыг нэг дор хийлгээрэй.</T>
-            </div>
-            <span style={sx("align-self:flex-start;margin-top:18px;background:#E10613;color:#fff;font:700 13px Montserrat;letter-spacing:.06em;padding:12px 22px;border-radius:9px;text-transform:uppercase;")}>
-              <T>Цаг захиалах</T>
-            </span>
-          </Link>
           <Link
             href="/photo"
             className="mh-card"
@@ -349,15 +333,10 @@ export default async function HomePage() {
               <T>MOTO HOUSE-ийн мэдээллийг түрүүлж аваарай</T>
             </div>
             <div style={sx("font:400 14px Roboto;color:#A3A3A3;margin-top:8px;max-width:480px;")}>
-              <T>Шинэ бараа, экспортын боломж, Event, Giveaway болон засварын зөвлөгөөг и-мэйлээр хүргэнэ.</T>
+              <T>Шинэ бараа, экспортын боломж, Event болон Giveaway-ийн мэдээллийг и-мэйлээр хүргэнэ.</T>
             </div>
           </div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <NewsletterInput />
-            <button style={sx("background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:14px 26px;border:none;border-radius:10px;text-transform:uppercase;cursor:pointer;")}>
-              <T>Мэдээ авах</T>
-            </button>
-          </div>
+          <NewsletterInput />
         </div>
       </div>
     </div>

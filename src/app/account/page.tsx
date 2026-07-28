@@ -35,7 +35,6 @@ export default function AccountOverview() {
     { label: "Захиалга", value: String(orders.length), href: "/account/orders" },
     { label: "Зураг авалт", value: String(photoCount), href: "/account/photo" },
     { label: "Хадгалсан", value: String(savedCount), href: "/account/wishlist" },
-    { label: "Bonus оноо", value: "1,250", href: "/account" },
   ];
   const recent = orders.slice(0, 3);
 

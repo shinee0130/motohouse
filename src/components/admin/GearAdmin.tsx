@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
 import { Select } from "@/components/ui/Select";
 import { fmt, isPart, PARTS_CATS, GENDERS, type GearItem } from "@/lib/db/data";
@@ -93,11 +93,11 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
     };
   }
 
-  async function refresh() {
+  const refresh = useCallback(async () => {
     const all = await getGearAll();
     setList(all.filter((g) => (mode === "parts" ? isPart(g) : !isPart(g))));
-  }
-  useEffect(() => { refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [mode]);
+  }, [mode]);
+  useEffect(() => { void refresh(); }, [refresh]);
 
   async function onImages(files: FileList | null) {
     if (!files || !files.length) return;

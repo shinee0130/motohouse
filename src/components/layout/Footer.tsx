@@ -22,7 +22,7 @@ export function Footer() {
         <div>
           <Brand height={30} />
           <p style={sx("font:400 13px/1.6 Roboto;color:#8A8F98;margin-top:14px;max-width:260px;")}>
-            {t("Монголд суурилсан мотоцикл, riding gear, сэлбэг, засвар үйлчилгээ болон олон улсын захиалгын платформ.")}
+            {t("Монголд суурилсан мотоцикл, riding gear, сэлбэг болон олон улсын захиалгын платформ.")}
           </p>
         </div>
         <div>
@@ -34,9 +34,7 @@ export function Footer() {
               { href: "/motorcycles", label: "Мотоцикл" },
               { href: "/gear", label: "Дагалдах хэрэгсэл" },
               { href: "/parts", label: "Сэлбэг" },
-              { href: "/service", label: "Засвар" },
               { href: "/photo", label: "Зураг авалт" },
-              { href: "/travel", label: "Аялал" },
               { href: "/events", label: "Event" },
               { href: "/giveaway", label: "Giveaway" },
             ].map((p) => (

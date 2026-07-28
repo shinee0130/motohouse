@@ -76,8 +76,8 @@ export default function AdminRequests() {
           <div key={r.id} style={sx("background:#111113;border:1px solid #262626;border-radius:14px;padding:16px 18px;")}>
             <div style={{ display: "flex", gap: 14, alignItems: "flex-start", flexWrap: "wrap" }}>
               {r.image && (
-                // eslint-disable-next-line @next/next/no-img-element
                 <a href={r.image} target="_blank" rel="noreferrer">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={r.image} alt="" style={sx("width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid #262626;flex-shrink:0;")} />
                 </a>
               )}

@@ -56,7 +56,6 @@ export default async function Image() {
         />
 
         {/* лого — бүтнээр нь голд */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={logoSrc} width={880} height={Math.round((880 * 294) / 1899)} alt="MOTO HOUSE" />
 
         {/* доод улаан зурвас */}

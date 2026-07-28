@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
 import { Select } from "@/components/ui/Select";
 import { type EventItem } from "@/lib/db/data";
@@ -43,11 +43,11 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
     };
   }
 
-  async function refresh() {
+  const refresh = useCallback(async () => {
     const all = await getEvents();
     setList(all.filter((e) => (gv ? isGiveaway(e.type) : !isGiveaway(e.type))));
-  }
-  useEffect(() => { refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [mode]);
+  }, [gv]);
+  useEffect(() => { void refresh(); }, [refresh]);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();

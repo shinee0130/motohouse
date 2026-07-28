@@ -22,7 +22,7 @@ export function EventsGrid({
 
   return (
     <div style={sx("max-width:1280px;margin:0 auto;padding:clamp(32px,5vw,56px) clamp(20px,4vw,40px);")}>
-      <div style={{ animation: "mhfade .5s both" }}>
+      <div aria-label={t(label)} style={{ animation: "mhfade .5s both" }}>
         <h1 style={sx("font:800 clamp(30px,5vw,46px) Montserrat;color:#fff;margin-top:6px;text-transform:uppercase;")}>
           {t(title)}
         </h1>

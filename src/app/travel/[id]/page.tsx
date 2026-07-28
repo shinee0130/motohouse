@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 
-// Аялал coming soon үед detail хуудсыг /travel руу шилжүүлнэ.
-// Сэргээх: git түүхээс өмнөх getTour + TourDetail хувилбарыг буцаа.
+// Аяллын хэсэг түр харагдахгүй тул шууд нэвтрэх URL-ийг ч home руу буцаана.
 export default function TourPage() {
-  redirect("/travel");
+  redirect("/");
 }
