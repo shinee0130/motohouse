@@ -30,7 +30,7 @@ const CATS = [
   { title: "Мотоцикл", desc: "Sport, naked, adventure төрлийн сонголтууд", href: "/motorcycles", img: "/assets/home/cat_moto.webp", setKey: "cat_moto" },
   { title: "Дагалдах хэрэгсэл", desc: "Монгол болон гадаад захиалгад нийлүүлэх riding gear", href: "/gear", img: "/assets/home/cat_gear.avif", setKey: "cat_gear" },
   { title: "Сэлбэг", desc: "Экспортод бэлтгэх боломжтой сэлбэг, consumables", href: "/parts", img: "/assets/home/cat_parts.jpg", setKey: "cat_parts" },
-  { title: "Зураг авалт", desc: "Мотоциклын зураг, reel, видео үйлчилгээ", href: "/photo", img: "/assets/home/poster_xpro_mn.jpg", setKey: "cat_photo" },
+  { title: "Зураг авалт", desc: "Мотоциклын зураг, reel, видео үйлчилгээ", href: "/photo", img: "/assets/home/cat_photo.jpg", setKey: "cat_photo" },
 ];
 
 export const dynamic = "force-dynamic";
