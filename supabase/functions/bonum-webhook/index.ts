@@ -63,7 +63,7 @@ Deno.serve(async (req) => {
       // яг таарахгүй. Мөнгө орсон атал төлөгдөөгүй гэж үлдэхээс сэргийлж
       // анхны хэсгээр нь (…-rXXX-гүй) хайж дахин оролдоно.
       if ((o.data?.length ?? 0) === 0 && (p.data?.length ?? 0) === 0) {
-        const base = txId.replace(/-r[a-z0-9]+$/i, "");
+        const base = txId.replace(/(-r[a-z0-9]+)+$/i, "");
         console.error("bonum-webhook: SUCCESS яг таарсангүй, угтвараар хайж байна —", base);
         await admin.from("orders").update({ payment_status: "paid", paid_at: paidAt })
           .like("transaction_id", `${base}%`).neq("payment_status", "paid");

@@ -34,7 +34,23 @@ function reasonOf(payload: unknown): string | null {
       if (typeof v === "string" && v.trim()) return v.trim();
     }
   }
+  // Текст тайлбар ирээгүй бол invoice-ийн төлөв өөрөө шалтгаан болно.
+  // Ажиглагдсан утга: EXPIRED = хэрэглэгч 30 минутын дотор төлбөрөө гүйцээгээгүй.
+  const inv = body.invoiceStatus ?? body.status;
+  if (typeof inv === "string" && inv && inv !== "PAID") {
+    return inv === "EXPIRED" ? "EXPIRED — хугацаа дуусав (төлбөрөө гүйцээгээгүй)" : inv;
+  }
   return null;
+}
+
+// Аль сувгаар / ямар банкаар төлснийг харуулна (QPAY, карт г.м).
+function vendorOf(payload: unknown): string | null {
+  if (!payload || typeof payload !== "object") return null;
+  const body = ((payload as Record<string, unknown>).body ?? {}) as Record<string, unknown>;
+  const vendor = typeof body.paymentVendor === "string" ? body.paymentVendor : null;
+  const app = body.paymentApp && typeof body.paymentApp === "object"
+    ? (body.paymentApp as Record<string, unknown>).name : null;
+  return [vendor, typeof app === "string" ? app : null].filter(Boolean).join(" · ") || null;
 }
 
 function timeOf(iso: string): string {
@@ -61,7 +77,8 @@ export default function AdminPayments() {
   // transaction_id → захиалга (аль барааны төлбөр байсныг харуулна).
   // Дахин төлөх бүрд id-д "-rXXX" залгагддаг тул анхны хэсгээр нь тааруулна —
   // эс бол хуучин оролдлогын бичлэг захиалгаа олохгүй болно.
-  const baseTx = (tx: string) => tx.replace(/-r[a-z0-9]+$/i, "");
+  // Давхарласан залгаврыг ч бүгдийг нь тайлна (…-r118-r6re → …l1k5i).
+  const baseTx = (tx: string) => tx.replace(/(-r[a-z0-9]+)+$/i, "");
   const byTx = useMemo(() => {
     const m = new Map<string, Order>();
     for (const o of orders) if (o.transactionId) m.set(baseTx(o.transactionId), o);
@@ -105,6 +122,7 @@ export default function AdminPayments() {
         {shown.map((e) => {
           const order = e.transactionId ? byTx.get(baseTx(e.transactionId)) : undefined;
           const reason = reasonOf(e.payload);
+          const vendor = vendorOf(e.payload);
           const isOpen = open === e.id;
           return (
             <div key={e.id} style={sx("border-bottom:1px solid #1c1c1f;")}>
@@ -120,7 +138,10 @@ export default function AdminPayments() {
                     {timeOf(e.createdAt)} · {e.type || "—"}
                     {e.transactionId ? ` · ${e.transactionId}` : ""}
                   </div>
-                  {reason && (
+                  {vendor && (
+                    <div style={sx("font:600 12px Roboto;color:#60a5fa;margin-top:5px;")}>💳 {vendor}</div>
+                  )}
+                  {reason && e.status !== "SUCCESS" && (
                     <div style={sx("font:500 12px Roboto;color:#f59e0b;margin-top:6px;")}>⚠ {reason}</div>
                   )}
                 </div>

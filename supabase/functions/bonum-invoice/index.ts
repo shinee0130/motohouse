@@ -83,7 +83,7 @@ Deno.serve(async (req) => {
     // төлбөрийн лог дээр аль захиалгынх болохыг таниулна.
     // Хуучин "-rXXX" залгаврыг ЭХЛЭЭД тайлна — эс бол оролдлого бүрд id уртсаад
     // (…-r118-rt5v-r9qa) Bonum-ын хязгаарт тулна.
-    const baseTxId = String(transactionId).replace(/-r[a-z0-9]+$/i, "");
+    const baseTxId = String(transactionId).replace(/(-r[a-z0-9]+)+$/i, "");
     const payTxId = isRetry
       ? `${baseTxId}-r${Math.random().toString(36).slice(2, 5)}`
       : transactionId;
