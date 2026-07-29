@@ -104,7 +104,7 @@ export default function ServicePage() {
             </button>
           </div>
         ) : (
-          <form onSubmit={submit} style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;margin-top:28px;align-items:start;")}>
+          <form onSubmit={submit} style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:28px;margin-top:28px;align-items:start;")}>
             {/* Зүүн: төрөл + огноо */}
             <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
               <div>
@@ -125,7 +125,7 @@ export default function ServicePage() {
             <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
               <div>
                 <label style={sx(LABEL)}>{t("3. Цаг")} {date && booked.length > 0 && <span style={sx("color:#8A8F98;font-weight:400;")}>· {t("авагдсан цаг саарал")}</span>}</label>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(72px,1fr))", gap: 8 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(72px,100%),1fr))", gap: 8 }}>
                   {TIMES.map((slot) => {
                     const taken = booked.includes(slot);
                     return taken ? (

@@ -109,7 +109,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
         {/* performance + extras */}
         <div
           style={sx(
-            "margin-top:clamp(36px,5vw,56px);display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:32px;",
+            "margin-top:clamp(36px,5vw,56px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:32px;",
           )}
         >
           <div>
@@ -154,7 +154,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
           <h2 style={sx("font:800 22px Montserrat;color:#fff;text-transform:uppercase;")}><T>Төстэй мотоцикл</T></h2>
           <div
             style={sx(
-              "display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;margin-top:18px;",
+              "display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:18px;margin-top:18px;",
             )}
           >
             {similar.map((s) => (

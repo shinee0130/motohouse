@@ -13,7 +13,7 @@ export function PhotoGrid({ photographers }: { photographers: Photographer[] }) 
   }
 
   return (
-    <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:26px;")}>
+    <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:16px;margin-top:26px;")}>
       {photographers.map((p) => {
         const initial = loc(p.name, p.nameEn).replace(/\D+/g, "") || "📸";
         return (

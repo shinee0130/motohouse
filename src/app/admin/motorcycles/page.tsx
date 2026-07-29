@@ -141,7 +141,7 @@ export default function AdminMotorcycles() {
       {editing !== null && (
         <form onSubmit={save} style={sx("background:#0e0e10;border:1px solid #262626;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px;")}>
           <div style={sx("font:700 15px Montserrat;color:#fff;")}>{editing === "new" ? "Шинэ мотоцикл" : "Засах"}</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(150px,100%),1fr))", gap: 14 }}>
             <div><label style={sx(LABEL)}>Брэнд</label>
               <Select
                 value={customBrand ? CUSTOM : f.brand}

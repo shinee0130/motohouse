@@ -93,7 +93,7 @@ export function GearDetail({
         <span style={{ color: "#C8C8C8" }}>{loc(item.name, item.nameEn)}</span>
       </div>
 
-      <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:clamp(24px,4vw,48px);align-items:start;")}>
+      <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:clamp(24px,4vw,48px);align-items:start;")}>
         {/* ===== GALLERY ===== */}
         <div style={{ display: "flex", gap: 12 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, flexShrink: 0 }}>
@@ -280,7 +280,7 @@ export function GearDetail({
         {loc(item.features, item.featuresEn).length > 0 && (
           <>
             <h3 style={sx("font:800 15px Montserrat;color:#fff;text-transform:uppercase;margin-top:26px;")}>{t("Онцлог")}</h3>
-            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px 28px;margin-top:14px;")}>
+            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:8px 28px;margin-top:14px;")}>
               {loc(item.features, item.featuresEn).map((f) => (
                 <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 11 }}>
                   <span style={sx("width:6px;height:6px;border-radius:50%;background:#E10613;flex-shrink:0;margin-top:7px;")} />

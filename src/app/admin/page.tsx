@@ -45,7 +45,7 @@ export default function AdminOverview() {
         </div>
       </div>
 
-      <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;")}>
+      <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr));gap:16px;")}>
         {stats.map((st) => (
           <Link key={st.label} href={st.href} className="mh-card" style={sx(CARD + "display:block;cursor:pointer;")}>
             <div style={sx("font:800 30px Montserrat;color:#E10613;")}>{st.value}</div>
@@ -54,7 +54,7 @@ export default function AdminOverview() {
         ))}
       </div>
 
-      <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;")}>
+      <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:16px;")}>
         <div style={sx(CARD)}>
           <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.14em;color:#8A8F98;")}>НИЙТ INVENTORY ҮНЭ</div>
           <div style={sx("font:800 26px Montserrat;color:#fff;margin-top:8px;")}>{fmt(s.inventory)}</div>

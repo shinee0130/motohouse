@@ -47,7 +47,7 @@ export default function AccountOverview() {
         </div>
       </div>
 
-      <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;")}>
+      <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:16px;")}>
         {stats.map((s) => (
           <Link key={s.label} href={s.href} className="mh-card" style={sx(CARD + "display:block;cursor:pointer;")}>
             <div style={sx("font:800 30px Montserrat;color:#E10613;")}>{s.value}</div>

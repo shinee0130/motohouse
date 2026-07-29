@@ -134,7 +134,7 @@ export default async function HomePage() {
       {/* ===== SHOP BY CATEGORY ===== */}
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
         <h2 style={sx(SECTION_TITLE)}><T>Ангилалаар үзэх</T></h2>
-        <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-top:24px;")}>
+        <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr));gap:18px;margin-top:24px;")}>
           {CATS.map(({ title, desc, href, img, setKey }) => (
             <Link
               key={title}
@@ -221,7 +221,7 @@ export default async function HomePage() {
 
       {/* ===== PROMO BANNERS ===== */}
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
-        <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;")}>
+        <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:20px;")}>
           <Link
             href="/photo"
             className="mh-card"
@@ -295,7 +295,7 @@ export default async function HomePage() {
           </div>
           <Link href="/events" style={sx(SEE_ALL)}><T>Бүгдийг →</T></Link>
         </div>
-        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:24px;")}>
+        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:20px;margin-top:24px;")}>
           {events.map((e) => (
             <Link key={e.id} href={`/events/${e.id}`} className="mh-card" style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;")}>
               <div style={{ position: "relative", height: 240, background: "radial-gradient(120% 120% at 50% 0%, #17171a, #0b0b0d)" }}>

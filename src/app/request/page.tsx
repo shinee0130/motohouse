@@ -106,7 +106,7 @@ export default function RequestPage() {
               style={sx(INPUT + "resize:vertical;")}
             />
           </div>
-          <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;")}>
+          <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:14px;")}>
             <div>
               <label style={sx(LABEL)}>{t("Нэр")}</label>
               <input value={name} onChange={(e) => setName(e.target.value)} style={sx(INPUT)} />

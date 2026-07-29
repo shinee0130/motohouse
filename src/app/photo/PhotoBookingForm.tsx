@@ -85,7 +85,7 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
   }
 
   return (
-    <form onSubmit={submit} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 26, alignItems: "start" }}>
+    <form onSubmit={submit} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(280px,100%),1fr))", gap: 26, alignItems: "start" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
         <div>
           <label style={sx(LABEL)}>{t("1. Үйлчилгээ сонгох")}</label>

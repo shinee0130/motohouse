@@ -29,7 +29,7 @@ export function TourList({ tours }: { tours: Tour[] }) {
           </div>
         )}
 
-        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px;margin-top:22px;")}>
+        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:22px;margin-top:22px;")}>
           {tours.map((tour) => {
             const left = Math.max(0, tour.maxCapacity - tour.booked);
             const soldOut = tour.status !== "Нээлттэй" || left <= 0;

@@ -88,5 +88,5 @@ export function Section({ index, title, children }: { index: number; title: stri
 
 // Хоёр баганат grid (mobile дээр нэг багана).
 export function FieldGrid({ children }: { children: ReactNode }) {
-  return <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;")}>{children}</div>;
+  return <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:12px;")}>{children}</div>;
 }

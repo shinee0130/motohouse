@@ -26,7 +26,7 @@ export function MotoGallery({ images, status, video }: { images?: string[]; stat
       </div>
 
       {/* thumbnails */}
-      <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:10px;margin-top:12px;")}>
+      <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(min(72px,100%),1fr));gap:10px;margin-top:12px;")}>
         {has
           ? images!.map((src, i) => (
               <button

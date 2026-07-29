@@ -75,7 +75,7 @@ export default function AdminService() {
       {day && (
         <div style={sx("background:#0e0e10;border:1px solid #262626;border-radius:14px;padding:18px;")}>
           <div style={sx("font:700 14px Montserrat;color:#fff;margin-bottom:14px;")}>{dayLabel} — цагийн хуваарь</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(140px,1fr))", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(140px,100%),1fr))", gap: 10 }}>
             {TIMES.map((t) => {
               const bs = (slotMap[t] || []).filter((b) => b.status !== "Цуцлагдсан");
               const booked = bs.length > 0;

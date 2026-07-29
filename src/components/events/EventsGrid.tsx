@@ -35,7 +35,7 @@ export function EventsGrid({
 
         <div
           style={sx(
-            "display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:22px;margin-top:26px;",
+            "display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:22px;margin-top:26px;",
           )}
         >
           {events.map((e) => (

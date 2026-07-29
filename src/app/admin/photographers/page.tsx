@@ -149,7 +149,7 @@ export default function AdminPhotographers() {
               ))}
             </div>
 
-            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;")}>
+            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:14px;")}>
               <div><label style={sx(LABEL)}>Нэр * <span style={sx("color:#8A8F98;font-weight:400;")}>(2 хэлэнд ижил)</span></label><input value={f.name} onChange={(e) => set("name", e.target.value)} style={sx(INPUT)} /></div>
               {flang === "mn"
                 ? <div><label style={sx(LABEL)}>Чиглэл</label><input value={f.specialty} onChange={(e) => set("specialty", e.target.value)} style={sx(INPUT)} /></div>
@@ -160,14 +160,14 @@ export default function AdminPhotographers() {
               <textarea value={flang === "mn" ? f.bio : f.bioEn} onChange={(e) => set(flang === "mn" ? "bio" : "bioEn", e.target.value)} rows={3} style={sx(INPUT + "resize:vertical;")} />
             </div>
 
-            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;")}>
+            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:14px;")}>
               <div><label style={sx(LABEL)}>Tag (таслалаар: Зураг, Reel, Видео)</label><input value={f.tags} onChange={(e) => set("tags", e.target.value)} style={sx(INPUT)} /></div>
               <div><label style={sx(LABEL)}>Үнэ (текст, сонголт)</label><input value={f.price} onChange={(e) => set("price", e.target.value)} placeholder="ж: 150,000₮-с" style={sx(INPUT)} /></div>
               <div><label style={sx(LABEL)}>Эрэмбэ (sort)</label><input type="number" value={f.sort} onChange={(e) => set("sort", Number(e.target.value))} style={sx(INPUT)} /></div>
               <div><label style={sx(LABEL)}>Өдрийн захиалгын хязгаар</label><input type="number" min={1} value={f.dailyLimit} onChange={(e) => set("dailyLimit", Number(e.target.value))} style={sx(INPUT)} /></div>
             </div>
 
-            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;")}>
+            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:14px;")}>
               <div><label style={sx(LABEL)}>Instagram URL</label><input value={f.instagram} onChange={(e) => set("instagram", e.target.value)} style={sx(INPUT)} /></div>
               <div><label style={sx(LABEL)}>Facebook URL</label><input value={f.facebook} onChange={(e) => set("facebook", e.target.value)} style={sx(INPUT)} /></div>
               <div><label style={sx(LABEL)}>TikTok URL</label><input value={f.tiktok} onChange={(e) => set("tiktok", e.target.value)} style={sx(INPUT)} /></div>

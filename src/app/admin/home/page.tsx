@@ -131,7 +131,7 @@ export default function AdminHome() {
         </div>
       </div>
 
-      <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;")}>
+      <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:18px;")}>
         {SLOTS.map((s) => {
           const src = shownSrc(s.key);
           const hidden = isHidden(s.key);

@@ -79,7 +79,7 @@ export function TourDetail({ tour }: { tour: Tour }) {
         </div>
       </div>
 
-      <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(20px,3vw,32px);margin-top:24px;align-items:start;")}>
+      <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:clamp(20px,3vw,32px);margin-top:24px;align-items:start;")}>
         {/* мэдээлэл */}
         <div>
           <div style={sx("display:grid;grid-template-columns:1fr 1fr;gap:12px;")}>

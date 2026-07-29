@@ -237,7 +237,7 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
 
       {/* 2. Хүлээн авагч */}
       <Section index={2} title={t("Хүлээн авагч")}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(200px,100%),1fr))", gap: 12 }}>
           <TextField label={t("Хүлээн авагчийн нэр")} value={recipientName} onChange={setRecipientName} required error={errName} autoComplete="name" />
           <InternationalPhoneInput label={t("Утасны дугаар")} value={phone} onChange={setPhone} countryCode={countryCode} required error={errPhone} />
         </div>

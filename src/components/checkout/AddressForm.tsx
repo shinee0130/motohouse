@@ -30,7 +30,7 @@ export function AddressForm({ countryCode, value, onChange, onCountry, errors }:
   }
 
   return (
-    <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;")}>
+    <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:12px;")}>
       {schema.map((f) => {
         const full = f.key === "line1" || f.key === "line2" || f.key === "note";
         return (

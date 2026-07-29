@@ -10,6 +10,10 @@
 html,
 body {
   background: #050505;
+  /* Утсан дээр ямар нэг блок дэлгэцнээс халивал хажуу тийш гүйдэг болохоос
+     сэргийлнэ. `hidden` биш `clip` — `hidden` нь scroll container үүсгэдэг
+     тул header-ийн `position: sticky` эвддэг, `clip` эвддэггүй. */
+  overflow-x: clip;
 }
 
 body {

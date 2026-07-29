@@ -16,7 +16,7 @@ export function Footer() {
     <div style={sx("border-top:1px solid #1c1c1f;background:#0B0B0D;margin-top:auto;")}>
       <div
         style={sx(
-          "max-width:1280px;margin:0 auto;padding:clamp(36px,5vw,56px) clamp(20px,4vw,40px);display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:32px;",
+          "max-width:1280px;margin:0 auto;padding:clamp(36px,5vw,56px) clamp(20px,4vw,40px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:32px;",
         )}
       >
         <div>

@@ -70,7 +70,7 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
 
       {/* хадгалагдсан ажлууд */}
       {works.length > 0 && (
-        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;")}>
+        <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(min(120px,100%),1fr));gap:10px;")}>
           {works.map((w) => (
             <div key={w.id} style={sx("position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;background:#0b0b0d;border:1px solid #262626;")}>
               {w.kind === "photo" ? (
@@ -104,7 +104,7 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
         {pending.length > 0 && (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             <div style={sx("font:600 12px Montserrat;color:#C8C8C8;")}>Хадгалахад бэлэн ({pending.length})</div>
-            <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;")}>
+            <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(min(90px,100%),1fr));gap:8px;")}>
               {pending.map((p, i) => (
                 <div key={i} style={sx("position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;background:#0b0b0d;border:1px solid #333;")}>
                   {p.kind === "photo" ? (

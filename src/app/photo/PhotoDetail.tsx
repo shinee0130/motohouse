@@ -106,7 +106,7 @@ export function PhotoDetail({ p }: { p: Photographer }) {
             <div style={sx("font:800 18px Montserrat;color:#fff;text-transform:uppercase;")}>{t("Ажлууд")}</div>
 
             {videos.length > 0 && (
-              <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:16px;")}>
+              <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:12px;margin-top:16px;")}>
                 {videos.map((w) => {
                   const e = videoEmbed(w.url);
                   const isFile = /\.(mp4|webm|mov|m4v)(\?|$)/i.test(w.url);
@@ -136,7 +136,7 @@ export function PhotoDetail({ p }: { p: Photographer }) {
             )}
 
             {photos.length > 0 && (
-              <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:12px;")}>
+              <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:12px;margin-top:12px;")}>
                 {photos.map((w, i) => (
                   <button key={w.id} type="button" onClick={() => setLb(i)} aria-label={t("Томоор харах")}
                     style={{ padding: 0, border: "1px solid #262626", borderRadius: 14, overflow: "hidden", background: "#0b0b0d", cursor: "zoom-in", display: "block" }}>

@@ -173,7 +173,7 @@ export default function StudioPage() {
                   <button key={l} onClick={() => setFlang(l)} style={sx(`cursor:pointer;font:700 12px Montserrat;padding:7px 15px;border-radius:8px;${flang === l ? "background:#E10613;border:1px solid #E10613;color:#fff;" : "background:#050505;border:1px solid #333;color:#C8C8C8;"}`)}>{l.toUpperCase()}</button>
                 ))}
               </div>
-              <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;")}>
+              <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:14px;")}>
                 <div><label style={sx(LABEL)}>Нэр * <span style={sx("color:#8A8F98;font-weight:400;")}>(2 хэлэнд ижил)</span></label><input value={f.name} onChange={(e) => set("name", e.target.value)} style={sx(INPUT)} /></div>
                 {flang === "mn"
                   ? <div><label style={sx(LABEL)}>Чиглэл</label><input value={f.specialty} onChange={(e) => set("specialty", e.target.value)} style={sx(INPUT)} /></div>
@@ -183,11 +183,11 @@ export default function StudioPage() {
                 <label style={sx(LABEL)}>{flang === "mn" ? "Танилцуулга" : "Bio (EN)"}</label>
                 <textarea value={flang === "mn" ? f.bio : f.bioEn} onChange={(e) => set(flang === "mn" ? "bio" : "bioEn", e.target.value)} rows={3} style={sx(INPUT + "resize:vertical;")} />
               </div>
-              <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;")}>
+              <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:14px;")}>
                 <div><label style={sx(LABEL)}>Tag (таслалаар)</label><input value={f.tags} onChange={(e) => set("tags", e.target.value)} style={sx(INPUT)} /></div>
                 <div><label style={sx(LABEL)}>Үнэ (текст)</label><input value={f.price} onChange={(e) => set("price", e.target.value)} style={sx(INPUT)} /></div>
               </div>
-              <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;")}>
+              <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:14px;")}>
                 <div><label style={sx(LABEL)}>Instagram URL</label><input value={f.instagram} onChange={(e) => set("instagram", e.target.value)} style={sx(INPUT)} /></div>
                 <div><label style={sx(LABEL)}>Facebook URL</label><input value={f.facebook} onChange={(e) => set("facebook", e.target.value)} style={sx(INPUT)} /></div>
                 <div><label style={sx(LABEL)}>TikTok URL</label><input value={f.tiktok} onChange={(e) => set("tiktok", e.target.value)} style={sx(INPUT)} /></div>
@@ -223,7 +223,7 @@ export default function StudioPage() {
             <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px;margin-top:16px;")}>
               <div style={sx("font:700 15px Montserrat;color:#fff;")}>Нууц үг солих</div>
               <div style={sx("font:400 11px Roboto;color:#8A8F98;")}>Танд өгсөн түр нууц үгээ өөрийн нууц үгээр солиорой.</div>
-              <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;")}>
+              <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:14px;")}>
                 <div>
                   <label style={sx(LABEL)}>Шинэ нууц үг (6+ тэмдэгт)</label>
                   <PasswordInput value={pw1} onChange={setPw1} />
