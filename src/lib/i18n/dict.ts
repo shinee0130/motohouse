@@ -317,7 +317,8 @@ export const EN: Record<string, string> = {
   "Сагс хоосон байна": "Your cart is empty",
   "Дагалдах хэрэгсэл үзэх": "Browse gear",
   "Сэлбэг үзэх": "Browse parts",
-  "Захиалах": "Place order",
+  // Зөвхөн цаг захиалгад хэрэглэгддэг (зураг авалт, аялал) — "Place order" биш.
+  "Захиалах": "Book",
   "Захиалга өгөх": "Place order",
   "Захиалга": "Order",
   "үүслээ.": "created.",

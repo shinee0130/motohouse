@@ -147,7 +147,7 @@ export function PhotoBookingForm({ photographerName, photographerId, services = 
         {!user && <div style={sx("font:500 12px Roboto;color:#8A8F98;")}>{t("Захиалахын тулд эхлээд нэвтэрсэн байх шаардлагатай.")}</div>}
         {error && <div style={sx("font:500 13px Roboto;color:#ef4444;")}>{error}</div>}
         <button type="submit" disabled={busy || dayFull} style={sx(`background:#E10613;color:#fff;font:700 14px Montserrat;letter-spacing:.06em;padding:15px;border:none;border-radius:11px;text-transform:uppercase;cursor:pointer;${busy || dayFull ? "opacity:.6;" : ""}`)}>
-          {busy ? t("Төлбөр рүү шилжиж байна…") : user ? t("Урьдчилгаа төлж захиалах") : t("Нэвтэрч захиалах")}
+          {busy ? t("Төлбөр рүү шилжиж байна…") : user ? t("Захиалах") : t("Нэвтэрч захиалах")}
         </button>
       </div>
     </form>
