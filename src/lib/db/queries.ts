@@ -328,6 +328,7 @@ export type BonumEvent = {
   transactionId: string | null;
   invoiceId: string | null;
   payload: unknown;
+  notifyStatus: string | null; // имэйл мэдэгдлийн үр дүн (sent / skipped: … / error: …)
 };
 export async function getBonumEvents(limit = 200): Promise<BonumEvent[]> {
   const { data } = await supabase.from("bonum_events").select("*")
@@ -335,5 +336,6 @@ export async function getBonumEvents(limit = 200): Promise<BonumEvent[]> {
   return (data ?? []).map((r) => ({
     id: r.id, createdAt: r.created_at, type: r.type, status: r.status,
     transactionId: r.transaction_id, invoiceId: r.invoice_id, payload: r.payload,
+    notifyStatus: r.notify_status ?? null,
   }));
 }

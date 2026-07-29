@@ -144,6 +144,12 @@ export default function AdminPayments() {
                   {reason && e.status !== "SUCCESS" && (
                     <div style={sx("font:500 12px Roboto;color:#f59e0b;margin-top:6px;")}>⚠ {reason}</div>
                   )}
+                  {/* Имэйл мэдэгдэл явсан эсэх — тохиргоо дутуу бол шалтгааныг нь шууд хэлнэ */}
+                  {e.notifyStatus && (
+                    <div style={sx(`font:500 12px Roboto;margin-top:5px;color:${e.notifyStatus === "sent" ? "#22c55e" : "#f59e0b"};`)}>
+                      {e.notifyStatus === "sent" ? "✉️ Имэйл мэдэгдэл явлаа" : `✉️ Имэйл явсангүй — ${e.notifyStatus}`}
+                    </div>
+                  )}
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                   {order && <span style={sx("font:700 14px Montserrat;color:#fff;")}>{fmt(order.total)}</span>}

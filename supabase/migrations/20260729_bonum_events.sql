@@ -20,3 +20,7 @@ alter table public.bonum_events enable row level security;
 drop policy if exists "bonum events read" on public.bonum_events;
 create policy "bonum events read" on public.bonum_events
   for select using (private.is_admin());
+
+-- Мэдэгдэл (имэйл) илгээсэн эсэхийг event бүр дээр тэмдэглэнэ. Ингэснээр
+-- админы Төлбөрийн лог дээрээс "имэйл явсан уу" гэдгийг шууд харна.
+alter table public.bonum_events add column if not exists notify_status text;
