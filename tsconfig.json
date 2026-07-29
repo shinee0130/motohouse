@@ -30,5 +30,6 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "//": "supabase/functions нь Deno дээр ажилладаг (Deno global, jsr: import) — Next-ийн шалгалтад орохгүй.",
+  "exclude": ["node_modules", "supabase"]
 }

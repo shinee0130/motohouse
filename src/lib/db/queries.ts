@@ -40,6 +40,7 @@ function mapOrder(r: any): Order {
   return {
     id: r.id, date: r.order_date, item: r.item, qty: r.qty, total: r.total, status: r.status,
     paymentStatus: r.payment_status ?? undefined,
+    transactionId: r.transaction_id ?? undefined,
     shipCountry: r.ship_country ?? undefined, shipName: r.ship_name ?? undefined,
     shipPhone: r.ship_phone ?? undefined, shipAddress: r.ship_address ?? undefined,
     countryCode: r.country_code ?? undefined, deliveryMethod: r.delivery_method ?? undefined,
@@ -316,4 +317,23 @@ export function relatedOf(g: GearItem, all: GearItem[], n = 2): GearItem[] {
   return all.filter((x) => x.id !== g.id && x.category === g.category)
     .concat(all.filter((x) => x.id !== g.id && x.category !== g.category))
     .slice(0, n);
+}
+
+// ---- Bonum төлбөрийн лог (зөвхөн админ уншина — RLS) ----
+export type BonumEvent = {
+  id: number;
+  createdAt: string;
+  type: string | null;
+  status: string | null;
+  transactionId: string | null;
+  invoiceId: string | null;
+  payload: unknown;
+};
+export async function getBonumEvents(limit = 200): Promise<BonumEvent[]> {
+  const { data } = await supabase.from("bonum_events").select("*")
+    .order("created_at", { ascending: false }).limit(limit);
+  return (data ?? []).map((r) => ({
+    id: r.id, createdAt: r.created_at, type: r.type, status: r.status,
+    transactionId: r.transaction_id, invoiceId: r.invoice_id, payload: r.payload,
+  }));
 }

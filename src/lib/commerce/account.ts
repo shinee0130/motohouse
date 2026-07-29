@@ -8,6 +8,7 @@ export interface Order {
   total: number;
   status: "Хүлээгдэж буй" | "Баталгаажсан" | "Хүргэлтэнд гарсан" | "Хүргэгдсэн" | "Цуцлагдсан";
   paymentStatus?: "unpaid" | "pending" | "paid" | "failed"; // Bonum төлбөрийн төлөв
+  transactionId?: string; // Bonum-ын лог руу холбох түлхүүр (admin)
   userPhone?: string; // захиалагчийн утас (admin талд)
   userName?: string;  // захиалагчийн нэр (profiles-аас)
   shipCountry?: string; // хүргэх улс (олон улсын захиалга)

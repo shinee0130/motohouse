@@ -18,6 +18,7 @@ const MENU = [
   { label: "Аяллын маршрут", href: "/admin/routes" },
   { label: "Захиалга", href: "/admin/orders" },
   { label: "Захиалгын хүсэлт", href: "/admin/requests" },
+  { label: "Төлбөрийн лог", href: "/admin/payments" },
   { label: "Засварын цаг", href: "/admin/service" },
   { label: "Зурагчид", href: "/admin/photographers" },
   { label: "Зураг авалт", href: "/admin/photo" },
