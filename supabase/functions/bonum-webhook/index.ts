@@ -52,10 +52,27 @@ Deno.serve(async (req) => {
     if (status === "SUCCESS") {
       const paidAt = new Date().toISOString();
       // Барааны захиалга — зөвхөн төлбөрийн төлөв
-      await admin.from("orders").update({ payment_status: "paid", paid_at: paidAt }).eq("transaction_id", txId);
+      const o = await admin.from("orders")
+        .update({ payment_status: "paid", paid_at: paidAt }).eq("transaction_id", txId).select("id");
       // Зураг авалт — төлбөр ормогц захиалга баталгаажна
-      await admin.from("photo_bookings").update({ payment_status: "paid", paid_at: paidAt, status: "Баталгаажсан" }).eq("transaction_id", txId);
+      const p = await admin.from("photo_bookings")
+        .update({ payment_status: "paid", paid_at: paidAt, status: "Баталгаажсан" }).eq("transaction_id", txId).select("id");
+
+      // Хэрэглэгч "Дахин төлөх" дарсны дараа ХУУЧИН төлбөрийн хуудсаа гүйцээж
+      // болно. Тэр үед мөрийн transaction_id аль хэдийн шинэчлэгдсэн байх тул
+      // яг таарахгүй. Мөнгө орсон атал төлөгдөөгүй гэж үлдэхээс сэргийлж
+      // анхны хэсгээр нь (…-rXXX-гүй) хайж дахин оролдоно.
+      if ((o.data?.length ?? 0) === 0 && (p.data?.length ?? 0) === 0) {
+        const base = txId.replace(/-r[a-z0-9]+$/i, "");
+        console.error("bonum-webhook: SUCCESS яг таарсангүй, угтвараар хайж байна —", base);
+        await admin.from("orders").update({ payment_status: "paid", paid_at: paidAt })
+          .like("transaction_id", `${base}%`).neq("payment_status", "paid");
+        await admin.from("photo_bookings").update({ payment_status: "paid", paid_at: paidAt, status: "Баталгаажсан" })
+          .like("transaction_id", `${base}%`).neq("payment_status", "paid");
+      }
     } else if (status === "FAILED") {
+      // FAILED-ийг ЗӨВХӨН яг таарсан үед бичнэ — хуучин оролдлогын хоцорсон
+      // FAILED нь шинэ оролдлогын төлөвийг дарж болохгүй.
       await admin.from("orders").update({ payment_status: "failed" }).eq("transaction_id", txId);
       await admin.from("photo_bookings").update({ payment_status: "failed" }).eq("transaction_id", txId);
     }
