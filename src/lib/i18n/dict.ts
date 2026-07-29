@@ -129,6 +129,9 @@ export const EN: Record<string, string> = {
   "Төлбөр төлөх": "Pay",
   "Нэвтэрч төлөх": "Sign in to pay",
   "Төлбөр рүү шилжиж байна…": "Redirecting to payment…",
+  "Төлбөрөө төлөх": "Pay now",
+  "Төлбөр хийгдээгүй байна. Дараад төлбөрөө үргэлжлүүлээрэй.": "Payment isn’t complete. Tap to finish paying.",
+  "Урьдчилгаа төлөгдөөгүй байна. Дараад төлбөрөө үргэлжлүүлээрэй.": "The deposit isn’t paid yet. Tap to finish paying.",
   "Төлбөрийн хуудас үүсгэхэд алдаа гарлаа. Дахин оролдоно уу.": "Failed to open the payment page. Please try again.",
   "Энэ и-мэйл бүртгэлгүй байна.": "This email is not registered.",
   "Улаанбаатар хот, Хан-Уул дүүрэг, 18-р хороо, Их Монгол Улсын гудамж, Uniqcenter, 00 тоот, 17013":

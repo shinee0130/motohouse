@@ -58,10 +58,13 @@ export default function AdminPayments() {
   }
   useEffect(() => { refresh(); }, []);
 
-  // transaction_id → захиалга (аль барааны төлбөр байсныг харуулна)
+  // transaction_id → захиалга (аль барааны төлбөр байсныг харуулна).
+  // Дахин төлөх бүрд id-д "-rXXX" залгагддаг тул анхны хэсгээр нь тааруулна —
+  // эс бол хуучин оролдлогын бичлэг захиалгаа олохгүй болно.
+  const baseTx = (tx: string) => tx.replace(/-r[a-z0-9]+$/i, "");
   const byTx = useMemo(() => {
     const m = new Map<string, Order>();
-    for (const o of orders) if (o.transactionId) m.set(o.transactionId, o);
+    for (const o of orders) if (o.transactionId) m.set(baseTx(o.transactionId), o);
     return m;
   }, [orders]);
 
@@ -100,7 +103,7 @@ export default function AdminPayments() {
 
       <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;")}>
         {shown.map((e) => {
-          const order = e.transactionId ? byTx.get(e.transactionId) : undefined;
+          const order = e.transactionId ? byTx.get(baseTx(e.transactionId)) : undefined;
           const reason = reasonOf(e.payload);
           const isOpen = open === e.id;
           return (

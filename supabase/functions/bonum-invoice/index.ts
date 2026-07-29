@@ -45,20 +45,27 @@ Deno.serve(async (req) => {
     let amount = 0;
     let callback = `${SITE}/account/orders`;
 
+    // Дахин төлж буй эсэх — мөр дээр invoice аль хэдийн үүссэн бол дахилт.
+    let isRetry = false;
+
     if (kind === "photo") {
       // Зураг авалт — урьдчилгааг (deposit) төлнө
-      const { data: rows } = await admin.from("photo_bookings").select("deposit, price")
+      const { data: rows } = await admin.from("photo_bookings").select("deposit, price, bonum_invoice_id")
         .eq("transaction_id", transactionId).eq("user_phone", phone).neq("payment_status", "paid");
       if (!rows || rows.length === 0) return j({ error: "no photo bookings for transaction" }, 404);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       amount = rows.reduce((s: number, r: any) => s + Number(r.deposit ?? r.price ?? 0), 0);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      isRetry = rows.some((r: any) => !!r.bonum_invoice_id);
       callback = `${SITE}/photo`;
     } else {
-      const { data: orders } = await admin.from("orders").select("total")
+      const { data: orders } = await admin.from("orders").select("total, bonum_invoice_id")
         .eq("transaction_id", transactionId).eq("user_phone", phone).neq("payment_status", "paid");
       if (!orders || orders.length === 0) return j({ error: "no orders for transaction" }, 404);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       amount = orders.reduce((s: number, o: any) => s + Number(o.total || 0), 0);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      isRetry = orders.some((o: any) => !!o.bonum_invoice_id);
     }
 
     amount = Math.round(amount);
@@ -70,17 +77,30 @@ Deno.serve(async (req) => {
     const accessToken = authJson.accessToken;
     if (!accessToken) return j({ error: "bonum auth failed", detail: authJson }, 502);
 
+    // Bonum нэг transactionId дээр ГАНЦ л invoice зөвшөөрдөг — хоёр дахийг
+    // "Гүйлгээ аль хэдийн бүртгэгдсэн байна" (409) гэж татгалзана. Тиймээс дахин
+    // төлөхөд шинэ id өгнө. Анхныхаа id-г угтвар болгон үлдээж байгаа нь
+    // төлбөрийн лог дээр аль захиалгынх болохыг таниулна.
+    // Хуучин "-rXXX" залгаврыг ЭХЛЭЭД тайлна — эс бол оролдлого бүрд id уртсаад
+    // (…-r118-rt5v-r9qa) Bonum-ын хязгаарт тулна.
+    const baseTxId = String(transactionId).replace(/-r[a-z0-9]+$/i, "");
+    const payTxId = isRetry
+      ? `${baseTxId}-r${Math.random().toString(36).slice(2, 5)}`
+      : transactionId;
+
     // Invoice үүсгэх
     const invRes = await fetch(`${API_BASE}/bonum-gateway/ecommerce/invoices`, {
       method: "POST",
       headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json", "Accept-Language": "mn" },
-      body: JSON.stringify({ amount, callback, transactionId, expiresIn: 1800 }),
+      body: JSON.stringify({ amount, callback, transactionId: payTxId, expiresIn: 1800 }),
     });
     const invJson = await invRes.json();
     if (!invJson.followUpLink) return j({ error: "bonum invoice failed", detail: invJson }, 502);
 
+    // transaction_id-г шинэчилнэ — webhook үүгээр л мөрөө олно.
     const table = kind === "photo" ? "photo_bookings" : "orders";
-    await admin.from(table).update({ bonum_invoice_id: invJson.invoiceId, payment_status: "pending" })
+    await admin.from(table)
+      .update({ transaction_id: payTxId, bonum_invoice_id: invJson.invoiceId, payment_status: "pending" })
       .eq("transaction_id", transactionId).eq("user_phone", phone).neq("payment_status", "paid");
     return j({ followUpLink: invJson.followUpLink, amount });
   } catch (e) {

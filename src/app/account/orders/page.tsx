@@ -8,6 +8,14 @@ import { useAuth } from "@/lib/auth/auth";
 import { useI18n } from "@/lib/i18n";
 import { getUserOrders } from "@/lib/db/queries";
 import { OrderTimeline } from "@/components/cart/OrderTimeline";
+import { PayAgainButton } from "@/components/cart/PayAgainButton";
+
+// Төлбөр нь дуусаагүй захиалга — хэрэглэгч буцаж орж төлж болно.
+// Цуцлагдсан захиалгыг төлүүлэхгүй. Bonum-аас өмнөх хуучин захиалгад
+// transactionId байхгүй тул тэдэнд товч гарахгүй.
+function canPay(o: Order): boolean {
+  return !!o.transactionId && o.paymentStatus !== "paid" && o.status !== "Цуцлагдсан";
+}
 
 export default function OrdersPage() {
   const { user } = useAuth();
@@ -47,6 +55,16 @@ export default function OrdersPage() {
                   </svg>
                 </div>
               </button>
+              {/* Төлөх товч header-ийн <button>-оос ГАДНА — button дотор button
+                  байж болохгүй, бас дэлгэхгүйгээр шууд харагдах ёстой. */}
+              {canPay(o) && (
+                <div style={sx("border-top:1px solid #1c1c1f;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;")}>
+                  <div style={sx("font:400 12px Roboto;color:#8A8F98;")}>
+                    {t("Төлбөр хийгдээгүй байна. Дараад төлбөрөө үргэлжлүүлээрэй.")}
+                  </div>
+                  <PayAgainButton transactionId={o.transactionId as string} kind="order" />
+                </div>
+              )}
               {open && (
                 <div style={sx("border-top:1px solid #1c1c1f;padding:16px 18px 18px;animation:mhfade .2s both;")}>
                   <OrderTimeline order={o} />

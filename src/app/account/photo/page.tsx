@@ -7,6 +7,12 @@ import { Price } from "@/lib/reference/currency";
 import { useAuth } from "@/lib/auth/auth";
 import { useI18n } from "@/lib/i18n";
 import { getMyPhotoOrders, type PhotoBooking } from "@/lib/db/admin";
+import { PayAgainButton } from "@/components/cart/PayAgainButton";
+
+// Урьдчилгаа нь төлөгдөөгүй захиалга — буцаж орж төлж болно.
+function canPay(b: PhotoBooking): boolean {
+  return !!b.transaction_id && b.payment_status !== "paid" && b.status !== "Цуцлагдсан";
+}
 
 // Захиалгын төлөв — badge
 function stBadge(status: string): string {
@@ -48,7 +54,8 @@ export default function MyPhotoBookingsPage() {
       ) : (
         <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;")}>
           {list.map((b) => (
-            <div key={b.id} style={sx("display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid #1c1c1f;")}>
+            <div key={b.id} style={sx("border-bottom:1px solid #1c1c1f;")}>
+            <div style={sx("display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px 18px;")}>
               <div style={{ minWidth: 210 }}>
                 <div style={sx("font:700 15px Montserrat;color:#fff;")}>📸 {b.photographer}</div>
                 <div style={sx("font:500 13px Roboto;color:#C8C8C8;margin-top:3px;")}>{t(b.service_type)}</div>
@@ -69,6 +76,15 @@ export default function MyPhotoBookingsPage() {
                 </div>
                 <span style={sx(stBadge(b.status))}>{b.status}</span>
               </div>
+            </div>
+            {canPay(b) && (
+              <div style={sx("border-top:1px solid #1c1c1f;padding:13px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;")}>
+                <div style={sx("font:400 12px Roboto;color:#8A8F98;")}>
+                  {t("Урьдчилгаа төлөгдөөгүй байна. Дараад төлбөрөө үргэлжлүүлээрэй.")}
+                </div>
+                <PayAgainButton transactionId={b.transaction_id as string} kind="photo" />
+              </div>
+            )}
             </div>
           ))}
         </div>
