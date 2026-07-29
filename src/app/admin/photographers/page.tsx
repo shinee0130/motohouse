@@ -121,15 +121,16 @@ export default function AdminPhotographers() {
 
       {editing === null ? (
         <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;")}>
+          {/* Утсан дээр товчнууд доод мөрөнд буухаар эвхэгдэнэ (flex-wrap) */}
           {list.map((p) => (
-            <div key={p.id} style={sx("display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid #1c1c1f;")}>
+            <div key={p.id} style={sx("display:flex;align-items:center;gap:14px;padding:14px 18px;border-bottom:1px solid #1c1c1f;flex-wrap:wrap;")}>
               <div style={sx("width:46px;height:46px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#0b0b0d;border:1px solid #262626;display:flex;align-items:center;justify-content:center;font:800 16px Montserrat;color:#E10613;")}>
                 {p.avatar ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={p.avatar} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 ) : (p.name.replace(/\D+/g, "") || "📸")}
               </div>
-              <div style={{ flex: 1, minWidth: 160 }}>
+              <div style={{ flex: 1, minWidth: 140 }}>
                 <div style={sx("font:700 15px Montserrat;color:#fff;")}>{p.name} {!p.active && <span style={sx("font:600 10px Montserrat;color:#8A8F98;")}>(нуугдсан)</span>}</div>
                 <div style={sx("font:400 12px Roboto;color:#8A8F98;")}>{p.specialty} · {(p.tags ?? []).join(", ")}</div>
               </div>

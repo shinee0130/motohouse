@@ -98,10 +98,18 @@ a {
   }
 }
 
-/* account sidebar — гар утсан дээр босоо болгох */
+/* account/admin sidebar — гар утсан дээр босоо болгох */
 @media (max-width: 760px) {
   .mh-account-grid {
-    grid-template-columns: 1fr !important;
+    /* `1fr` биш `minmax(0,1fr)` — `1fr` track нь агуулгынхаа доод хэмжээнээс
+       доош шахагддаггүй тул admin-ы 15 цэстэй хэвтээ nav бүхэл layout-ыг
+       дэлгэцнээс хальтал сунгадаг байв. */
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  /* Grid item-ийн min-width: auto-г ч мөн тайлна — эс бол track шахагдсан ч
+     item нь өөрөө агуулгаараа тэлнэ. */
+  .mh-account-grid > * {
+    min-width: 0;
   }
 }
 
