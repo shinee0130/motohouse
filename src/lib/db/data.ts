@@ -56,6 +56,9 @@ export interface GearItem {
   sizes?: string[]; // зөвхөн хувцас/каск (apparel)
   colors?: string[];
   images?: string[];
+  // Зураг → өнгө. Өнгө сонгоход зөвхөн тухайн өнгөний зургууд харагдана.
+  // Энд байхгүй зураг нь "бүх өнгөнд" гэсэн үг.
+  imageColors?: Record<string, string>;
   bestSeller?: boolean;
   gender?: string; // "unisex" | "women" | "men" — хэнд зориулсан (ангилал биш, шүүлт)
   nameEn?: string; // англи хувилбарууд (хоосон бол монголоор)

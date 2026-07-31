@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
 import { Slot } from "@/components/ui/Slot";
 import { type GearItem } from "@/lib/db/data";
 import { Price } from "@/lib/reference/currency";
-import { sizeLabel } from "@/lib/commerce/sizes";
+import { sizeCm } from "@/lib/commerce/sizes";
+import { colorHex, checkOn } from "@/lib/commerce/colors";
 import { useAuth } from "@/lib/auth/auth";
 import { useAuthModal } from "@/lib/auth/authModal";
 import { useCartModal } from "@/lib/commerce/cartModal";
@@ -52,7 +53,19 @@ export function GearDetail({
   const [color, setColor] = useState(item.colors?.[0] ?? "");
   const [size, setSize] = useState("");
   const [activeImg, setActiveImg] = useState(0);
-  const imgs = item.images ?? [];
+
+  // Сонгосон өнгөнд тохирох зургууд. Тухайн өнгөнд тэмдэглэсэн зураг байвал
+  // ЗӨВХӨН тэдгээр + өнгөгүй (бүх өнгөнд зориулсан) зургууд. Байхгүй бол бүгд.
+  const allImgs = useMemo(() => item.images ?? [], [item.images]);
+  const imgs = useMemo(() => {
+    const map = item.imageColors ?? {};
+    const mine = allImgs.filter((u) => map[u] === color);
+    if (mine.length === 0) return allImgs;
+    return [...mine, ...allImgs.filter((u) => !map[u])];
+  }, [allImgs, item.imageColors, color]);
+
+  // Өнгө солигдоход эхний зураг руу буцаана — эс бол индекс хуучин зураг дээр үлдэнэ.
+  useEffect(() => { setActiveImg(0); }, [color]);
   const [saved, setSavedState] = useState(false);
   const [cartMsg, setCartMsg] = useState(false);
   const [qty, setQty] = useState(1);
@@ -177,18 +190,35 @@ export function GearDetail({
               <div style={sx("font:600 13px Montserrat;color:#fff;margin-bottom:10px;")}>
                 {t("Өнгө")}: <span style={{ color: "#A3A3A3", fontWeight: 400 }}>{color}</span>
               </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {item.colors.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => setColor(c)}
-                    style={sx(
-                      `cursor:pointer;font:600 13px Montserrat;padding:9px 16px;border-radius:999px;background:${c === color ? "#fff" : "#111113"};color:${c === color ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${c === color ? "#fff" : "#262626"};`,
-                    )}
-                  >
-                    {c}
-                  </button>
-                ))}
+              {/* Админ дээрхтэй ижил дугуй swatch. Палитрт байхгүй өнгийг
+                  (жнь "Хар/Улаан") дугуйгаар үзүүлэх боломжгүй тул текст чипээр. */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+                {item.colors.map((c) => {
+                  const hex = colorHex(c);
+                  const on = c === color;
+                  if (!hex) {
+                    return (
+                      <button key={c} onClick={() => setColor(c)} aria-pressed={on}
+                        style={sx(`cursor:pointer;font:600 13px Montserrat;padding:9px 16px;border-radius:999px;background:${on ? "#fff" : "#111113"};color:${on ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${on ? "#fff" : "#262626"};`)}>
+                        {c}
+                      </button>
+                    );
+                  }
+                  return (
+                    <button key={c} onClick={() => setColor(c)} title={c} aria-pressed={on}
+                      style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+                      <span style={{
+                        width: 32, height: 32, borderRadius: "50%", background: hex,
+                        border: on ? "2px solid #E10613" : "1px solid #444",
+                        boxShadow: on ? "0 0 0 2px #050505, 0 0 0 4px #E10613" : "none",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        {on && <span style={{ color: checkOn(hex), fontSize: 15, fontWeight: 800, lineHeight: 1 }}>✓</span>}
+                      </span>
+                      <span style={sx(`font:600 10px Roboto;${on ? "color:#fff;" : "color:#8A8F98;"}`)}>{c}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -201,17 +231,24 @@ export function GearDetail({
                 <span style={sx("font:500 12px Roboto;color:#8A8F98;text-decoration:underline;cursor:pointer;")}>{t("Хэмжээний заавар")}</span>
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {item.sizes.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSize(s)}
-                    style={sx(
-                      `cursor:pointer;min-width:54px;font:600 13px Montserrat;padding:10px 12px;border-radius:10px;background:${s === size ? "#fff" : "#111113"};color:${s === size ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${s === size ? "#fff" : "#262626"};`,
-                    )}
-                  >
-                    {sizeLabel(s)}
-                  </button>
-                ))}
+                {/* Үсэг дээр, см доор — нэг мөрөнд "S (82-88 cm)" гэж бөөгнөрөхгүй */}
+                {item.sizes.map((s) => {
+                  const cm = sizeCm(s);
+                  const on = s === size;
+                  return (
+                    <button
+                      key={s}
+                      onClick={() => setSize(s)}
+                      aria-pressed={on}
+                      style={sx(
+                        `cursor:pointer;min-width:62px;padding:9px 12px;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:2px;background:${on ? "#fff" : "#111113"};color:${on ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${on ? "#fff" : "#262626"};`,
+                      )}
+                    >
+                      <span style={sx("font:700 14px Montserrat;")}>{s}</span>
+                      {cm && <span style={sx(`font:500 10px Roboto;${on ? "color:#5b5b60;" : "color:#8A8F98;"}`)}>{cm} cm</span>}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}

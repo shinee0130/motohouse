@@ -8,6 +8,7 @@ import { getGearAll } from "@/lib/db/queries";
 import { createGear, updateGear, deleteGear, uploadGear } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
 import { sizeCm } from "@/lib/commerce/sizes";
+import { GEAR_COLORS as COLORS, checkOn } from "@/lib/commerce/colors";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:11px 13px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
 const LABEL = "font:600 11px Montserrat;letter-spacing:.04em;color:#A3A3A3;margin-bottom:6px;display:block;";
@@ -21,19 +22,13 @@ const GEAR_CATS = [
   "Merch", "Бусад хэрэгсэл",
 ];
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
-const COLORS: { name: string; hex: string }[] = [
-  { name: "Хар", hex: "#111114" }, { name: "Цагаан", hex: "#f5f5f5" }, { name: "Саарал", hex: "#6b7280" },
-  { name: "Мөнгөлөг", hex: "#c0c0c0" }, { name: "Улаан", hex: "#E10613" }, { name: "Цэнхэр", hex: "#2563eb" },
-  { name: "Хөх", hex: "#1e3a8a" }, { name: "Ногоон", hex: "#16a34a" }, { name: "Шар", hex: "#eab308" },
-  { name: "Улбар шар", hex: "#f97316" }, { name: "Ягаан", hex: "#ec4899" }, { name: "Нил ягаан", hex: "#7c3aed" },
-  { name: "Хүрэн", hex: "#92400e" }, { name: "Алтан", hex: "#d4af37" },
-];
 const toggle = (arr: string[], v: string) => (arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
 type Form = {
   name: string; brand: string; category: string; meta: string; price: string; oldPrice: string;
   rating: string; reviews: string; sku: string; bestSeller: boolean; desc: string;
   features: string; sizes: string[]; colors: string[]; images: string[];
+  imageColors: Record<string, string>;
   gender: string;
   nameEn: string; descEn: string; metaEn: string; featuresEn: string;
 };
@@ -43,7 +38,7 @@ function toForm(g: GearItem): Form {
     price: String(g.price), oldPrice: String(g.oldPrice), rating: String(g.rating),
     reviews: String(g.reviews), sku: g.sku, bestSeller: !!g.bestSeller, desc: g.desc,
     features: (g.features ?? []).join("\n"), sizes: g.sizes ?? [], colors: g.colors ?? [],
-    images: g.images ?? [], gender: g.gender ?? "unisex",
+    images: g.images ?? [], imageColors: g.imageColors ?? {}, gender: g.gender ?? "unisex",
     nameEn: g.nameEn ?? "", descEn: g.descEn ?? "", metaEn: g.metaEn ?? "", featuresEn: (g.featuresEn ?? []).join("\n"),
   };
 }
@@ -55,7 +50,7 @@ function fromForm(f: Form): Partial<GearItem> {
     price, oldPrice: Number(f.oldPrice) || price, rating: Number(f.rating) || 5,
     reviews: Number(f.reviews) || 0, sku: f.sku || "—", bestSeller: f.bestSeller,
     desc: f.desc, features: lines(f.features), sizes: f.sizes, colors: f.colors,
-    images: f.images, gender: f.gender,
+    images: f.images, imageColors: f.imageColors, gender: f.gender,
     nameEn: f.nameEn.trim(), descEn: f.descEn.trim(), metaEn: f.metaEn.trim(), featuresEn: lines(f.featuresEn),
   };
 }
@@ -66,7 +61,7 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
   const newLabel = mode === "parts" ? "+ Шинэ сэлбэг" : "+ Шинэ хэрэгсэл";
   const empty: Form = {
     name: "", brand: "", category: cats[0], meta: "", price: "", oldPrice: "",
-    rating: "5", reviews: "0", sku: "", bestSeller: false, desc: "", features: "", sizes: [], colors: [], images: [],
+    rating: "5", reviews: "0", sku: "", bestSeller: false, desc: "", features: "", sizes: [], colors: [], images: [], imageColors: {},
     gender: "unisex", nameEn: "", descEn: "", metaEn: "", featuresEn: "",
   };
 
@@ -77,12 +72,21 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [colorInput, setColorInput] = useState("");
+  const [sizeInput, setSizeInput] = useState("");
   const alert = useAlert();
   function addColor() {
     const v = colorInput.trim();
     if (!v) return;
     setF((c) => ({ ...c, colors: c.colors.includes(v) ? c.colors : [...c.colors, v] }));
     setColorInput("");
+  }
+  // Гараар хэмжээ нэмэх. Таслал/зайгаар зааглаж олныг нэг дор нэмнэ
+  // (жнь "56 cm, 58 cm, 60 cm") — каск, бээлий г.м. үсгэн хэмжээгүй бараанд.
+  function addSizes() {
+    const parts = sizeInput.split(/[,;\n]/).map((x) => x.trim()).filter(Boolean);
+    if (parts.length === 0) return;
+    setF((c) => ({ ...c, sizes: [...c.sizes, ...parts.filter((p) => !c.sizes.includes(p))] }));
+    setSizeInput("");
   }
 
   const EN_KEY = { name: "nameEn", desc: "descEn", meta: "metaEn", features: "featuresEn" } as const;
@@ -181,6 +185,24 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
                 );
               })}
             </div>
+            {/* Гараар нэмсэн хэмжээнүүд (үсгэн бус — 56 cm, 58 cm г.м) */}
+            {f.sizes.filter((s) => !SIZES.includes(s)).length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
+                {f.sizes.filter((s) => !SIZES.includes(s)).map((s) => (
+                  <span key={s} style={sx("display:inline-flex;align-items:center;gap:6px;background:#050505;border:1px solid #333;border-radius:999px;padding:6px 8px 6px 12px;font:600 12px Roboto;color:#C8C8C8;")}>
+                    {s}
+                    <button type="button" onClick={() => setF((c) => ({ ...c, sizes: c.sizes.filter((x) => x !== s) }))}
+                      style={sx("width:18px;height:18px;border-radius:50%;background:#E10613;color:#fff;border:none;cursor:pointer;font:700 11px Montserrat;line-height:1;")}>×</button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <div style={{ display: "flex", gap: 8, marginTop: 12, maxWidth: 420 }}>
+              <input value={sizeInput} onChange={(e) => setSizeInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addSizes(); } }}
+                placeholder="Гараар хэмжээ (жнь: 56 cm, 58 cm, 60 cm)" style={sx(INPUT + "padding:8px 11px;font:400 13px Roboto;")} />
+              <button type="button" onClick={addSizes} style={sx("background:#1a1a1d;border:1px solid #333;color:#fff;font:600 12px Montserrat;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;")}>Нэмэх</button>
+            </div>
           </div>
           <div>
             <label style={sx(LABEL)}>Өнгө <span style={sx("color:#6b7280;")}>(сонгох)</span></label>
@@ -196,7 +218,7 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
                       boxShadow: on ? "0 0 0 2px #050505, 0 0 0 4px #E10613" : "none",
                       display: "flex", alignItems: "center", justifyContent: "center",
                     }}>
-                      {on && <span style={{ color: c.hex === "#f5f5f5" || c.hex === "#c0c0c0" || c.hex === "#eab308" || c.hex === "#d4af37" ? "#111" : "#fff", fontSize: 14, fontWeight: 800, lineHeight: 1 }}>✓</span>}
+                      {on && <span style={{ color: checkOn(c.hex), fontSize: 14, fontWeight: 800, lineHeight: 1 }}>✓</span>}
                     </span>
                     <span style={sx(`font:600 10px Roboto;${on ? "color:#fff;" : "color:#8A8F98;"}`)}>{c.name}</span>
                   </button>
@@ -225,11 +247,31 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
             <label style={sx(LABEL)}>Зураг ({f.images.length})</label>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 10 }}>
               {f.images.map((src, i) => (
-                <div key={src + i} style={{ position: "relative", width: 84, height: 84 }}>
+                <div key={src + i} style={{ position: "relative", width: 84 }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="" style={sx("width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;")} />
-                  <button type="button" onClick={() => setF((c) => ({ ...c, images: c.images.filter((_, x) => x !== i) }))}
+                  <img src={src} alt="" style={sx("width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;display:block;")} />
+                  <button type="button" onClick={() => setF((c) => {
+                    const im = { ...c.imageColors };
+                    delete im[src];
+                    return { ...c, images: c.images.filter((_, x) => x !== i), imageColors: im };
+                  })}
                     style={sx("position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;background:#E10613;color:#fff;border:none;cursor:pointer;font:700 12px Montserrat;line-height:1;")}>×</button>
+                  {/* Аль өнгөнийх вэ — хэрэглэгч тэр өнгийг сонгоход зөвхөн эдгээр
+                      зураг харагдана. "Бүх өнгөнд" бол үргэлж харагдана. */}
+                  <select
+                    value={f.imageColors[src] ?? ""}
+                    onChange={(e) => setF((c) => {
+                      const im = { ...c.imageColors };
+                      if (e.target.value) im[src] = e.target.value; else delete im[src];
+                      return { ...c, imageColors: im };
+                    })}
+                    disabled={f.colors.length === 0}
+                    title={f.colors.length === 0 ? "Эхлээд өнгө сонгоно уу" : "Аль өнгөний зураг вэ"}
+                    style={sx("width:84px;margin-top:5px;background:#050505;border:1px solid #333;border-radius:7px;color:#C8C8C8;font:500 11px Roboto;padding:5px 6px;outline:none;cursor:pointer;")}
+                  >
+                    <option value="">Бүх өнгөнд</option>
+                    {f.colors.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
                 </div>
               ))}
             </div>
