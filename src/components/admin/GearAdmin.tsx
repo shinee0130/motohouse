@@ -74,16 +74,22 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
   const [colorInput, setColorInput] = useState("");
   const [sizeInput, setSizeInput] = useState("");
   const [drag, setDrag] = useState<number | null>(null); // чирж буй зургийн байрлал
-  // Чирсэн зургийг буулгасан байрлал руу зөөнө (бусад нь шахагдана).
-  function dropImage(to: number) {
+  // Хуруу/хулгана өөр зургийн дээгүүр орох бүрд шууд байраа сольж, дараалал
+  // нүдэн дээр амьдаар өөрчлөгдөнө. setPointerCapture-ээс болж эвент эх
+  // элемент дээрээ ирдэг тул доорхыг elementFromPoint-оор олно.
+  function dragOver(e: React.PointerEvent) {
+    if (drag === null) return;
+    const cell = document.elementFromPoint(e.clientX, e.clientY)?.closest("[data-img-idx]");
+    if (!cell) return;
+    const to = Number(cell.getAttribute("data-img-idx"));
+    if (Number.isNaN(to) || to === drag) return;
     setF((c) => {
-      if (drag === null || drag === to) return c;
       const im = [...c.images];
       const [moved] = im.splice(drag, 1);
       im.splice(to, 0, moved);
       return { ...c, images: im };
     });
-    setDrag(null);
+    setDrag(to);
   }
   const alert = useAlert();
   function addColor() {
@@ -122,7 +128,8 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
     try {
       const urls: string[] = [];
       for (const file of Array.from(files)) urls.push(await uploadGear(file));
-      setF((cur) => ({ ...cur, images: [...cur.images, ...urls] }));
+      // Давхардсан URL байвал React-ийн түлхүүр (=url) мөргөлдөнө — цэвэрлэнэ.
+      setF((cur) => ({ ...cur, images: [...new Set([...cur.images, ...urls])] }));
     } catch (err) {
       alert({ title: "Зураг оруулахад алдаа гарлаа", message: err instanceof Error ? err.message : String(err), danger: true });
     } finally { setUploading(false); }
@@ -260,31 +267,33 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
               Зураг ({f.images.length}) <span style={sx("color:#6b7280;")}>— чирж дараалал солино. Өнгө бүрийн эхний зураг нь тэр өнгөний нүүр зураг болно.</span>
             </label>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 10 }}>
+              {/* key нь ЗУРГИЙН URL — байрлалаас хамаарвал дараалал солих бүрд
+                  React зангилааг дахин үүсгэж, чирэлтийн барилт тасарна. */}
               {f.images.map((src, i) => (
-                <div
-                  key={src + i}
-                  style={{ position: "relative", width: 84 }}
-                  onDragOver={(e) => { if (drag !== null) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; } }}
-                  onDrop={(e) => { e.preventDefault(); dropImage(i); }}
-                >
-                  {/* Зөвхөн зураг нь чирэгддэг — select дээрээс чирвэл эвгүй болно */}
+                <div key={src} data-img-idx={i} style={{ position: "relative", width: 84 }}>
+                  {/* Чирэлт нь Pointer Events дээр — хулгана, хуруу, stylus гурвуулаа
+                      нэг замаар ажиллана. HTML5 drag-and-drop гар утсан дээр огт
+                      ажилладаггүй тул ашиглаагүй. Зөвхөн зураг нь бариул — доорх
+                      өнгөний сонголт дээрээс чирэгдэхгүй. */}
                   <div
-                    draggable
-                    onDragStart={(e) => {
+                    onPointerDown={(e) => {
+                      if (e.button !== 0) return;
+                      e.currentTarget.setPointerCapture(e.pointerId);
                       setDrag(i);
-                      // Firefox чирэлтийг setData байхгүй бол огт эхлүүлдэггүй.
-                      e.dataTransfer.effectAllowed = "move";
-                      e.dataTransfer.setData("text/plain", String(i));
                     }}
-                    onDragEnd={() => setDrag(null)}
+                    onPointerMove={dragOver}
+                    onPointerUp={() => setDrag(null)}
+                    onPointerCancel={() => setDrag(null)}
                     style={{
                       position: "relative", cursor: drag === i ? "grabbing" : "grab",
-                      opacity: drag === i ? 0.4 : 1,
+                      opacity: drag === i ? 0.45 : 1,
+                      // Чирэх үед хуудас гүйхээс сэргийлнэ (утсанд зайлшгүй).
+                      touchAction: "none",
                     }}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={src} alt="" draggable={false}
-                      style={sx("width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;display:block;")} />
+                      style={sx("width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;display:block;pointer-events:none;")} />
                     {/* Дараалал нь хараагаар шууд мэдэгдэхийн тулд дугаарлана */}
                     <span style={sx("position:absolute;top:4px;left:4px;min-width:20px;height:20px;padding:0 5px;border-radius:6px;background:rgba(5,5,5,.78);color:#fff;font:700 11px Montserrat;display:flex;align-items:center;justify-content:center;pointer-events:none;")}>
                       {i + 1}
