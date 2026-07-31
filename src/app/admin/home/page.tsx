@@ -201,33 +201,6 @@ export default function AdminHome() {
         </div>
       </div>
 
-      {/* Hero видео */}
-      <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;")}>
-        <div style={{ position: "relative", height: 200, background: "#0d0d0f" }}>
-          <video
-            key={shownSrc("hero_video") || "default"}
-            src={shownSrc("hero_video") || "https://ejdvftjtotahcummzlpn.supabase.co/storage/v1/object/public/site/home/hero-bg.mp4"}
-            autoPlay muted loop playsInline
-            style={sx(`position:absolute;inset:0;width:100%;height:100%;object-fit:cover;${isHidden("hero_video") ? "opacity:.3;filter:grayscale(1);" : ""}`)}
-          />
-          {isHidden("hero_video") && <span style={sx("position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);border:1px solid #444;color:#C8C8C8;font:700 10px Montserrat;letter-spacing:.06em;padding:5px 9px;border-radius:6px;")}>НУУГДСАН</span>}
-        </div>
-        <div style={{ padding: "14px 16px" }}>
-          <div style={sx("font:700 14px Montserrat;color:#fff;")}>Hero видео (нүүрний background)</div>
-          <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:4px;")}>Нүүр хуудасны том background видео. Анхдагч: hero-bg.mp4. Нуувал/устгавал анхдагч видео харагдана.</div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
-            <label style={sx(`cursor:pointer;background:#E10613;color:#fff;font:700 12px Montserrat;padding:9px 16px;border-radius:8px;${busy === "hero_video" ? "opacity:.6;" : ""}`)}>
-              {busy === "hero_video" ? "Хуулж байна…" : "Видео солих"}
-              <input type="file" accept="video/*" disabled={busy === "hero_video"} onChange={(e) => onFile("hero_video", e.target.files?.[0] ?? null, "Hero видео")} style={{ display: "none" }} />
-            </label>
-            {map.hero_video && <button onClick={() => hideImage("hero_video")} disabled={busy === "hero_video"} style={sx(softBtn)}>Нуух</button>}
-            {isHidden("hero_video") && <button onClick={() => showImage("hero_video")} disabled={busy === "hero_video"} style={sx(softBtn)}>Харуулах</button>}
-            {shownSrc("hero_video") && <button onClick={() => clearImage("hero_video", "Hero видео")} disabled={busy === "hero_video"} style={sx(delBtn)}>Устгах</button>}
-          </div>
-          <div style={sx("font:400 11px Roboto;color:#6b7280;margin-top:8px;")}>Санал болгох: 1920×1080 (16:9) · MP4 · &lt; 15MB</div>
-        </div>
-      </div>
-
       <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:18px;")}>
         {SLOTS.map((s) => {
           const src = shownSrc(s.key);
