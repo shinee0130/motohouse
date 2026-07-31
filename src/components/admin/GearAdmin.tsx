@@ -393,19 +393,19 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
 
       <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;")}>
         {list.map((g) => (
-          <div key={g.id} style={sx("display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #1c1c1f;")}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 160 }}>
+          <div key={g.id} className="mh-adm-row" style={sx("padding:14px 18px;border-bottom:1px solid #1c1c1f;")}>
+            <div className="mh-adm-row-main" style={{ display: "flex", alignItems: "center", gap: 12 }}>
               {g.images && g.images[0] && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={g.images[0]} alt="" style={sx("width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;flex-shrink:0;")} />
               )}
-              <div>
-              <div style={sx("font:700 15px Montserrat;color:#fff;")}>{g.name} {g.bestSeller && <span style={sx("font:700 9px Montserrat;color:#E10613;")}>★</span>}</div>
-              <div style={sx("font:400 12px 'JetBrains Mono';color:#8A8F98;margin-top:3px;")}>{g.brand.toUpperCase()} · {g.category}</div>
+              <div style={{ minWidth: 0 }}>
+              <div className="mh-adm-clip" title={g.name} style={sx("font:700 15px Montserrat;color:#fff;")}>{g.name} {g.bestSeller && <span style={sx("font:700 9px Montserrat;color:#E10613;")}>★</span>}</div>
+              <div className="mh-adm-clip" style={sx("font:400 12px 'JetBrains Mono';color:#8A8F98;margin-top:3px;")}>{g.brand.toUpperCase()} · {g.category}</div>
               </div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-              <span style={sx("font:700 14px Montserrat;color:#fff;")}>{fmt(g.price)}</span>
+            <div className="mh-adm-row-side">
+              <span style={sx("font:700 14px Montserrat;color:#fff;white-space:nowrap;")}>{fmt(g.price)}</span>
               <button onClick={() => { setF(toForm(g)); setEditing(g.id); }} style={sx("background:none;border:1px solid #333;color:#C8C8C8;font:600 12px Montserrat;padding:7px 12px;border-radius:8px;cursor:pointer;")}>Засах</button>
               <button onClick={() => del(g.id)} style={sx("background:none;border:1px solid #333;color:#ef4444;font:600 12px Montserrat;padding:7px 12px;border-radius:8px;cursor:pointer;")}>Устгах</button>
             </div>

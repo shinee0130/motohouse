@@ -342,3 +342,40 @@ a {
     border-color: #E10613 !important;
   }
 }
+
+/* Админы жагсаалтын мөр — урт нэр баруун талын үнэ/товчийг доош түлхэхээс
+   сэргийлнэ. Нэр нь өөрөө таслагдана (…), товчнууд байрандаа үлдэнэ.
+   Нарийн дэлгэцэд харин эвхэгдэж, товчнууд доод мөрөнд бууна. */
+.mh-adm-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mh-adm-row-main {
+  flex: 1;
+  min-width: 0; /* эс бол агуулга нь track-аа тэлнэ */
+}
+.mh-adm-row-main .mh-adm-clip {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mh-adm-row-side {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+@media (max-width: 640px) {
+  .mh-adm-row {
+    flex-wrap: wrap;
+  }
+  /* `flex:1` дангаараа бол мөр эвхэгдэхийн оронд нэрийг 30px болтол шахаад
+     үсэг тус бүрээр нь мөр болгодог. 100% суурь өгч баруун талыг доош буулгана. */
+  .mh-adm-row-main {
+    flex: 1 0 100%;
+  }
+  .mh-adm-row-main .mh-adm-clip {
+    white-space: normal;
+  }
+}
