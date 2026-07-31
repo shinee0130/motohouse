@@ -1,13 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { sx } from "@/lib/ui/sx";
 import { Select } from "@/components/ui/Select";
 import { fmt, isPart, PARTS_CATS, GENDERS, type GearItem } from "@/lib/db/data";
 import { getGearAll } from "@/lib/db/queries";
 import { createGear, updateGear, deleteGear, uploadGear } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
-import { sizeCm } from "@/lib/commerce/sizes";
 import { GEAR_COLORS as COLORS, checkOn } from "@/lib/commerce/colors";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:11px 13px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
@@ -74,6 +73,18 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
   const [colorInput, setColorInput] = useState("");
   const [sizeInput, setSizeInput] = useState("");
   const [drag, setDrag] = useState<number | null>(null); // чирж буй зургийн байрлал
+
+  // Зургийн дугаарыг ӨНГӨ БҮРИЙН ДОТОР тоолно: Хар 1,2,3,4 · Саарал 1,2,3,4 …
+  // Сайт дээр өнгө сонгоход тухайн өнгийн 1-р зураг эхэлж харагддаг тул
+  // "хэд дэх нь вэ" гэдгийг өнгөөр нь харуулах нь ойлгомжтой.
+  const seq = useMemo(() => {
+    const count: Record<string, number> = {};
+    return f.images.map((src) => {
+      const c = f.imageColors[src] ?? "";
+      count[c] = (count[c] ?? 0) + 1;
+      return count[c];
+    });
+  }, [f.images, f.imageColors]);
   // Хуруу/хулгана өөр зургийн дээгүүр орох бүрд шууд байраа сольж, дараалал
   // нүдэн дээр амьдаар өөрчлөгдөнө. setPointerCapture-ээс болж эвент эх
   // элемент дээрээ ирдэг тул доорхыг elementFromPoint-оор олно.
@@ -196,10 +207,12 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
               {SIZES.map((s) => {
                 const on = f.sizes.includes(s);
                 return (
+                  // Үсгэн хэмжээ дор см бичихээ болив — см нь тусдаа систем,
+                  // доорх талбараар гараар нэмнэ (каск дээр толгойн тойрог,
+                  // хувцас дээр цээж — үсэгтэй нь автоматаар холбож болохгүй).
                   <button key={s} type="button" onClick={() => setF((c) => ({ ...c, sizes: toggle(c.sizes, s) }))}
-                    style={sx(`min-width:58px;cursor:pointer;font:700 13px Montserrat;padding:8px 10px;border-radius:9px;display:flex;flex-direction:column;align-items:center;gap:2px;${on ? "background:#E10613;border:1px solid #E10613;color:#fff;" : "background:#050505;border:1px solid #333;color:#C8C8C8;"}`)}>
-                    <span>{s}</span>
-                    {sizeCm(s) && <small style={{ font: "500 10px Roboto", opacity: .8 }}>{sizeCm(s)} cm</small>}
+                    style={sx(`min-width:58px;cursor:pointer;font:700 13px Montserrat;padding:11px 14px;border-radius:9px;${on ? "background:#E10613;border:1px solid #E10613;color:#fff;" : "background:#050505;border:1px solid #333;color:#C8C8C8;"}`)}>
+                    {s}
                   </button>
                 );
               })}
@@ -294,9 +307,10 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={src} alt="" draggable={false}
                       style={sx("width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;display:block;pointer-events:none;")} />
-                    {/* Дараалал нь хараагаар шууд мэдэгдэхийн тулд дугаарлана */}
-                    <span style={sx("position:absolute;top:4px;left:4px;min-width:20px;height:20px;padding:0 5px;border-radius:6px;background:rgba(5,5,5,.78);color:#fff;font:700 11px Montserrat;display:flex;align-items:center;justify-content:center;pointer-events:none;")}>
-                      {i + 1}
+                    {/* Дугаар нь ӨНГӨ БҮРИЙН ДОТОР. Тухайн өнгийн 1-р зураг нь
+                        сайт дээр эхэлж харагдана — тиймээс улаанаар онцолно. */}
+                    <span style={sx(`position:absolute;top:4px;left:4px;min-width:20px;height:20px;padding:0 5px;border-radius:6px;color:#fff;font:700 11px Montserrat;display:flex;align-items:center;justify-content:center;pointer-events:none;background:${seq[i] === 1 ? "#E10613" : "rgba(5,5,5,.78)"};`)}>
+                      {seq[i]}
                     </span>
                   </div>
                   <button type="button" onClick={() => setF((c) => {
