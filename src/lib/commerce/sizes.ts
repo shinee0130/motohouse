@@ -20,3 +20,9 @@ export function sizeLabel(size: string): string {
 export function sizeCm(size: string): string | undefined {
   return SIZE_CM[size.trim().toUpperCase()];
 }
+
+// Үсгэн хэмжээ (XS…3XL) мөн эсэх. Админ дээр гараар нэмсэн "56 cm" зэрэг
+// хэмжээг үсгэн хэмжээнээс тусад нь бүлэглэхэд хэрэглэнэ.
+export function isLetterSize(size: string): boolean {
+  return size.trim().toUpperCase() in SIZE_CM;
+}

@@ -250,6 +250,22 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
                 <div key={src + i} style={{ position: "relative", width: 84 }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={src} alt="" style={sx("width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;display:block;")} />
+                  {/* Дараалал солих. Өнгө бүрийн ЭХНИЙ зураг нь тухайн өнгөний
+                      swatch болон галерейн эхний зураг болдог тул эрэмбэ чухал. */}
+                  {f.images.length > 1 && ([[-1, "‹", "left:3px"], [1, "›", "right:3px"]] as const).map(([dir, ch, pos]) => (
+                    <button key={ch} type="button" title={dir < 0 ? "Урагш" : "Хойш"}
+                      disabled={dir < 0 ? i === 0 : i === f.images.length - 1}
+                      onClick={() => setF((c) => {
+                        const j = i + dir;
+                        if (j < 0 || j >= c.images.length) return c;
+                        const im = [...c.images];
+                        [im[i], im[j]] = [im[j], im[i]];
+                        return { ...c, images: im };
+                      })}
+                      style={sx(`position:absolute;bottom:3px;${pos};width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,.62);border:1px solid #444;color:#fff;font:700 13px Montserrat;line-height:1;cursor:pointer;${(dir < 0 ? i === 0 : i === f.images.length - 1) ? "opacity:.25;cursor:default;" : ""}`)}>
+                      {ch}
+                    </button>
+                  ))}
                   <button type="button" onClick={() => setF((c) => {
                     const im = { ...c.imageColors };
                     delete im[src];

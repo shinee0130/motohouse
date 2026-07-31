@@ -7,7 +7,7 @@ import { sx } from "@/lib/ui/sx";
 import { Slot } from "@/components/ui/Slot";
 import { type GearItem } from "@/lib/db/data";
 import { Price } from "@/lib/reference/currency";
-import { sizeCm, SIZE_TABLE } from "@/lib/commerce/sizes";
+import { sizeCm, SIZE_TABLE, isLetterSize } from "@/lib/commerce/sizes";
 import { colorHex, checkOn } from "@/lib/commerce/colors";
 import { useAuth } from "@/lib/auth/auth";
 import { useAuthModal } from "@/lib/auth/authModal";
@@ -89,6 +89,29 @@ function SizeGuide({ onClose }: { onClose: () => void }) {
   );
 }
 
+// Нэг эгнээ хэмжээний товч. Үсгэн болон см хэмжээг тусад нь эгнүүлэхэд хэрэглэнэ.
+function SizeRow({ list, size, onPick }: { list: string[]; size: string; onPick: (s: string) => void }) {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      {list.map((s) => {
+        const on = s === size;
+        return (
+          <button
+            key={s}
+            onClick={() => onPick(on ? "" : s)}
+            aria-pressed={on}
+            style={sx(
+              `cursor:pointer;min-width:74px;padding:12px 16px;border-radius:999px;font:600 14px Montserrat;background:${on ? "#fff" : "transparent"};color:${on ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${on ? "#fff" : "#3a3a3f"};`,
+            )}
+          >
+            {s}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function Stars({ rating }: { rating: number }) {
   return (
     <span style={sx("font:700 14px Montserrat;letter-spacing:.06em;color:#E10613;")}>
@@ -138,6 +161,10 @@ export function GearDetail({
     (c: string) => allImgs.find((u) => (item.imageColors ?? {})[u] === c),
     [allImgs, item.imageColors],
   );
+
+  // Үсгэн хэмжээ (S/M/L) ба гараар нэмсэн см хэмжээг тусад нь эгнүүлнэ.
+  const letterSizes = useMemo(() => (item.sizes ?? []).filter(isLetterSize), [item.sizes]);
+  const cmSizes = useMemo(() => (item.sizes ?? []).filter((s) => !isLetterSize(s)), [item.sizes]);
 
   const [guide, setGuide] = useState(false); // хэмжээний заавар цонх
   const [saved, setSavedState] = useState(false);
@@ -333,23 +360,19 @@ export function GearDetail({
                   {t("Хэмжээний заавар")}
                 </button>
               </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {item.sizes.map((s) => {
-                  const on = s === size;
-                  return (
-                    <button
-                      key={s}
-                      onClick={() => setSize(on ? "" : s)}
-                      aria-pressed={on}
-                      style={sx(
-                        `cursor:pointer;min-width:74px;padding:12px 16px;border-radius:999px;font:600 14px Montserrat;background:${on ? "#fff" : "transparent"};color:${on ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${on ? "#fff" : "#3a3a3f"};`,
-                      )}
-                    >
-                      {s}
-                    </button>
-                  );
-                })}
-              </div>
+              {/* Үсгэн хэмжээ (XS…3XL) дээрээ */}
+              {letterSizes.length > 0 && <SizeRow list={letterSizes} size={size} onPick={setSize} />}
+              {/* Админ дээр гараар нэмсэн см хэмжээ — тусдаа доор нь */}
+              {cmSizes.length > 0 && (
+                <div style={{ marginTop: letterSizes.length > 0 ? 16 : 0 }}>
+                  {letterSizes.length > 0 && (
+                    <div style={sx("font:600 12px Montserrat;letter-spacing:.04em;color:#8A8F98;margin-bottom:8px;")}>
+                      {t("Хэмжээ (см)")}
+                    </div>
+                  )}
+                  <SizeRow list={cmSizes} size={size} onPick={setSize} />
+                </div>
+              )}
             </div>
           )}
 
