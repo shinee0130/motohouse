@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
 import { getSettingsMap, updateSetting, uploadSiteImage } from "@/lib/db/admin";
 import { useConfirm } from "@/lib/ui/confirm";
+import { PROMOS_KEY, parsePromos, type Promo } from "@/components/layout/Nav";
 
 const SLOTS = [
   { key: "hero", label: "Hero (нүүрний том зураг)" },
@@ -19,14 +20,44 @@ const SLOTS = [
   { key: "cat_service", label: "Категори — Засвар" },
 ];
 
+// Nav-ын анхдагчтай ижил — админ анх нээхэд одоо сайт дээр юу гарч байгааг харна.
+const DEFAULTS_HINT: Promo[] = [
+  { mn: "Онлайн төлбөр — QPay, SocialPay, картаар шууд төлөөрэй" },
+  { mn: "Дотоод болон олон улсын хүргэлт" },
+  { mn: "Даваа–Ням 10:00–21:00 · Uniqcenter, Хан-Уул" },
+];
+
 export default function AdminHome() {
   const [map, setMap] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
   const confirm = useConfirm();
 
-  async function refresh() { setMap(await getSettingsMap()); }
+  // ===== Дээд улаан баннер =====
+  const [promos, setPromos] = useState<Promo[]>([]);
+  const [promoBusy, setPromoBusy] = useState(false);
+
+  async function refresh() {
+    const m = await getSettingsMap();
+    setMap(m);
+    // Тохируулаагүй бол Nav-ын анхдагчийг харуулна (parse нь null буцаана).
+    setPromos(parsePromos(m[PROMOS_KEY]) ?? DEFAULTS_HINT);
+  }
   useEffect(() => { refresh(); }, []);
+
+  async function savePromos() {
+    setPromoBusy(true); setMsg("");
+    try {
+      const clean = promos
+        .map((p) => ({ mn: p.mn.trim(), en: p.en?.trim() || undefined }))
+        .filter((p) => p.mn);
+      await updateSetting(PROMOS_KEY, JSON.stringify(clean));
+      await refresh();
+      setMsg(clean.length ? "✓ Дээд баннер хадгалагдлаа." : "✓ Дээд баннер нуугдлаа (мөр үлдээгүй).");
+    } catch (e) {
+      setMsg("⚠️ Алдаа: " + (e instanceof Error ? e.message : String(e)));
+    } finally { setPromoBusy(false); }
+  }
 
   // Нуугдсан зургийн нөөц утга энэ түлхүүрт хадгалагдана
   const bak = (key: string) => `${key}__hidden`;
@@ -103,6 +134,52 @@ export default function AdminHome() {
         </div>
       </div>
       {msg && <div style={sx("font:500 13px Roboto;color:#22c55e;")}>{msg}</div>}
+
+      {/* ===== Дээд улаан баннер ===== */}
+      <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;padding:18px;")}>
+        <div style={sx("font:700 15px Montserrat;color:#fff;")}>Дээд улаан баннер</div>
+        <div style={sx("font:400 12px Roboto;color:#8A8F98;margin-top:4px;line-height:1.6;")}>
+          Сайтын хамгийн дээд талын улаан тууз. Олон мөр бичвэл 5 секунд тутам ээлжилнэ.
+          Англи хувилбарыг хоосон орхивол монголоороо харагдана.
+          <b style={{ color: "#C8C8C8" }}> Бүх мөрийг устгаад хадгалбал тууз огт гарахгүй.</b>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 14 }}>
+          {promos.map((p, i) => (
+            <div key={i} style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+              <input
+                value={p.mn}
+                onChange={(e) => setPromos((c) => c.map((x, k) => (k === i ? { ...x, mn: e.target.value } : x)))}
+                placeholder="Монгол текст"
+                style={sx("flex:1;min-width:180px;background:#050505;border:1px solid #262626;border-radius:9px;padding:10px 12px;color:#fff;font:400 13px Roboto;outline:none;")}
+              />
+              <input
+                value={p.en ?? ""}
+                onChange={(e) => setPromos((c) => c.map((x, k) => (k === i ? { ...x, en: e.target.value } : x)))}
+                placeholder="English (сонгох)"
+                style={sx("flex:1;min-width:180px;background:#050505;border:1px solid #262626;border-radius:9px;padding:10px 12px;color:#C8C8C8;font:400 13px Roboto;outline:none;")}
+              />
+              <button type="button" onClick={() => setPromos((c) => c.filter((_, k) => k !== i))}
+                title="Мөрийг устгах"
+                style={sx("width:32px;height:32px;flex-shrink:0;border-radius:8px;background:none;border:1px solid #333;color:#ef4444;font:700 15px Montserrat;line-height:1;cursor:pointer;")}>×</button>
+            </div>
+          ))}
+          {promos.length === 0 && (
+            <div style={sx("font:400 13px Roboto;color:#f59e0b;")}>Мөр байхгүй — хадгалбал тууз сайт дээр гарахгүй.</div>
+          )}
+        </div>
+
+        <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
+          <button type="button" onClick={() => setPromos((c) => [...c, { mn: "" }])}
+            style={sx("background:#1a1a1d;border:1px solid #333;color:#fff;font:600 12px Montserrat;padding:10px 16px;border-radius:9px;cursor:pointer;")}>
+            + Мөр нэмэх
+          </button>
+          <button type="button" onClick={savePromos} disabled={promoBusy}
+            style={sx(`background:#E10613;color:#fff;font:700 13px Montserrat;padding:10px 20px;border:none;border-radius:9px;cursor:pointer;${promoBusy ? "opacity:.6;" : ""}`)}>
+            {promoBusy ? "Хадгалж байна…" : "Хадгалах"}
+          </button>
+        </div>
+      </div>
 
       {/* Hero видео */}
       <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;")}>

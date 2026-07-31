@@ -11,6 +11,7 @@ import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
 import { Brand } from "@/components/layout/Brand";
 import { useAuth } from "@/lib/auth/auth";
+import { getSettings } from "@/lib/db/queries";
 import { cartCount, CART_EVENT } from "@/lib/commerce/cart";
 import { LanguageToggle, useI18n } from "@/lib/i18n";
 import { CurrencySwitch } from "@/lib/reference/currency";
@@ -43,12 +44,29 @@ const CATS = [
   { label: "Giveaway", href: "/giveaway", hot: true }, // SALE шиг улаан
 ];
 
-// Эргэлдэх promo мессежүүд
-const PROMOS = [
-  "Онлайн төлбөр — QPay, SocialPay, картаар шууд төлөөрэй",
-  "Дотоод болон олон улсын хүргэлт",
-  "Даваа–Ням 10:00–21:00 · Uniqcenter, Хан-Уул",
+// Эргэлдэх promo мессежүүд. Админ (Home backgrounds → Дээд баннер) дээрээс
+// солиогүй үед доорх анхдагчийг хэрэглэнэ. Админаас хоосон хадгалбал тууз
+// бүрмөсөн нуугдана.
+export type Promo = { mn: string; en?: string };
+const DEFAULT_PROMOS: Promo[] = [
+  { mn: "Онлайн төлбөр — QPay, SocialPay, картаар шууд төлөөрэй" },
+  { mn: "Дотоод болон олон улсын хүргэлт" },
+  { mn: "Даваа–Ням 10:00–21:00 · Uniqcenter, Хан-Уул" },
 ];
+export const PROMOS_KEY = "promos";
+// Тохиргооны түүхий утгыг найдвартай задлах — эвдэрсэн JSON сайтыг унагаахгүй.
+export function parsePromos(raw: string | undefined): Promo[] | null {
+  if (raw === undefined || raw === null || raw === "") return null;
+  try {
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return null;
+    return arr
+      .filter((x) => x && typeof x.mn === "string" && x.mn.trim())
+      .map((x) => ({ mn: String(x.mn).trim(), en: x.en ? String(x.en).trim() : undefined }));
+  } catch {
+    return null;
+  }
+}
 
 const ACCOUNT_MENU = [
   { label: "Миний бүртгэл", href: "/account" },
@@ -103,7 +121,8 @@ export function Nav() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, ready, logout } = useAuth();
-  const { t } = useI18n();
+  const { t, loc } = useI18n();
+  const [promos, setPromos] = useState<Promo[]>(DEFAULT_PROMOS);
   const authModal = useAuthModal();
   const cartModal = useCartModal();
   const [open, setOpen] = useState(false); // sidebar
@@ -131,11 +150,21 @@ export function Nav() {
     return () => { window.removeEventListener(CART_EVENT, load); window.removeEventListener("storage", load); };
   }, []);
 
+  // Админаас тохируулсан баннерын мессежийг татна (тохируулаагүй бол анхдагч).
+  useEffect(() => {
+    let alive = true;
+    getSettings()
+      .then((s) => { const p = parsePromos(s[PROMOS_KEY]); if (alive && p) setPromos(p); })
+      .catch(() => {}); // тохиргоо уншигдахгүй бол анхдагчаараа явна
+    return () => { alive = false; };
+  }, []);
+
   // Promo автоматаар эргэлдэнэ
   useEffect(() => {
-    const id = window.setInterval(() => setPromo((p) => (p + 1) % PROMOS.length), 5000);
+    if (promos.length < 2) return;
+    const id = window.setInterval(() => setPromo((p) => (p + 1) % promos.length), 5000);
     return () => window.clearInterval(id);
-  }, []);
+  }, [promos.length]);
 
   // Sidebar нээлттэй үед body scroll түгжинэ
   useEffect(() => {
@@ -154,18 +183,25 @@ export function Nav() {
 
   return (
     <>
-      {/* ===== (0) PROMO ТУУЗ ===== */}
-      <div style={sx("background:#E10613;")}>
-        <div style={sx(wrap + "height:36px;display:flex;align-items:center;justify-content:center;gap:10px;")}>
-          <button onClick={() => setPromo((p) => (p - 1 + PROMOS.length) % PROMOS.length)} aria-label="‹"
-            style={sx("background:none;border:none;color:rgba(255,255,255,.7);font:700 15px Montserrat;cursor:pointer;padding:2px 8px;")}>‹</button>
-          <span key={promo} style={sx("font:700 12px Montserrat;letter-spacing:.03em;color:#fff;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;animation:mhfade .35s both;")}>
-            {t(PROMOS[promo])}
-          </span>
-          <button onClick={() => setPromo((p) => (p + 1) % PROMOS.length)} aria-label="›"
-            style={sx("background:none;border:none;color:rgba(255,255,255,.7);font:700 15px Montserrat;cursor:pointer;padding:2px 8px;")}>›</button>
+      {/* ===== (0) PROMO ТУУЗ ===== админаас хоосон хадгалбал огт гарахгүй */}
+      {promos.length > 0 && (
+        <div style={sx("background:#E10613;")}>
+          <div style={sx(wrap + "height:36px;display:flex;align-items:center;justify-content:center;gap:10px;")}>
+            {promos.length > 1 && (
+              <button onClick={() => setPromo((p) => (p - 1 + promos.length) % promos.length)} aria-label="‹"
+                style={sx("background:none;border:none;color:rgba(255,255,255,.7);font:700 15px Montserrat;cursor:pointer;padding:2px 8px;")}>‹</button>
+            )}
+            <span key={promo} style={sx("font:700 12px Montserrat;letter-spacing:.03em;color:#fff;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;animation:mhfade .35s both;")}>
+              {/* Админаас EN өгсөн бол түүнийг, эс бол толь бичгээс орчуулна */}
+              {(() => { const p = promos[promo % promos.length]; return p.en ? loc(p.mn, p.en) : t(p.mn); })()}
+            </span>
+            {promos.length > 1 && (
+              <button onClick={() => setPromo((p) => (p + 1) % promos.length)} aria-label="›"
+                style={sx("background:none;border:none;color:rgba(255,255,255,.7);font:700 15px Montserrat;cursor:pointer;padding:2px 8px;")}>›</button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ===== (1+2) STICKY HEADER ===== */}
       <div style={sx("position:sticky;top:0;z-index:50;background:#070708;border-bottom:1px solid #1c1c1f;")}>
