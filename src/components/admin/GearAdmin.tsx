@@ -55,9 +55,10 @@ function fromForm(f: Form): Partial<GearItem> {
 }
 
 export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
-  const cats = mode === "parts" ? PARTS_CATS : GEAR_CATS;
-  const heading = mode === "parts" ? "Сэлбэг" : "Дагалдах хэрэгсэл";
-  const newLabel = mode === "parts" ? "+ Шинэ сэлбэг" : "+ Шинэ хэрэгсэл";
+  const isParts = mode === "parts";
+  const cats = isParts ? PARTS_CATS : GEAR_CATS;
+  const heading = isParts ? "Сэлбэг" : "Дагалдах хэрэгсэл";
+  const newLabel = isParts ? "+ Шинэ сэлбэг" : "+ Шинэ хэрэгсэл";
   const empty: Form = {
     name: "", brand: "", category: cats[0], meta: "", price: "", oldPrice: "",
     rating: "5", reviews: "0", sku: "", bestSeller: false, desc: "", features: "", sizes: [], colors: [], images: [], imageColors: {},
@@ -151,8 +152,11 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
     if (!f.name.trim()) return;
     setBusy(true);
     try {
-      if (editing === "new") await createGear(fromForm(f));
-      else if (typeof editing === "number") await updateGear(editing, fromForm(f));
+      // Сэлбэгт хэмжээ/өнгө байхгүй тул хадгалахдаа өгөгдлийг нь ч цэвэрлэнэ —
+      // эс бол админ дээр харагдахгүй атлаа сайт дээр үлдэж, засах аргагүй болно.
+      const row = isParts ? { ...fromForm(f), sizes: [], colors: [], imageColors: {} } : fromForm(f);
+      if (editing === "new") await createGear(row);
+      else if (typeof editing === "number") await updateGear(editing, row);
       await refresh();
       setEditing(null);
     } finally { setBusy(false); }
@@ -201,7 +205,9 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
           </div>
           <div><label style={sx(LABEL)}>Тайлбар {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><textarea {...bind("desc")} rows={2} style={sx(INPUT + "resize:vertical;")} /></div>
           <div><label style={sx(LABEL)}>Онцлог (мөр тус бүр) {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><textarea {...bind("features")} rows={3} style={sx(INPUT + "resize:vertical;")} /></div>
-          <div>
+          {/* Хэмжээ, Өнгө хоёр зөвхөн дагалдах хэрэгсэлд. Сэлбэгт хэрэггүй —
+              25 сэлбэгийн аль нь ч хэмжээ ашиглаагүй. */}
+          {!isParts && <div>
             <label style={sx(LABEL)}>Хэмжээ <span style={sx("color:#6b7280;")}>(сонгох)</span></label>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {SIZES.map((s) => {
@@ -235,8 +241,8 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
                 placeholder="Гараар хэмжээ (жнь: 56 cm, 58 cm, 60 cm)" style={sx(INPUT + "padding:8px 11px;font:400 13px Roboto;")} />
               <button type="button" onClick={addSizes} style={sx("background:#1a1a1d;border:1px solid #333;color:#fff;font:600 12px Montserrat;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;")}>Нэмэх</button>
             </div>
-          </div>
-          <div>
+          </div>}
+          {!isParts && <div>
             <label style={sx(LABEL)}>Өнгө <span style={sx("color:#6b7280;")}>(сонгох)</span></label>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
               {COLORS.map((c) => {
@@ -274,7 +280,7 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
                 placeholder="Бусад өнгө (жнь: Хар/Улаан)" style={sx(INPUT + "padding:8px 11px;font:400 13px Roboto;")} />
               <button type="button" onClick={addColor} style={sx("background:#1a1a1d;border:1px solid #333;color:#fff;font:600 12px Montserrat;padding:8px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;")}>Нэмэх</button>
             </div>
-          </div>
+          </div>}
           <div>
             <label style={sx(LABEL)}>
               Зураг ({f.images.length}) <span style={sx("color:#6b7280;")}>— чирж дараалал солино. Өнгө бүрийн эхний зураг нь тэр өнгөний нүүр зураг болно.</span>
