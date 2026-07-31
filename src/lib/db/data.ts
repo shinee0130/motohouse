@@ -83,7 +83,7 @@ export const PARTS_CATS = [
 ];
 export const isPart = (g: GearItem) => PARTS_CATS.includes(g.category);
 
-// Хэнд зориулсан — ангилал БИШ, тусдаа шүүлт.
+// Хүйс — ангилал БИШ, тусдаа шүүлт.
 export const GENDERS: { v: string; mn: string; en: string }[] = [
   { v: "unisex", mn: "Унисекс", en: "Unisex" },
   { v: "women", mn: "Эмэгтэй", en: "Women" },

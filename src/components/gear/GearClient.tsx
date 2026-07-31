@@ -153,7 +153,7 @@ export function GearClient({
         </FilterGroup>
       )}
       {hasGendered && (
-        <FilterGroup title={t("Хэнд зориулсан")}>
+        <FilterGroup title={t("Хүйс")}>
           {GENDERS.map((g) => (
             <CheckRow key={g.v} label={t(g.mn)} count={countBy("gender", (x) => (x.gender ?? "unisex") === g.v)} checked={genders.has(g.v)} onToggle={() => setGenders((s) => toggleSet(s, g.v))} />
           ))}

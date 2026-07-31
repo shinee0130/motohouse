@@ -683,7 +683,7 @@ export const EN: Record<string, string> = {
   "Зөвхөн хямдралтай": "On sale only",
   "Багтаамж": "Engine size",
   "Төлөв": "Status",
-  "Хэнд зориулсан": "For whom",
+  "Хүйс": "Gender",
   "Энэ шүүлтүүрт тохирох бараа алга. Шүүлтүүрээ цэвэрлэж үзээрэй.": "No products match these filters. Try clearing them.",
   "Энэ шүүлтүүрт тохирох мотоцикл алга. Шүүлтүүрээ цэвэрлэж үзээрэй.": "No motorcycles match these filters. Try clearing them.",
   "₮200,000 хүртэл": "Under ₮200,000",
