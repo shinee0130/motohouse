@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
 import { Slot } from "@/components/ui/Slot";
 import { type GearItem } from "@/lib/db/data";
 import { Price } from "@/lib/reference/currency";
-import { sizeCm } from "@/lib/commerce/sizes";
+import { sizeCm, SIZE_TABLE } from "@/lib/commerce/sizes";
 import { colorHex, checkOn } from "@/lib/commerce/colors";
 import { useAuth } from "@/lib/auth/auth";
 import { useAuthModal } from "@/lib/auth/authModal";
@@ -23,6 +24,70 @@ const PAYMENT_METHODS = [
   { name: "Visa", src: "/assets/payments/visa.png", width: 48 },
   { name: "Mastercard", src: "/assets/payments/mastercard.png", width: 82 },
 ];
+
+// Alpinestars-ын доод хэсгийн эвхэгддэг блок.
+function Acc({ title, defaultOpen = false, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div style={sx("border-top:1px solid #262626;")}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        style={sx("width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:none;padding:20px 2px;cursor:pointer;text-align:left;")}
+      >
+        <span style={sx("font:700 16px Montserrat;color:#fff;")}>{title}</span>
+        <svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"
+          style={{ transition: "transform .18s ease", transform: open ? "rotate(180deg)" : "none", flexShrink: 0 }}>
+          <path d="M2 4l4 4 4-4" fill="none" stroke="#9a9aa0" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      {open && <div style={{ padding: "0 2px 24px" }}>{children}</div>}
+    </div>
+  );
+}
+
+// Хэмжээний заавар — үсгэн хэмжээ ↔ цээжний тойрог.
+function SizeGuide({ onClose }: { onClose: () => void }) {
+  const { t } = useI18n();
+  if (typeof document === "undefined") return null;
+  // portal-аар body руу — эцэг элементийн animation(transform) нь
+  // position:fixed-ийн тулгуурыг өөрчилдөг тул цонх голлохгүй болно.
+  return createPortal(
+    <div
+      onClick={onClose}
+      style={sx("position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:20px;animation:mhfade .2s both;")}
+    >
+      <div onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true"
+        style={sx("background:#111113;border:1px solid #262626;border-radius:16px;max-width:420px;width:100%;max-height:86vh;overflow:auto;padding:22px;")}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <h3 style={sx("font:800 18px Montserrat;color:#fff;")}>{t("Хэмжээний заавар")}</h3>
+          <button onClick={onClose} aria-label={t("Хаах")}
+            style={sx("width:30px;height:30px;border-radius:50%;background:#1a1a1d;border:1px solid #333;color:#C8C8C8;font:700 15px Montserrat;line-height:1;cursor:pointer;")}>×</button>
+        </div>
+        <p style={sx("font:400 13px/1.6 Roboto;color:#8A8F98;margin-top:8px;")}>
+          {t("Цээжний тойргоо см-ээр хэмжиж, доорх хүснэгтээс хэмжээгээ сонгоно уу.")}
+        </p>
+        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 16 }}>
+          <thead>
+            <tr>
+              <th style={sx("text-align:left;font:700 11px Montserrat;letter-spacing:.08em;color:#8A8F98;padding:0 0 9px;border-bottom:1px solid #262626;")}>{t("Хэмжээ")}</th>
+              <th style={sx("text-align:right;font:700 11px Montserrat;letter-spacing:.08em;color:#8A8F98;padding:0 0 9px;border-bottom:1px solid #262626;")}>{t("Цээжний тойрог")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SIZE_TABLE.map((r) => (
+              <tr key={r.size}>
+                <td style={sx("font:700 14px Montserrat;color:#fff;padding:11px 0;border-bottom:1px solid #1c1c1f;")}>{r.size}</td>
+                <td style={sx("text-align:right;font:500 14px Roboto;color:#C8C8C8;padding:11px 0;border-bottom:1px solid #1c1c1f;font-variant-numeric:tabular-nums;")}>{r.cm} cm</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>,
+    document.body,
+  );
+}
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -66,6 +131,15 @@ export function GearDetail({
 
   // Өнгө солигдоход эхний зураг руу буцаана — эс бол индекс хуучин зураг дээр үлдэнэ.
   useEffect(() => { setActiveImg(0); }, [color]);
+
+  // Alpinestars шиг өнгө бүрийг ТУХАЙН өнгөний бодит зургаар үзүүлнэ.
+  // Тэмдэглэсэн зураг байхгүй өнгийг дугуй swatch-аар (палитрт байвал) харуулна.
+  const swatchOf = useCallback(
+    (c: string) => allImgs.find((u) => (item.imageColors ?? {})[u] === c),
+    [allImgs, item.imageColors],
+  );
+
+  const [guide, setGuide] = useState(false); // хэмжээний заавар цонх
   const [saved, setSavedState] = useState(false);
   const [cartMsg, setCartMsg] = useState(false);
   const [qty, setQty] = useState(1);
@@ -84,7 +158,7 @@ export function GearDetail({
   function intoCart() {
     addToCart({
       id: item.id, name: item.name, price: item.price,
-      image: item.images?.[0],
+      image: imgs[0] ?? item.images?.[0],
       meta: [size, color].filter(Boolean).join(" · ") || undefined,
     }, qty);
   }
@@ -137,20 +211,23 @@ export function GearDetail({
                 SALE -{sale}%
               </span>
             )}
+            {/* Alpinestars шиг өмнөх/дараах сум — зураг 2-оос олон үед */}
+            {imgs.length > 1 && ([["‹", -1, "left:12px"], ["›", 1, "right:12px"]] as const).map(([ch, dir, pos]) => (
+              <button
+                key={ch}
+                onClick={() => setActiveImg((v) => (v + dir + imgs.length) % imgs.length)}
+                aria-label={dir < 0 ? t("Өмнөх зураг") : t("Дараах зураг")}
+                style={sx(`position:absolute;top:50%;${pos};transform:translateY(-50%);width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.92);border:1px solid #d4d4d8;color:#111;font:600 20px Montserrat;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;`)}
+              >
+                {ch}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* ===== INFO (RevZilla маягийн дараалал) ===== */}
+        {/* ===== INFO (Alpinestars-ын дараалал: үнэлгээ → нэр → ангилал → үнэ) ===== */}
         <div>
-          {/* брэнд — тухайн брэндийн жагсаалт руу */}
-          <Link href={`${baseHref}?brand=${encodeURIComponent(item.brand)}`}
-            style={sx("font:700 13px Montserrat;letter-spacing:.08em;color:#E10613;text-transform:uppercase;cursor:pointer;")}>
-            {item.brand}
-          </Link>
-
-          <h1 style={sx("font:800 clamp(25px,3.4vw,36px)/1.15 Montserrat;color:#fff;margin-top:8px;")}>{loc(item.name, item.nameEn)}</h1>
-
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
             <Stars rating={item.rating} />
             <span style={sx("font:600 13px Montserrat;color:#fff;")}>{item.rating.toFixed(1)}</span>
             <span style={sx("font:500 13px Roboto;color:#8A8F98;text-decoration:underline;")}>{item.reviews} {t("сэтгэгдэл")}</span>
@@ -159,6 +236,18 @@ export function GearDetail({
                 BEST SELLER
               </span>
             )}
+          </div>
+
+          <h1 style={sx("font:800 clamp(25px,3.4vw,36px)/1.15 Montserrat;color:#fff;margin-top:10px;")}>{loc(item.name, item.nameEn)}</h1>
+
+          {/* Брэнд | ангилал — Alpinestars-ын "Racing/Sport | Footwear" мөрийн байрлал */}
+          <div style={sx("font:500 13px Roboto;color:#8A8F98;margin-top:7px;")}>
+            <Link href={`${baseHref}?brand=${encodeURIComponent(item.brand)}`}
+              style={sx("font:700 13px Montserrat;letter-spacing:.06em;color:#E10613;text-transform:uppercase;cursor:pointer;")}>
+              {item.brand}
+            </Link>
+            <span style={{ margin: "0 8px", color: "#3a3a3f" }}>|</span>
+            <span>{t(item.category)}</span>
           </div>
 
           {/* үнэ + хэмнэлт */}
@@ -190,32 +279,39 @@ export function GearDetail({
               <div style={sx("font:600 13px Montserrat;color:#fff;margin-bottom:10px;")}>
                 {t("Өнгө")}: <span style={{ color: "#A3A3A3", fontWeight: 400 }}>{color}</span>
               </div>
-              {/* Админ дээрхтэй ижил дугуй swatch. Палитрт байхгүй өнгийг
-                  (жнь "Хар/Улаан") дугуйгаар үзүүлэх боломжгүй тул текст чипээр. */}
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
+              {/* Alpinestars шиг — өнгө бүр нь тухайн өнгөний бодит зураг.
+                  Зураг тэмдэглээгүй өнгийг палитрын дугуйгаар, палитрт ч байхгүй
+                  бол (жнь "Хар/Улаан") текст чипээр харуулна. */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
                 {item.colors.map((c) => {
-                  const hex = colorHex(c);
                   const on = c === color;
-                  if (!hex) {
+                  const thumb = swatchOf(c);
+                  const hex = colorHex(c);
+                  if (thumb) {
                     return (
-                      <button key={c} onClick={() => setColor(c)} aria-pressed={on}
-                        style={sx(`cursor:pointer;font:600 13px Montserrat;padding:9px 16px;border-radius:999px;background:${on ? "#fff" : "#111113"};color:${on ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${on ? "#fff" : "#262626"};`)}>
-                        {c}
+                      <button key={c} onClick={() => setColor(c)} title={c} aria-label={c} aria-pressed={on}
+                        style={sx(`width:62px;height:62px;padding:2px;border-radius:8px;cursor:pointer;background:#fff;border:2px solid ${on ? "#E10613" : "#333"};`)}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={thumb} alt={c} style={sx("width:100%;height:100%;object-fit:contain;display:block;")} />
+                      </button>
+                    );
+                  }
+                  if (hex) {
+                    return (
+                      <button key={c} onClick={() => setColor(c)} title={c} aria-label={c} aria-pressed={on}
+                        style={{
+                          width: 62, height: 62, borderRadius: 8, background: hex, cursor: "pointer",
+                          border: on ? "2px solid #E10613" : "1px solid #444",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                        {on && <span style={{ color: checkOn(hex), fontSize: 18, fontWeight: 800, lineHeight: 1 }}>✓</span>}
                       </button>
                     );
                   }
                   return (
-                    <button key={c} onClick={() => setColor(c)} title={c} aria-pressed={on}
-                      style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 5, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                      <span style={{
-                        width: 32, height: 32, borderRadius: "50%", background: hex,
-                        border: on ? "2px solid #E10613" : "1px solid #444",
-                        boxShadow: on ? "0 0 0 2px #050505, 0 0 0 4px #E10613" : "none",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                      }}>
-                        {on && <span style={{ color: checkOn(hex), fontSize: 15, fontWeight: 800, lineHeight: 1 }}>✓</span>}
-                      </span>
-                      <span style={sx(`font:600 10px Roboto;${on ? "color:#fff;" : "color:#8A8F98;"}`)}>{c}</span>
+                    <button key={c} onClick={() => setColor(c)} aria-pressed={on}
+                      style={sx(`cursor:pointer;font:600 13px Montserrat;padding:9px 16px;border-radius:8px;background:${on ? "#fff" : "#111113"};color:${on ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${on ? "#fff" : "#262626"};`)}>
+                      {c}
                     </button>
                   );
                 })}
@@ -226,26 +322,30 @@ export function GearDetail({
           {/* sizes */}
           {item.sizes && item.sizes.length > 0 && (
             <div style={{ marginTop: 24 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                <span style={sx("font:600 13px Montserrat;color:#fff;")}>{t("Хэмжээ")}</span>
-                <span style={sx("font:500 12px Roboto;color:#8A8F98;text-decoration:underline;cursor:pointer;")}>{t("Хэмжээний заавар")}</span>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 10 }}>
+                {/* Сонгосон хэмжээний см-ийг толгой мөрөнд — товч дээр бөөгнөрөхгүй */}
+                <span style={sx("font:600 13px Montserrat;color:#fff;")}>
+                  {t("Хэмжээ")}
+                  {size && <span style={{ color: "#A3A3A3", fontWeight: 400 }}>: {size}{sizeCm(size) ? ` · ${sizeCm(size)} cm` : ""}</span>}
+                </span>
+                <button onClick={() => setGuide(true)}
+                  style={sx("background:none;border:none;padding:0;font:500 12px Roboto;color:#8A8F98;text-decoration:underline;cursor:pointer;white-space:nowrap;")}>
+                  {t("Хэмжээний заавар")}
+                </button>
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {/* Үсэг дээр, см доор — нэг мөрөнд "S (82-88 cm)" гэж бөөгнөрөхгүй */}
                 {item.sizes.map((s) => {
-                  const cm = sizeCm(s);
                   const on = s === size;
                   return (
                     <button
                       key={s}
-                      onClick={() => setSize(s)}
+                      onClick={() => setSize(on ? "" : s)}
                       aria-pressed={on}
                       style={sx(
-                        `cursor:pointer;min-width:62px;padding:9px 12px;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:2px;background:${on ? "#fff" : "#111113"};color:${on ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${on ? "#fff" : "#262626"};`,
+                        `cursor:pointer;min-width:74px;padding:12px 16px;border-radius:999px;font:600 14px Montserrat;background:${on ? "#fff" : "transparent"};color:${on ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${on ? "#fff" : "#3a3a3f"};`,
                       )}
                     >
-                      <span style={sx("font:700 14px Montserrat;")}>{s}</span>
-                      {cm && <span style={sx(`font:500 10px Roboto;${on ? "color:#5b5b60;" : "color:#8A8F98;"}`)}>{cm} cm</span>}
+                      {s}
                     </button>
                   );
                 })}
@@ -309,15 +409,16 @@ export function GearDetail({
         </div>
       </div>
 
-      {/* ===== ТАЙЛБАР + ОНЦЛОГ (бүтэн өргөн, RevZilla-ийн description хэсэг шиг) ===== */}
-      <div style={sx("margin-top:clamp(36px,5vw,56px);background:#111113;border:1px solid #262626;border-radius:18px;padding:clamp(22px,3.4vw,36px);")}>
-        <h2 style={sx("font:800 20px Montserrat;color:#fff;text-transform:uppercase;")}>{t("Тайлбар")}</h2>
-        <p style={sx("font:400 15px/1.75 Roboto;color:#A3A3A3;margin-top:14px;max-width:860px;")}>{loc(item.desc, item.descEn)}</p>
+      {/* ===== АККОРДИОН (Alpinestars: Description / Key Features / Shipping / Reviews) ===== */}
+      <div style={{ marginTop: "clamp(36px,5vw,56px)" }}>
+        <Acc title={t("Тайлбар")} defaultOpen>
+          <p style={sx("font:400 15px/1.75 Roboto;color:#A3A3A3;max-width:860px;")}>{loc(item.desc, item.descEn)}</p>
+          <div style={sx("font:500 12px 'JetBrains Mono';color:#6b7280;letter-spacing:.04em;margin-top:16px;")}>SKU: {item.sku}</div>
+        </Acc>
 
         {loc(item.features, item.featuresEn).length > 0 && (
-          <>
-            <h3 style={sx("font:800 15px Montserrat;color:#fff;text-transform:uppercase;margin-top:26px;")}>{t("Онцлог")}</h3>
-            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:8px 28px;margin-top:14px;")}>
+          <Acc title={t("Онцлог")}>
+            <div style={sx("display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:8px 28px;")}>
               {loc(item.features, item.featuresEn).map((f) => (
                 <div key={f} style={{ display: "flex", alignItems: "flex-start", gap: 11 }}>
                   <span style={sx("width:6px;height:6px;border-radius:50%;background:#E10613;flex-shrink:0;margin-top:7px;")} />
@@ -325,15 +426,22 @@ export function GearDetail({
                 </div>
               ))}
             </div>
-          </>
+          </Acc>
         )}
 
-        <div style={sx("display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:26px;padding-top:16px;border-top:1px solid #1c1c1f;")}>
-          <span style={sx("font:500 12px 'JetBrains Mono';color:#8A8F98;letter-spacing:.04em;")}>SKU: {item.sku}</span>
-          <span style={sx("font:400 12px Roboto;color:#6b7280;")}>
+        <Acc title={t("Хүргэлт ба буцаалт")}>
+          <p style={sx("font:400 14px/1.75 Roboto;color:#A3A3A3;max-width:860px;")}>
             {t("УБ хот доторх хүргэлт 1–2 хоног. Барааг задлаагүй, гэмтээгүй тохиолдолд 14 хоногийн дотор солих/буцаах боломжтой.")}
-          </span>
-        </div>
+          </p>
+        </Acc>
+
+        <Acc title={`${t("Сэтгэгдэл")} (${item.reviews})`}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <Stars rating={item.rating} />
+            <span style={sx("font:700 15px Montserrat;color:#fff;")}>{item.rating.toFixed(1)}</span>
+            <span style={sx("font:400 13px Roboto;color:#8A8F98;")}>· {item.reviews} {t("сэтгэгдэл")}</span>
+          </div>
+        </Acc>
       </div>
 
       {/* ===== COMPLETE THE LOOK ===== */}
@@ -359,6 +467,8 @@ export function GearDetail({
           </div>
         </div>
       )}
+
+      {guide && <SizeGuide onClose={() => setGuide(false)} />}
     </div>
   );
 }

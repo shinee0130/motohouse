@@ -8,6 +8,9 @@ const SIZE_CM: Record<string, string> = {
   "3XL": "120-128",
 };
 
+// Хэмжээний заавар цонхонд дараалалтай гаргах.
+export const SIZE_TABLE = Object.entries(SIZE_CM).map(([size, cm]) => ({ size, cm }));
+
 // Universal chest-circumference guide for the admin/catalog size picker.
 export function sizeLabel(size: string): string {
   const cm = SIZE_CM[size.trim().toUpperCase()];
