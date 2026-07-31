@@ -433,6 +433,24 @@ export async function uploadSiteImage(file: File, path: string): Promise<string>
   return `${url}?v=${Date.now()}`;
 }
 
+// site bucket доторх файлыг storage-аас бүрмөсөн устгана (зөвхөн админ).
+// Зураг солиход хуучин файл хуримтлагдаж үлддэг байсныг цэвэрлэхэд хэрэглэнэ.
+// URL нь энэ bucket-ынх биш бол юу ч хийхгүй — /assets/… гэх мэт анхдагч зам
+// эсвэл өөр хостынхыг санамсаргүй устгахгүй.
+export async function deleteSiteFile(publicUrl: string): Promise<boolean> {
+  const m = /\/storage\/v1\/object\/public\/site\/(.+)$/.exec(publicUrl.split("?")[0]);
+  if (!m) return false;
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+  if (!token) throw new Error("Нэвтрэлт хүчингүй байна. Дахин нэвтэрнэ үү.");
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/admin-upload`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, apikey: SUPABASE_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "delete", path: decodeURIComponent(m[1]) }),
+  });
+  return res.ok;
+}
+
 // Зураг/видео storage-д upload хийж public URL буцаана.
 async function uploadTo(folder: string, file: File, ext?: string): Promise<string> {
   const e = ext || file.name.split(".").pop() || "bin";

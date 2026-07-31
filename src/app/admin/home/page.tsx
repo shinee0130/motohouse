@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
-import { getSettingsMap, updateSetting, uploadSiteImage } from "@/lib/db/admin";
-import { useConfirm } from "@/lib/ui/confirm";
+import { getSettingsMap, updateSetting, uploadSiteImage, deleteSiteFile } from "@/lib/db/admin";
+import { useConfirm, useAlert } from "@/lib/ui/confirm";
 import { PROMOS_KEY, parsePromos, type Promo } from "@/components/layout/Nav";
 
 const SLOTS = [
@@ -17,7 +17,7 @@ const SLOTS = [
   { key: "cat_moto", label: "Категори — Мотоцикл" },
   { key: "cat_gear", label: "Категори — Хэрэгсэл" },
   { key: "cat_parts", label: "Категори — Сэлбэг" },
-  { key: "cat_service", label: "Категори — Засвар" },
+  { key: "cat_photo", label: "Категори — Зураг авалт" },
 ];
 
 // Nav-ын анхдагчтай ижил — админ анх нээхэд одоо сайт дээр юу гарч байгааг харна.
@@ -32,6 +32,7 @@ export default function AdminHome() {
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
   const confirm = useConfirm();
+  const alert = useAlert();
 
   // ===== Дээд улаан баннер =====
   const [promos, setPromos] = useState<Promo[]>([]);
@@ -68,11 +69,14 @@ export default function AdminHome() {
     const ok = await confirm({ title: `“${label}” зургийг устгах уу?`, message: "Зураг бүрмөсөн арилж, сайт дээр анхдагч/хоосон болно.", confirmLabel: "Устгах", danger: true });
     if (!ok) return;
     setBusy(key); setMsg("");
+    const prev = map[key] || map[bak(key)] || "";
     try {
       await updateSetting(key, "");
       await updateSetting(bak(key), ""); // нөөцийг ч цэвэрлэнэ
+      // "Бүрмөсөн арилгана" гэсэн тул файлыг нь storage-аас ч устгана.
+      if (prev) { try { await deleteSiteFile(prev); } catch { /* тохиргоо аль хэдийн цэвэрлэгдсэн */ } }
       await refresh();
-      setMsg(`✓ ${key} устгагдлаа.`);
+      setMsg(`✓ "${label}" устгагдлаа.`);
     } catch (e) {
       setMsg("⚠️ Алдаа: " + (e instanceof Error ? e.message : String(e)));
     } finally { setBusy(null); }
@@ -108,17 +112,33 @@ export default function AdminHome() {
     } finally { setBusy(null); }
   }
 
-  async function onFile(key: string, file: File | null) {
+  async function onFile(key: string, file: File | null, label?: string) {
     if (!file) return;
     setBusy(key); setMsg("");
+    // Хуучин файлын хаяг — шинийг нь амжилттай хадгалсны дараа устгана.
+    const prev = map[key] || map[bak(key)] || "";
     try {
       const ext = file.name.split(".").pop() || "jpg";
       const url = await uploadSiteImage(file, `home/${key}.${ext}`);
       await updateSetting(key, url);
+      // Нэр (өргөтгөл) нь өөрчлөгдсөн бол хуучин файл storage дээр үлдэнэ —
+      // цэвэрлэнэ. Ижил зам бол upsert хийгдсэн тул устгах юм алга.
+      let removed = false;
+      const samePath = prev.split("?")[0] === url.split("?")[0];
+      if (prev && !samePath) {
+        try { removed = await deleteSiteFile(prev); } catch { /* устгаж чадаагүй нь гол ажлыг унагаахгүй */ }
+      }
       await refresh();
-      setMsg(`✓ ${key} шинэчлэгдлээ.`);
+      const name = label || key;
+      setMsg(`✓ "${name}" зураг амжилттай солигдлоо.${removed ? " Хуучин файл устгагдав." : ""}`);
+      await alert({
+        title: "Зураг солигдлоо",
+        message: `"${name}" шинэчлэгдэж, сайт дээр шууд харагдана.${removed ? " Хуучин файлыг storage-аас устгав." : ""}`,
+      });
     } catch (e) {
-      setMsg("⚠️ Алдаа: " + (e instanceof Error ? e.message : String(e)));
+      const m = e instanceof Error ? e.message : String(e);
+      setMsg("⚠️ Алдаа: " + m);
+      await alert({ title: "Зураг солиход алдаа гарлаа", message: m, danger: true });
     } finally { setBusy(null); }
   }
 
@@ -198,7 +218,7 @@ export default function AdminHome() {
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
             <label style={sx(`cursor:pointer;background:#E10613;color:#fff;font:700 12px Montserrat;padding:9px 16px;border-radius:8px;${busy === "hero_video" ? "opacity:.6;" : ""}`)}>
               {busy === "hero_video" ? "Хуулж байна…" : "Видео солих"}
-              <input type="file" accept="video/*" disabled={busy === "hero_video"} onChange={(e) => onFile("hero_video", e.target.files?.[0] ?? null)} style={{ display: "none" }} />
+              <input type="file" accept="video/*" disabled={busy === "hero_video"} onChange={(e) => onFile("hero_video", e.target.files?.[0] ?? null, "Hero видео")} style={{ display: "none" }} />
             </label>
             {map.hero_video && <button onClick={() => hideImage("hero_video")} disabled={busy === "hero_video"} style={sx(softBtn)}>Нуух</button>}
             {isHidden("hero_video") && <button onClick={() => showImage("hero_video")} disabled={busy === "hero_video"} style={sx(softBtn)}>Харуулах</button>}
@@ -230,7 +250,7 @@ export default function AdminHome() {
                     type="file"
                     accept="image/*"
                     disabled={busy === s.key}
-                    onChange={(e) => onFile(s.key, e.target.files?.[0] ?? null)}
+                    onChange={(e) => onFile(s.key, e.target.files?.[0] ?? null, s.label)}
                     style={{ display: "none" }}
                   />
                 </label>
