@@ -56,11 +56,11 @@ function fromForm(f: Form): Partial<GearItem> {
 
 export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
   const isParts = mode === "parts";
-  const cats = isParts ? PARTS_CATS : GEAR_CATS;
+  const baseCats = isParts ? PARTS_CATS : GEAR_CATS;
   const heading = isParts ? "Сэлбэг" : "Дагалдах хэрэгсэл";
   const newLabel = isParts ? "+ Шинэ сэлбэг" : "+ Шинэ хэрэгсэл";
   const empty: Form = {
-    name: "", brand: "", category: cats[0], meta: "", price: "", oldPrice: "",
+    name: "", brand: "", category: baseCats[0], meta: "", price: "", oldPrice: "",
     rating: "5", reviews: "0", sku: "", bestSeller: false, desc: "", features: "", sizes: [], colors: [], images: [], imageColors: {},
     gender: "unisex", nameEn: "", descEn: "", metaEn: "", featuresEn: "",
   };
@@ -73,6 +73,7 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
   const [uploading, setUploading] = useState(false);
   const [colorInput, setColorInput] = useState("");
   const [sizeInput, setSizeInput] = useState("");
+  const [catInput, setCatInput] = useState("");
   const [drag, setDrag] = useState<number | null>(null); // чирж буй зургийн байрлал
 
   // Зургийн дугаарыг ӨНГӨ БҮРИЙН ДОТОР тоолно: Хар 1,2,3,4 · Саарал 1,2,3,4 …
@@ -103,7 +104,24 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
     });
     setDrag(to);
   }
+  // Сонгох ангиллууд: үндсэн багц + DB дээр бодитоор хэрэглэгдэж буй ангиллууд.
+  // Админ шинэ ангилал бичээд хадгалмагц тэр ангилал энд орж ирнэ — дараагийн
+  // бараагаа шууд сонгож оруулна. Тусдаа хүснэгт шаардлагагүй.
+  const cats = useMemo(() => {
+    const set = new Set<string>(baseCats);
+    list.forEach((g) => g.category && set.add(g.category));
+    if (f.category) set.add(f.category);
+    return [...set];
+  }, [baseCats, list, f.category]);
+
   const alert = useAlert();
+  // Шинэ ангилал — бичээд нэмэхэд шууд сонгогдоно, хадгалмагц бүртгэгдэнэ.
+  function addCategory() {
+    const v = catInput.trim();
+    if (!v) return;
+    setF((c) => ({ ...c, category: v }));
+    setCatInput("");
+  }
   function addColor() {
     const v = colorInput.trim();
     if (!v) return;
@@ -154,7 +172,10 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
     try {
       // Сэлбэгт хэмжээ/өнгө байхгүй тул хадгалахдаа өгөгдлийг нь ч цэвэрлэнэ —
       // эс бол админ дээр харагдахгүй атлаа сайт дээр үлдэж, засах аргагүй болно.
-      const row = isParts ? { ...fromForm(f), sizes: [], colors: [], imageColors: {}, gender: "unisex" } : fromForm(f);
+      // kind-ыг мөрөн дээр нь бичнэ — шинэ ангилал нэмсэн ч сэлбэг/хэрэгсэл нь
+      // хатуу жагсаалтаас биш үүнээс тодорхойлогдоно.
+      const base = { ...fromForm(f), kind: (isParts ? "part" : "gear") as "part" | "gear" };
+      const row = isParts ? { ...base, sizes: [], colors: [], imageColors: {}, gender: "unisex" } : base;
       if (editing === "new") await createGear(row);
       else if (typeof editing === "number") await updateGear(editing, row);
       await refresh();
@@ -193,7 +214,15 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
             <div><label style={sx(LABEL)}>Нэр * {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><input {...bind("name")} style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Брэнд</label><input value={f.brand} onChange={(e) => setF({ ...f, brand: e.target.value })} style={sx(INPUT)} /></div>
             <div><label style={sx(LABEL)}>Ангилал</label>
-              <Select value={f.category} onChange={(v) => setF({ ...f, category: v })} full bg="#050505" options={[...cats.map((c) => ({ value: c, label: c })), ...(!cats.includes(f.category) ? [{ value: f.category, label: f.category }] : [])]} /></div>
+              <Select value={f.category} onChange={(v) => setF({ ...f, category: v })} full bg="#050505" options={cats.map((c) => ({ value: c, label: c }))} />
+              {/* Шинэ ангилал — бичээд нэмэхэд сонгогдоно, бараагаа хадгалмагц
+                  жагсаалтад бүртгэгдэж, дараагийн бараанд сонгогдоно. */}
+              <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+                <input value={catInput} onChange={(e) => setCatInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCategory(); } }}
+                  placeholder="Шинэ ангилал" style={sx(INPUT + "padding:7px 10px;font:400 12px Roboto;")} />
+                <button type="button" onClick={addCategory} style={sx("background:#1a1a1d;border:1px solid #333;color:#fff;font:600 11px Montserrat;padding:7px 11px;border-radius:8px;cursor:pointer;white-space:nowrap;")}>+</button>
+              </div></div>
             {/* Хүйс зөвхөн дагалдах хэрэгсэлд — сэлбэг хэн ч хамаагүй нэг адил. */}
             {!isParts && <div><label style={sx(LABEL)}>Хүйс</label>
               <Select value={f.gender} onChange={(v) => setF({ ...f, gender: v })} full bg="#050505" options={GENDERS.map((g) => ({ value: g.v, label: g.mn }))} /></div>}

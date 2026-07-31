@@ -60,6 +60,7 @@ export interface GearItem {
   // Энд байхгүй зураг нь "бүх өнгөнд" гэсэн үг.
   imageColors?: Record<string, string>;
   bestSeller?: boolean;
+  kind?: "gear" | "part"; // сэлбэг үү, дагалдах хэрэгсэл үү (DB-д хадгална)
   gender?: string; // "unisex" | "women" | "men" — хэнд зориулсан (ангилал биш, шүүлт)
   nameEn?: string; // англи хувилбарууд (хоосон бол монголоор)
   descEn?: string;
@@ -81,7 +82,10 @@ export const PARTS_CATS = [
   "Тормозны шингэн", "Хөргөлтийн шингэн", "Гэрэл", "Холхивч",
   "Тросс / кабель", "Бусад сэлбэг",
 ];
-export const isPart = (g: GearItem) => PARTS_CATS.includes(g.category);
+// Барааны төрөл нь мөрөн дээрээ (kind). Хуучин мөр эсвэл kind ирээгүй үед
+// ангиллаас нь тааж уналгүй ажиллана.
+export const isPart = (g: GearItem) =>
+  g.kind ? g.kind === "part" : PARTS_CATS.includes(g.category);
 
 // Хүйс — ангилал БИШ, тусдаа шүүлт.
 export const GENDERS: { v: string; mn: string; en: string }[] = [
