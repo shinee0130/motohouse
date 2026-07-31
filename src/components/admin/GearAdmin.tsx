@@ -73,6 +73,18 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
   const [uploading, setUploading] = useState(false);
   const [colorInput, setColorInput] = useState("");
   const [sizeInput, setSizeInput] = useState("");
+  const [drag, setDrag] = useState<number | null>(null); // чирж буй зургийн байрлал
+  // Чирсэн зургийг буулгасан байрлал руу зөөнө (бусад нь шахагдана).
+  function dropImage(to: number) {
+    setF((c) => {
+      if (drag === null || drag === to) return c;
+      const im = [...c.images];
+      const [moved] = im.splice(drag, 1);
+      im.splice(to, 0, moved);
+      return { ...c, images: im };
+    });
+    setDrag(null);
+  }
   const alert = useAlert();
   function addColor() {
     const v = colorInput.trim();
@@ -244,28 +256,40 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
             </div>
           </div>
           <div>
-            <label style={sx(LABEL)}>Зураг ({f.images.length})</label>
+            <label style={sx(LABEL)}>
+              Зураг ({f.images.length}) <span style={sx("color:#6b7280;")}>— чирж дараалал солино. Өнгө бүрийн эхний зураг нь тэр өнгөний нүүр зураг болно.</span>
+            </label>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 10 }}>
               {f.images.map((src, i) => (
-                <div key={src + i} style={{ position: "relative", width: 84 }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="" style={sx("width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;display:block;")} />
-                  {/* Дараалал солих. Өнгө бүрийн ЭХНИЙ зураг нь тухайн өнгөний
-                      swatch болон галерейн эхний зураг болдог тул эрэмбэ чухал. */}
-                  {f.images.length > 1 && ([[-1, "‹", "left:3px"], [1, "›", "right:3px"]] as const).map(([dir, ch, pos]) => (
-                    <button key={ch} type="button" title={dir < 0 ? "Урагш" : "Хойш"}
-                      disabled={dir < 0 ? i === 0 : i === f.images.length - 1}
-                      onClick={() => setF((c) => {
-                        const j = i + dir;
-                        if (j < 0 || j >= c.images.length) return c;
-                        const im = [...c.images];
-                        [im[i], im[j]] = [im[j], im[i]];
-                        return { ...c, images: im };
-                      })}
-                      style={sx(`position:absolute;bottom:3px;${pos};width:22px;height:22px;border-radius:6px;background:rgba(0,0,0,.62);border:1px solid #444;color:#fff;font:700 13px Montserrat;line-height:1;cursor:pointer;${(dir < 0 ? i === 0 : i === f.images.length - 1) ? "opacity:.25;cursor:default;" : ""}`)}>
-                      {ch}
-                    </button>
-                  ))}
+                <div
+                  key={src + i}
+                  style={{ position: "relative", width: 84 }}
+                  onDragOver={(e) => { if (drag !== null) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; } }}
+                  onDrop={(e) => { e.preventDefault(); dropImage(i); }}
+                >
+                  {/* Зөвхөн зураг нь чирэгддэг — select дээрээс чирвэл эвгүй болно */}
+                  <div
+                    draggable
+                    onDragStart={(e) => {
+                      setDrag(i);
+                      // Firefox чирэлтийг setData байхгүй бол огт эхлүүлдэггүй.
+                      e.dataTransfer.effectAllowed = "move";
+                      e.dataTransfer.setData("text/plain", String(i));
+                    }}
+                    onDragEnd={() => setDrag(null)}
+                    style={{
+                      position: "relative", cursor: drag === i ? "grabbing" : "grab",
+                      opacity: drag === i ? 0.4 : 1,
+                    }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={src} alt="" draggable={false}
+                      style={sx("width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;display:block;")} />
+                    {/* Дараалал нь хараагаар шууд мэдэгдэхийн тулд дугаарлана */}
+                    <span style={sx("position:absolute;top:4px;left:4px;min-width:20px;height:20px;padding:0 5px;border-radius:6px;background:rgba(5,5,5,.78);color:#fff;font:700 11px Montserrat;display:flex;align-items:center;justify-content:center;pointer-events:none;")}>
+                      {i + 1}
+                    </span>
+                  </div>
                   <button type="button" onClick={() => setF((c) => {
                     const im = { ...c.imageColors };
                     delete im[src];
