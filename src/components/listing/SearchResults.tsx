@@ -5,6 +5,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { Price } from "@/lib/reference/currency";
 import { useI18n } from "@/lib/i18n";
 import { isPart, type GearItem, type Moto } from "@/lib/db/data";
@@ -56,7 +57,7 @@ export function SearchResults({ q, gear, motos }: { q: string; gear: GearItem[];
                 <div style={sx("aspect-ratio:4/3;background:#fff;position:relative;")}>
                   {m.images?.[0] ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={m.images[0]} alt={`${m.brand} ${m.model}`} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+                    <img {...imgSrc(m.images[0], 300)} alt={`${m.brand} ${m.model}`} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
                   ) : (
                     <Slot label="" light style={{ position: "absolute", inset: 0 }} />
                   )}
@@ -81,7 +82,7 @@ export function SearchResults({ q, gear, motos }: { q: string; gear: GearItem[];
                 <div style={sx("aspect-ratio:1/1;background:#fff;position:relative;")}>
                   {g.images?.[0] ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
+                    <img {...imgSrc(g.images[0], 300)} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
                   ) : (
                     <Slot label="" light style={{ position: "absolute", inset: 0 }} />
                   )}

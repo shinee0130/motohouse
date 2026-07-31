@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { Slot } from "@/components/ui/Slot";
 import { badge, statusLabel, type Moto } from "@/lib/db/data";
 import { Price } from "@/lib/reference/currency";
@@ -30,7 +31,7 @@ export function MotoCard({ m, showCc = false }: { m: Moto; showCc?: boolean }) {
         {m.images && m.images.length > 0 ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={m.images[0]}
+            {...imgSrc(m.images[0], 300)}
             alt={`${m.brand} ${m.model}`}
             style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")}
           />

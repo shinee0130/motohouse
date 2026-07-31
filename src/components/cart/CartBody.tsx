@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { Price } from "@/lib/reference/currency";
 import { useAuth } from "@/lib/auth/auth";
 import { useAuthModal } from "@/lib/auth/authModal";
@@ -204,7 +205,7 @@ export function CartBody({ onNavigate }: { onNavigate?: () => void }) {
             <div style={sx("width:56px;height:56px;border-radius:10px;overflow:hidden;background:#fff;flex-shrink:0;")}>
               {it.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={it.image} alt="" style={sx("width:100%;height:100%;object-fit:contain;")} />
+                <img {...imgSrc(it.image, 56)} alt="" style={sx("width:100%;height:100%;object-fit:contain;")} />
               ) : (<div style={sx("width:100%;height:100%;background:#1a1a1d;")} />)}
             </div>
             <div style={{ minWidth: 140, flex: 1 }}>

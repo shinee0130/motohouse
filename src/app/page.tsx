@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { MotoCard } from "@/components/motorcycles/MotoCard";
 import { Slot } from "@/components/ui/Slot";
 import { badge, isPart, type GearItem } from "@/lib/db/data";
@@ -62,7 +63,7 @@ export default async function HomePage() {
           <div className="mh-card-img" style={{ position: "relative", height: 190, background: "#fff" }}>
             {g.images && g.images[0] ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
+              <img {...imgSrc(g.images[0], 300)} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
             ) : (
               <Slot label="Бүтээгдэхүүн зураг" light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
             )}
@@ -97,7 +98,7 @@ export default async function HomePage() {
         <div className="mh-hero-media" style={{ position: "relative", width: "100%" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={heroImg}
+            {...imgSrc(heroImg, 1280)}
             alt=""
             style={sx("display:block;width:100%;height:100%;object-fit:cover;object-position:center;")}
           />
@@ -144,7 +145,7 @@ export default async function HomePage() {
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={settings[setKey] || img}
+                {...imgSrc(settings[setKey] || img, 640)}
                 alt={title}
                 style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;")}
               />
@@ -301,7 +302,7 @@ export default async function HomePage() {
               <div style={{ position: "relative", height: 240, background: "radial-gradient(120% 120% at 50% 0%, #17171a, #0b0b0d)" }}>
                 {e.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={e.image} alt={e.title} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:10px;")} />
+                  <img {...imgSrc(e.image, 420)} alt={e.title} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:10px;")} />
                 ) : (
                   <Slot label="Event poster" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                 )}

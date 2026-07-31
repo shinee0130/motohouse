@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { Slot } from "@/components/ui/Slot";
 import { type GearItem } from "@/lib/db/data";
 import { Price } from "@/lib/reference/currency";
@@ -219,7 +220,7 @@ export function GearDetail({
               >
                 {imgs.length ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={src as string} alt="" style={sx("width:100%;height:100%;object-fit:cover;display:block;")} />
+                  <img {...imgSrc(src as string, 64)} alt="" style={sx("width:100%;height:100%;object-fit:cover;display:block;")} />
                 ) : (
                   <Slot label="" light style={{ width: "100%", height: "100%" }} />
                 )}
@@ -229,7 +230,7 @@ export function GearDetail({
           <div style={sx("position:relative;flex:1;border-radius:16px;overflow:hidden;border:1px solid #262626;background:#fff;aspect-ratio:1/1;")}>
             {imgs.length ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={imgs[Math.min(activeImg, imgs.length - 1)]} alt={item.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
+              <img {...imgSrc(imgs[Math.min(activeImg, imgs.length - 1)], 640)} alt={item.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
             ) : (
               <Slot label={t("Бүтээгдэхүүн зураг")} light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
             )}
@@ -319,7 +320,7 @@ export function GearDetail({
                       <button key={c} onClick={() => setColor(c)} title={t(c)} aria-label={t(c)} aria-pressed={on}
                         style={sx(`width:62px;height:62px;padding:2px;border-radius:8px;cursor:pointer;background:#fff;border:2px solid ${on ? "#E10613" : "#333"};`)}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={thumb} alt={t(c)} style={sx("width:100%;height:100%;object-fit:contain;display:block;")} />
+                        <img {...imgSrc(thumb, 62)} alt={t(c)} style={sx("width:100%;height:100%;object-fit:contain;display:block;")} />
                       </button>
                     );
                   }
@@ -508,7 +509,7 @@ function GearMini({ g, baseHref }: { g: GearItem; baseHref: "/gear" | "/parts" }
       <div className="mh-card-img" style={{ position: "relative", height: 170, background: "#fff" }}>
         {g.images && g.images[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
+          <img {...imgSrc(g.images[0], 280)} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
         ) : (
           <Slot label={t("Зураг")} light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
         )}

@@ -6,6 +6,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { Slot } from "@/components/ui/Slot";
 import { Select } from "@/components/ui/Select";
 import { GENDERS, type GearItem } from "@/lib/db/data";
@@ -209,7 +210,7 @@ export function GearClient({
               <div className="mh-card-img" style={{ position: "relative", height: 190, background: "#fff" }}>
                 {g.images && g.images[0] ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={g.images[0]} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
+                  <img {...imgSrc(g.images[0], 300)} alt={g.name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
                 ) : (
                   <Slot label={t("Бүтээгдэхүүн зураг")} light style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                 )}
