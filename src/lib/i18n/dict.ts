@@ -335,6 +335,8 @@ export const EN: Record<string, string> = {
   "Хэмжээ": "Size",
   "Хэмжээний заавар": "Size guide",
   "Хэмжээ (см)": "Size (cm)",
+  "Хэмжээ (EU)": "Size (EU)",
+  "Бусад хэмжээ": "Other sizes",
   // Барааны өнгөний нэрс (GEAR_COLORS палитр) — EN горимд монголоор үлдэж байв.
   "Хар": "Black",
   "Цагаан": "White",

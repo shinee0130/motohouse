@@ -26,3 +26,13 @@ export function sizeCm(size: string): string | undefined {
 export function isLetterSize(size: string): boolean {
   return size.trim().toUpperCase() in SIZE_CM;
 }
+
+// Үсгэн бус хэмжээний бүлгийн гарчиг. Каск дээр "55-56 cm", гутал дээр "42"
+// гэх мэт өөр систем ордог тул агуулгаас нь таана — бүгдийг "см" гэвэл
+// гутлын EU дугаарыг буруу нэрлэнэ.
+export function extraSizeLabel(sizes: string[]): string {
+  if (sizes.length === 0) return "";
+  if (sizes.every((s) => /cm|см/i.test(s))) return "Хэмжээ (см)";
+  if (sizes.every((s) => /^\d{2}(\.5)?$/.test(s.trim()))) return "Хэмжээ (EU)";
+  return "Бусад хэмжээ";
+}

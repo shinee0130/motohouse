@@ -7,7 +7,7 @@ import { sx } from "@/lib/ui/sx";
 import { Slot } from "@/components/ui/Slot";
 import { type GearItem } from "@/lib/db/data";
 import { Price } from "@/lib/reference/currency";
-import { sizeCm, SIZE_TABLE, isLetterSize } from "@/lib/commerce/sizes";
+import { sizeCm, SIZE_TABLE, isLetterSize, extraSizeLabel } from "@/lib/commerce/sizes";
 import { colorHex, checkOn } from "@/lib/commerce/colors";
 import { useAuth } from "@/lib/auth/auth";
 import { useAuthModal } from "@/lib/auth/authModal";
@@ -367,7 +367,7 @@ export function GearDetail({
                 <div style={{ marginTop: letterSizes.length > 0 ? 16 : 0 }}>
                   {letterSizes.length > 0 && (
                     <div style={sx("font:600 12px Montserrat;letter-spacing:.04em;color:#8A8F98;margin-bottom:8px;")}>
-                      {t("Хэмжээ (см)")}
+                      {t(extraSizeLabel(cmSizes))}
                     </div>
                   )}
                   <SizeRow list={cmSizes} size={size} onPick={setSize} />
