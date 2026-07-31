@@ -277,7 +277,7 @@ export function GearDetail({
           {item.colors && item.colors.length > 0 && (
             <div style={{ marginTop: 24 }}>
               <div style={sx("font:600 13px Montserrat;color:#fff;margin-bottom:10px;")}>
-                {t("Өнгө")}: <span style={{ color: "#A3A3A3", fontWeight: 400 }}>{color}</span>
+                {t("Өнгө")}: <span style={{ color: "#A3A3A3", fontWeight: 400 }}>{t(color)}</span>
               </div>
               {/* Alpinestars шиг — өнгө бүр нь тухайн өнгөний бодит зураг.
                   Зураг тэмдэглээгүй өнгийг палитрын дугуйгаар, палитрт ч байхгүй
@@ -289,16 +289,16 @@ export function GearDetail({
                   const hex = colorHex(c);
                   if (thumb) {
                     return (
-                      <button key={c} onClick={() => setColor(c)} title={c} aria-label={c} aria-pressed={on}
+                      <button key={c} onClick={() => setColor(c)} title={t(c)} aria-label={t(c)} aria-pressed={on}
                         style={sx(`width:62px;height:62px;padding:2px;border-radius:8px;cursor:pointer;background:#fff;border:2px solid ${on ? "#E10613" : "#333"};`)}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={thumb} alt={c} style={sx("width:100%;height:100%;object-fit:contain;display:block;")} />
+                        <img src={thumb} alt={t(c)} style={sx("width:100%;height:100%;object-fit:contain;display:block;")} />
                       </button>
                     );
                   }
                   if (hex) {
                     return (
-                      <button key={c} onClick={() => setColor(c)} title={c} aria-label={c} aria-pressed={on}
+                      <button key={c} onClick={() => setColor(c)} title={t(c)} aria-label={t(c)} aria-pressed={on}
                         style={{
                           width: 62, height: 62, borderRadius: 8, background: hex, cursor: "pointer",
                           border: on ? "2px solid #E10613" : "1px solid #444",
@@ -311,7 +311,7 @@ export function GearDetail({
                   return (
                     <button key={c} onClick={() => setColor(c)} aria-pressed={on}
                       style={sx(`cursor:pointer;font:600 13px Montserrat;padding:9px 16px;border-radius:8px;background:${on ? "#fff" : "#111113"};color:${on ? "#0B0B0D" : "#C8C8C8"};border:1px solid ${on ? "#fff" : "#262626"};`)}>
-                      {c}
+                      {t(c)}
                     </button>
                   );
                 })}
