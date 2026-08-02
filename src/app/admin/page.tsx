@@ -32,7 +32,7 @@ export default function AdminOverview() {
     { label: "Мотоцикл", value: s.motos, href: "/admin/motorcycles" },
     { label: "Бараа / сэлбэг", value: s.gear, href: "/admin/gear" },
     { label: "Biker Meeting", value: s.events, href: "/admin/meetings" },
-    { label: "Захиалга", value: s.orders, href: "/admin/orders" },
+    { label: "Худалдан авалт", value: s.orders, href: "/admin/orders" },
     { label: "Хэрэглэгч", value: s.users, href: "/admin/users" },
   ];
 

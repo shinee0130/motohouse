@@ -14,7 +14,7 @@ const MENU = [
   { label: "Сэлбэг", href: "/admin/parts" },
   { label: "Biker Meeting", href: "/admin/meetings" },
   { label: "Giveaway", href: "/admin/giveaway" },
-  { label: "Захиалга", href: "/admin/orders" },
+  { label: "Худалдан авалтын захиалга", href: "/admin/orders" },
   { label: "Захиалгын хүсэлт", href: "/admin/requests" },
   { label: "Төлбөрийн лог", href: "/admin/payments" },
   { label: "Зурагчид", href: "/admin/photographers" },
