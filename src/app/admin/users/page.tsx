@@ -22,10 +22,30 @@ const TIERS: Record<string, { label: string; color: string; min: number }> = {
 };
 const PAGE_SIZE = 8;
 
+// Эрэмбэлэх сонголтууд. Утга нь харьцуулах функц — шинэ эрэмбэ нэмэхэд
+// зөвхөн энэ жагсаалтад мөр нэмнэ.
+const SORTS: { value: string; label: string; cmp: (a: Profile, b: Profile) => number }[] = [
+  { value: "spent_desc", label: "Хамгийн их худалдан авалттай", cmp: (a, b) => (b.spent ?? 0) - (a.spent ?? 0) },
+  { value: "spent_asc", label: "Хамгийн бага худалдан авалттай", cmp: (a, b) => (a.spent ?? 0) - (b.spent ?? 0) },
+  { value: "orders_desc", label: "Хамгийн олон захиалгатай", cmp: (a, b) => (b.orders ?? 0) - (a.orders ?? 0) },
+  { value: "new", label: "Хамгийн сүүлд бүртгүүлсэн", cmp: (a, b) => (b.created_at ?? "").localeCompare(a.created_at ?? "") },
+  { value: "old", label: "Хамгийн эхэнд бүртгүүлсэн", cmp: (a, b) => (a.created_at ?? "").localeCompare(b.created_at ?? "") },
+  { value: "name", label: "Нэрээр (А-Я)", cmp: (a, b) => (a.name ?? "").localeCompare(b.name ?? "", "mn") },
+];
+
+// Түвшний шүүлт — spent-ээс тооцно (профайл дээрх tier хоцрогдсон байж болно)
+function tierOf(spent: number): string {
+  const keys = Object.keys(TIERS).sort((a, b) => TIERS[b].min - TIERS[a].min);
+  return keys.find((k) => spent >= TIERS[k].min) ?? "rookie";
+}
+
 export default function AdminUsers() {
   const [list, setList] = useState<Profile[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [q, setQ] = useState("");
+  const [sort, setSort] = useState("spent_desc");
+  const [tier, setTier] = useState("all");
+  const [buyersOnly, setBuyersOnly] = useState(false);
   const [page, setPage] = useState(1);
   const confirm = useConfirm();
 
@@ -67,18 +87,28 @@ export default function AdminUsers() {
   // хайлт — нэр / имэйл / утас-аар
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
-    if (!s) return list;
-    return list.filter((u) =>
-      `${u.name ?? ""} ${u.email ?? ""} ${u.phone ?? ""}`.toLowerCase().includes(s),
-    );
-  }, [list, q]);
+    let l = list;
+    if (s) l = l.filter((u) => `${u.name ?? ""} ${u.email ?? ""} ${u.phone ?? ""}`.toLowerCase().includes(s));
+    if (buyersOnly) l = l.filter((u) => (u.orders ?? 0) > 0);
+    if (tier !== "all") l = l.filter((u) => tierOf(u.spent ?? 0) === tier);
+    const cmp = SORTS.find((x) => x.value === sort)?.cmp;
+    return cmp ? [...l].sort(cmp) : l;
+  }, [list, q, sort, tier, buyersOnly]);
+
+  // Түвшин бүрийн тоо — хоосон түвшин товч болж гарахгүй
+  const tierCounts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const u of list) { const k = tierOf(u.spent ?? 0); m.set(k, (m.get(k) ?? 0) + 1); }
+    return m;
+  }, [list]);
+  const buyerCount = useMemo(() => list.filter((u) => (u.orders ?? 0) > 0).length, [list]);
 
   const admins = useMemo(() => filtered.filter((u) => u.role === "admin"), [filtered]);
   const photographers = useMemo(() => filtered.filter((u) => u.role === "photographer"), [filtered]);
   const customers = useMemo(() => filtered.filter((u) => u.role !== "admin" && u.role !== "photographer"), [filtered]);
 
   // хайлт өөрчлөгдвөл эхний хуудас руу
-  useEffect(() => { setPage(1); }, [q]);
+  useEffect(() => { setPage(1); }, [q, sort, tier, buyersOnly]);
 
   const totalPages = Math.max(1, Math.ceil(customers.length / PAGE_SIZE));
   const pageSafe = Math.min(page, totalPages);
@@ -105,6 +135,35 @@ export default function AdminUsers() {
         )}
       </div>
 
+      {/* эрэмбэ + шүүлт */}
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ minWidth: 240 }}>
+          <Select value={sort} onChange={setSort} full bg="#050505"
+            options={SORTS.map((o) => ({ value: o.value, label: o.label }))} />
+        </div>
+        <button onClick={() => setBuyersOnly((v) => !v)}
+          style={sx(`cursor:pointer;font:700 12px Montserrat;padding:9px 16px;border-radius:999px;${buyersOnly ? "background:#22c55e;border:1px solid #22c55e;color:#04120a;" : "background:#111113;border:1px solid #333;color:#C8C8C8;"}`)}>
+          Зөвхөн худалдан авсан ({buyerCount})
+        </button>
+      </div>
+
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <button onClick={() => setTier("all")}
+          style={sx(`cursor:pointer;font:700 12px Montserrat;padding:8px 16px;border-radius:999px;${tier === "all" ? "background:#fff;border:1px solid #fff;color:#0B0B0D;" : "background:#111113;border:1px solid #333;color:#C8C8C8;"}`)}>
+          Түвшин: бүгд
+        </button>
+        {Object.keys(TIERS).sort((a, b) => TIERS[b].min - TIERS[a].min)
+          .filter((k) => (tierCounts.get(k) ?? 0) > 0).map((k) => {
+            const t = TIERS[k]; const on = tier === k;
+            return (
+              <button key={k} onClick={() => setTier(k)}
+                style={sx(`cursor:pointer;font:700 12px Montserrat;padding:8px 16px;border-radius:999px;${on ? `background:${t.color};border:1px solid ${t.color};color:#0B0B0D;` : `background:#111113;border:1px solid #333;color:${t.color};`}`)}>
+                {t.label} ({tierCounts.get(k)})
+              </button>
+            );
+          })}
+      </div>
+
       {!loaded ? (
         <div style={sx("padding:30px;text-align:center;font:400 14px Roboto;color:#8A8F98;")}>Ачаалж байна…</div>
       ) : list.length === 0 ? (
@@ -113,7 +172,7 @@ export default function AdminUsers() {
         </div>
       ) : filtered.length === 0 ? (
         <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;padding:30px;text-align:center;font:400 14px Roboto;color:#8A8F98;")}>
-          “{q}” — тохирох хэрэглэгч олдсонгүй.
+          {q ? `“${q}” — тохирох хэрэглэгч олдсонгүй.` : "Энэ шүүлтэд тохирох хэрэглэгч алга."}
         </div>
       ) : (
         <>
@@ -189,6 +248,10 @@ function UserRow({ u, onRole }: { u: Profile; onRole: (id: string, role: string)
             <span style={{ font: "700 10px Montserrat", letterSpacing: ".05em", padding: "3px 8px", borderRadius: 5, color: tier.color, background: `${tier.color}22`, border: `1px solid ${tier.color}55` }}>{tier.label}</span>
           </div>
           <div style={sx("font:400 12px 'JetBrains Mono';color:#8A8F98;margin-top:2px;")}>+976 {u.phone}{u.email ? ` · ${u.email}` : ""}</div>
+          <div style={sx("font:400 11px 'JetBrains Mono';color:#6b7280;margin-top:3px;")}>
+            {(u.orders ?? 0) > 0 ? `${u.orders} захиалга` : "захиалга алга"}
+            {u.created_at ? ` · бүртгүүлсэн ${u.created_at.slice(0, 10)}` : ""}
+          </div>
         </div>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
