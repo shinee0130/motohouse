@@ -31,13 +31,14 @@ export function MeetingPartners({ partners }: { partners: EventPartner[] }) {
                 const inner = p.logo ? (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img {...imgSrc(p.logo, 160)} alt={p.name}
-                      style={{ maxHeight: 44, maxWidth: 150, objectFit: "contain", display: "block" }} />
+                    <img {...imgSrc(p.logo, 320)} alt={p.name}
+                      style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", display: "block" }} />
                   </>
                 ) : (
-                  <span style={sx("font:700 15px Montserrat;color:#fff;")}>{p.name}</span>
+                  <span style={sx("font:700 14px Montserrat;color:#fff;text-align:center;line-height:1.3;")}>{p.name}</span>
                 );
-                const box = "background:#111113;border:1px solid #262626;border-radius:12px;padding:14px 18px;min-height:72px;display:flex;align-items:center;justify-content:center;";
+                // Лого бүр өөр хэмжээтэй тул хайрцгийг нь тогтмол болгож жигдлэв.
+                const box = "background:#111113;border:1px solid #262626;border-radius:12px;padding:10px;width:176px;height:92px;display:flex;align-items:center;justify-content:center;overflow:hidden;";
                 return p.url ? (
                   <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer"
                     title={p.name} className="mh-card" style={sx(box + "cursor:pointer;")}>
