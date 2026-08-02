@@ -54,12 +54,12 @@ export function MeetingsGrid({
                 )}
                 {/* Зохион байгуулагч — постерын дээд буланд */}
                 {(partners[m.id] ?? []).filter(isOrganizer).length > 0 && (
-                  <div style={sx("position:absolute;top:10px;left:10px;right:10px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;width:fit-content;max-width:calc(100% - 20px);background:rgba(5,5,5,.78);border:1px solid #3a3a3f;border-radius:9px;padding:6px 10px;backdrop-filter:blur(4px);")}>
+                  <div style={sx("position:absolute;top:10px;left:10px;right:10px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;width:fit-content;max-width:calc(100% - 20px);background:rgba(5,5,5,.78);border:1px solid #3a3a3f;border-radius:10px;padding:8px 12px;backdrop-filter:blur(4px);")}>
                     {(partners[m.id] ?? []).filter(isOrganizer).slice(0, 3).map((p) => (
                       p.logo ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img key={p.id} {...imgSrc(p.logo, 140)} alt={p.name}
-                          style={{ height: 22, maxWidth: 86, objectFit: "contain", display: "block" }} />
+                          style={{ height: 30, maxWidth: 132, objectFit: "contain", display: "block" }} />
                       ) : (
                         <span key={p.id} style={sx("font:700 10px Montserrat;color:#fff;white-space:nowrap;")}>{p.name}</span>
                       )
