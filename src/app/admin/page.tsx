@@ -31,7 +31,7 @@ export default function AdminOverview() {
   const stats = [
     { label: "Мотоцикл", value: s.motos, href: "/admin/motorcycles" },
     { label: "Бараа / сэлбэг", value: s.gear, href: "/admin/gear" },
-    { label: "Event", value: s.events, href: "/admin/events" },
+    { label: "Biker Meeting", value: s.events, href: "/admin/meetings" },
     { label: "Захиалга", value: s.orders, href: "/admin/orders" },
     { label: "Хэрэглэгч", value: s.users, href: "/admin/users" },
   ];
@@ -41,7 +41,7 @@ export default function AdminOverview() {
       <div style={sx(CARD)}>
         <div style={sx("font:800 22px Montserrat;color:#fff;")}>Тавтай морил, Админ 🛠️</div>
         <div style={sx("font:400 14px Roboto;color:#8A8F98;margin-top:6px;")}>
-          Энд бүх зүйлийг (мотоцикл, бараа, Event, захиалга, хэрэглэгч, нүүрний зураг) удирдана. Supabase-тэй холбогдсон — өөрчлөлт хадгалагдана.
+          Энд бүх зүйлийг (мотоцикл, бараа, уулзалт, захиалга, хэрэглэгч, нүүрний зураг) удирдана. Supabase-тэй холбогдсон — өөрчлөлт хадгалагдана.
         </div>
       </div>
 

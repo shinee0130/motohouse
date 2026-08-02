@@ -15,17 +15,18 @@ const LABEL = "font:600 11px Montserrat;letter-spacing:.04em;color:#A3A3A3;margi
 const BTN = "background:#E10613;color:#fff;font:700 13px Montserrat;padding:11px 18px;border:none;border-radius:9px;cursor:pointer;";
 
 const isGiveaway = (t: string) => t.toUpperCase().includes("GIVEAWAY");
+const isMeeting = (t: string) => (t || "").toLowerCase().includes("meeting");
 
 type Form = { type: string; title: string; status: string; date: string; location: string; prize: string; image: string; description: string; winner: string; titleEn: string; descriptionEn: string; prizeEn: string };
 function toForm(e: EventItem): Form {
   return { type: e.type, title: e.title, status: e.status, date: e.date, location: e.location ?? "", prize: e.prize, image: e.image ?? "", description: e.description ?? "", winner: e.winner ?? "", titleEn: e.titleEn ?? "", descriptionEn: e.descriptionEn ?? "", prizeEn: e.prizeEn ?? "" };
 }
 
-export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
+export function EventsAdmin({ mode }: { mode: "meeting" | "giveaway" }) {
   const gv = mode === "giveaway";
-  const heading = gv ? "Giveaway" : "Events";
-  const newLabel = gv ? "+ Шинэ Giveaway" : "+ Шинэ Event";
-  const empty: Form = { type: gv ? "GIVEAWAY" : "RACE", title: "", status: "Upcoming", date: "", location: "", prize: "", image: "", description: "", winner: "", titleEn: "", descriptionEn: "", prizeEn: "" };
+  const heading = gv ? "Giveaway" : "Biker Meeting";
+  const newLabel = gv ? "+ Шинэ Giveaway" : "+ Шинэ уулзалт";
+  const empty: Form = { type: gv ? "GIVEAWAY" : "Meeting", title: "", status: "Upcoming", date: "", location: "", prize: "", image: "", description: "", winner: "", titleEn: "", descriptionEn: "", prizeEn: "" };
 
   const [flang, setFlang] = useState<"mn" | "en">("mn");
   const [list, setList] = useState<EventItem[]>([]);
@@ -48,7 +49,7 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
 
   const refresh = useCallback(async () => {
     const all = await getEvents();
-    setList(all.filter((e) => (gv ? isGiveaway(e.type) : !isGiveaway(e.type))));
+    setList(all.filter((e) => (gv ? isGiveaway(e.type) : isMeeting(e.type))));
   }, [gv]);
   useEffect(() => { void refresh(); }, [refresh]);
 
@@ -66,7 +67,7 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
   const confirm = useConfirm();
   const alert = useAlert();
   async function del(id: number) {
-    if (!(await confirm({ title: `Энэ ${gv ? "Giveaway" : "Event"}-ийг устгах уу?`, confirmLabel: "Устгах", danger: true }))) return;
+    if (!(await confirm({ title: `Энэ ${gv ? "Giveaway" : "уулзалт"}-ийг устгах уу?`, confirmLabel: "Устгах", danger: true }))) return;
     await deleteEvent(id);
     await refresh();
   }
@@ -122,7 +123,11 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
             </div>
           </div>
 
-          <div><label style={sx(LABEL)}>Төрөл</label><input value={f.type} onChange={(e) => setF({ ...f, type: e.target.value })} placeholder={gv ? "GIVEAWAY" : "RACE / RIDE / АЯЛАЛ"} style={sx(INPUT)} /></div>
+          {/* Уулзалт дээр төрөл нь тогтмол "Meeting" — гараар өөрчилбөл сайтын
+              Biker Meeting хэсгээс алга болно, тиймээс зөвхөн Giveaway-д харуулна. */}
+          {gv && (
+            <div><label style={sx(LABEL)}>Төрөл</label><input value={f.type} onChange={(e) => setF({ ...f, type: e.target.value })} placeholder="GIVEAWAY" style={sx(INPUT)} /></div>
+          )}
           <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Гарчиг * {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><input {...bind("title")} style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Төлөв</label>
             <Select value={f.status} onChange={(v) => setF({ ...f, status: v })} full bg="#050505" options={["Ongoing", "Upcoming", "Winner"].map((s) => ({ value: s, label: s }))} /></div>
@@ -173,7 +178,7 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
           )}
           </div>
         ))}
-        {list.length === 0 && <div style={sx("padding:30px;text-align:center;font:400 14px Roboto;color:#8A8F98;")}>Одоогоор {gv ? "Giveaway" : "Event"} алга.</div>}
+        {list.length === 0 && <div style={sx("padding:30px;text-align:center;font:400 14px Roboto;color:#8A8F98;")}>Одоогоор {gv ? "Giveaway" : "уулзалт"} алга.</div>}
       </div>
 
       {viewing && (

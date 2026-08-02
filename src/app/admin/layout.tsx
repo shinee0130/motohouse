@@ -12,7 +12,7 @@ const MENU = [
   { label: "Мотоцикл", href: "/admin/motorcycles" },
   { label: "Дагалдах хэрэгсэл", href: "/admin/gear" },
   { label: "Сэлбэг", href: "/admin/parts" },
-  { label: "Events", href: "/admin/events" },
+  { label: "Biker Meeting", href: "/admin/meetings" },
   { label: "Giveaway", href: "/admin/giveaway" },
   { label: "Аялал", href: "/admin/tours" },
   { label: "Аяллын маршрут", href: "/admin/routes" },
