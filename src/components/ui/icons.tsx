@@ -118,6 +118,16 @@ export function IconMap({ style }: { style?: CSSProperties }) {
   );
 }
 
+// Байршлын тэмдэглэгээ (газрын зургийн pin)
+export function IconPin({ style }: { style?: CSSProperties }) {
+  return (
+    <svg viewBox="0 0 24 24" style={base(style)}>
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
+
 export function IconRoute({ style }: { style?: CSSProperties }) {
   return (
     <svg viewBox="0 0 24 24" style={base(style)}>

@@ -4,6 +4,7 @@ import { sx } from "@/lib/ui/sx";
 import { getEvent, getEventMedia, getEventPartners } from "@/lib/db/queries";
 import { MeetingGallery } from "@/components/meetings/MeetingGallery";
 import { MeetingPartners } from "@/components/meetings/MeetingPartners";
+import { IconPin } from "@/components/ui/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -22,8 +23,14 @@ export default async function MeetingDetailPage({ params }: PageProps<"/meetings
 
       <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.2em;color:#E10613;margin-top:20px;")}>BIKER MEETING</div>
       <h1 style={sx("font:800 clamp(28px,4.4vw,44px) Montserrat;color:#fff;margin-top:8px;")}>{e.title.trim()}</h1>
-      <div style={sx("font:600 14px Montserrat;color:#8A8F98;margin-top:8px;")}>
-        {e.date}{e.location ? ` · ${e.location}` : ""}
+      <div style={sx("display:flex;align-items:center;flex-wrap:wrap;gap:6px 14px;font:600 14px Montserrat;color:#8A8F98;margin-top:8px;")}>
+        <span>{e.date}</span>
+        {e.location && (
+          <span style={sx("display:inline-flex;align-items:center;gap:6px;")}>
+            <IconPin style={{ width: 16, height: 16, strokeWidth: 2, color: "#E10613" }} />
+            {e.location}
+          </span>
+        )}
       </div>
 
       <MeetingPartners partners={partners} />

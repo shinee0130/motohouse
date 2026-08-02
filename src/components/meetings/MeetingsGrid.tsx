@@ -7,6 +7,7 @@ import { type EventItem } from "@/lib/db/data";
 import type { EventPartner } from "@/lib/db/queries";
 import { useI18n } from "@/lib/i18n";
 import { imgSrc } from "@/lib/ui/img";
+import { IconPin } from "@/components/ui/icons";
 
 // Biker Meeting-үүдийн жагсаалт. Уулзалт бүр өөрийн зураг/видеоны галерейтай.
 export function MeetingsGrid({
@@ -56,8 +57,14 @@ export function MeetingsGrid({
                 )}
               </div>
               <div style={{ padding: "16px 18px 18px" }}>
-                <div style={sx("font:500 11px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;")}>
-                  {m.date}{m.location ? ` · ${m.location}` : ""}
+                <div style={sx("display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;font:500 11px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;")}>
+                  <span>{m.date}</span>
+                  {m.location && (
+                    <span style={sx("display:inline-flex;align-items:center;gap:4px;color:#A3A3A3;")}>
+                      <IconPin style={{ width: 13, height: 13, strokeWidth: 2, color: "#E10613" }} />
+                      {m.location}
+                    </span>
+                  )}
                 </div>
                 <div style={sx("font:800 18px Montserrat;color:#fff;margin-top:6px;")}>{loc(m.title, m.titleEn).trim()}</div>
                 {/* Хамтрагчид — гарчигийн доор. Логотой нь логогоор, эс бол нэрээр. */}
