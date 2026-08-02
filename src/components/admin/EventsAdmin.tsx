@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { Select } from "@/components/ui/Select";
 import { type EventItem } from "@/lib/db/data";
 import { getEvents, getParticipants, type Participant } from "@/lib/db/queries";
@@ -123,7 +124,7 @@ export function EventsAdmin({ mode }: { mode: "meeting" | "giveaway" }) {
             <div style={sx("position:relative;width:160px;height:100px;border-radius:10px;overflow:hidden;border:1px solid #262626;background:#050505;flex:none;")}>
               {f.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={f.image} alt="" style={sx("width:100%;height:100%;object-fit:cover;")} />
+                <img {...imgSrc(f.image, 420)} alt="" style={sx("width:100%;height:100%;object-fit:cover;")} />
               ) : (
                 <div style={sx("width:100%;height:100%;display:flex;align-items:center;justify-content:center;font:500 11px Roboto;color:#555;")}>Poster алга</div>
               )}
@@ -167,7 +168,7 @@ export function EventsAdmin({ mode }: { mode: "meeting" | "giveaway" }) {
               <div style={sx("width:56px;height:56px;border-radius:9px;overflow:hidden;border:1px solid #262626;background:#050505;flex:none;")}>
                 {e.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={e.image} alt="" style={sx("width:100%;height:100%;object-fit:cover;")} />
+                  <img {...imgSrc(e.image, 96)} alt="" style={sx("width:100%;height:100%;object-fit:cover;")} />
                 ) : (
                   <div style={sx("width:100%;height:100%;display:flex;align-items:center;justify-content:center;font:700 18px Montserrat;color:#333;")}>★</div>
                 )}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { getSettingsMap, updateSetting, uploadSiteImage, deleteSiteFile } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
 import { useToast } from "@/lib/ui/toast";
@@ -214,7 +215,7 @@ export default function AdminHome() {
             <div style={{ position: "relative", height: 150, background: "#0d0d0f" }}>
               {src && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={src} alt={s.label} style={sx(`position:absolute;inset:0;width:100%;height:100%;object-fit:cover;${hidden ? "opacity:.3;filter:grayscale(1);" : ""}`)} />
+                <img {...imgSrc(src, 420)} alt={s.label} style={sx(`position:absolute;inset:0;width:100%;height:100%;object-fit:cover;${hidden ? "opacity:.3;filter:grayscale(1);" : ""}`)} />
               )}
               {hidden && <span style={sx("position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);border:1px solid #444;color:#C8C8C8;font:700 10px Montserrat;letter-spacing:.06em;padding:5px 9px;border-radius:6px;")}>НУУГДСАН</span>}
             </div>

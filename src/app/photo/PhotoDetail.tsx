@@ -7,6 +7,7 @@ import { sx } from "@/lib/ui/sx";
 import { useI18n } from "@/lib/i18n";
 import type { Photographer } from "@/lib/db/queries";
 import { PhotoBookingForm } from "./PhotoBookingForm";
+import { imgSrc } from "@/lib/ui/img";
 
 const SOCIALS: { key: keyof Photographer; label: string }[] = [
   { key: "instagram", label: "Instagram" },
@@ -69,7 +70,7 @@ export function PhotoDetail({ p }: { p: Photographer }) {
           <div style={sx("width:104px;height:104px;border-radius:20px;overflow:hidden;flex-shrink:0;background:#0b0b0d;border:1px solid #262626;")}>
             {p.avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={p.avatar} alt={loc(p.name, p.nameEn)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img {...imgSrc(p.avatar, 160)} alt={loc(p.name, p.nameEn)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             ) : (
               <div style={sx("width:100%;height:100%;display:flex;align-items:center;justify-content:center;font:800 40px Montserrat;color:#E10613;")}>{initial}</div>
             )}
@@ -116,7 +117,7 @@ export function PhotoDetail({ p }: { p: Photographer }) {
                       style={{ padding: 0, cursor: "pointer", ...sx("position:relative;display:block;aspect-ratio:9/16;max-height:340px;border-radius:14px;overflow:hidden;background:#0b0b0d;border:1px solid #262626;width:100%;") }}>
                       {w.thumb ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={w.thumb} alt={w.caption ? loc(w.caption, w.captionEn) : "reel"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        <img {...imgSrc(w.thumb, 300)} alt={w.caption ? loc(w.caption, w.captionEn) : "reel"} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       ) : isFile ? (
                         // видео файлын 1 сек дэх frame-ийг урьдчилан харуулна
                         <video src={`${w.url}#t=1`} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
@@ -141,7 +142,7 @@ export function PhotoDetail({ p }: { p: Photographer }) {
                   <button key={w.id} type="button" onClick={() => setLb(i)} aria-label={t("Томоор харах")}
                     style={{ padding: 0, border: "1px solid #262626", borderRadius: 14, overflow: "hidden", background: "#0b0b0d", cursor: "zoom-in", display: "block" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={w.url} alt={w.caption ? loc(w.caption, w.captionEn) : "photo"}
+                    <img {...imgSrc(w.url, 400)} alt={w.caption ? loc(w.caption, w.captionEn) : "photo"}
                       style={{ width: "100%", aspectRatio: "4 / 3", objectFit: "cover", display: "block" }} />
                   </button>
                 ))}
@@ -165,7 +166,7 @@ export function PhotoDetail({ p }: { p: Photographer }) {
               </>
             )}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={photos[lb].url} alt="" onClick={(e) => e.stopPropagation()}
+            <img {...imgSrc(photos[lb].url, 1280)} alt="" onClick={(e) => e.stopPropagation()}
               style={{ maxWidth: "96vw", maxHeight: "94vh", width: "auto", height: "auto", objectFit: "contain", borderRadius: 8 }} />
             {photos[lb].caption && <div style={sx("position:absolute;left:0;right:0;bottom:14px;text-align:center;font:600 14px Roboto;color:#fff;pointer-events:none;")}>{loc(photos[lb].caption as string, photos[lb].captionEn)}</div>}
           </div>,

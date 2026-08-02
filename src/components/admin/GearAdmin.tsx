@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { Select } from "@/components/ui/Select";
 import { fmt, isPart, PARTS_CATS, GENDERS, type GearItem } from "@/lib/db/data";
 import { getGearAll } from "@/lib/db/queries";
@@ -356,7 +357,7 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
                     }}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={src} alt="" draggable={false}
+                    <img {...imgSrc(src, 96)} alt="" draggable={false}
                       style={sx("width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;display:block;pointer-events:none;")} />
                     {/* Дугаар нь ӨНГӨ БҮРИЙН ДОТОР. Тухайн өнгийн 1-р зураг нь
                         сайт дээр эхэлж харагдана — тиймээс улаанаар онцолно. */}
@@ -412,7 +413,7 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
             <div className="mh-adm-row-main" style={{ display: "flex", alignItems: "center", gap: 12 }}>
               {g.images && g.images[0] && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={g.images[0]} alt="" style={sx("width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;flex-shrink:0;")} />
+                <img {...imgSrc(g.images[0], 46)} alt="" style={sx("width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;flex-shrink:0;")} />
               )}
               <div style={{ minWidth: 0 }}>
               <div className="mh-adm-clip" title={g.name} style={sx("font:700 15px Montserrat;color:#fff;")}>{g.name} {g.bestSeller && <span style={sx("font:700 9px Montserrat;color:#E10613;")}>★</span>}</div>

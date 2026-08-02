@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { Slot } from "@/components/ui/Slot";
 import { badge, statusLabel } from "@/lib/db/data";
 import { useI18n } from "@/lib/i18n";
@@ -18,7 +19,7 @@ export function MotoGallery({ images, status, video }: { images?: string[]; stat
       <div style={sx("position:relative;border-radius:18px;overflow:hidden;border:1px solid #262626;aspect-ratio:4/3;background:#0d0d0f;")}>
         {has ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={main!} alt="" style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
+          <img {...imgSrc(main!, 1080)} alt="" style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
         ) : (
           <Slot label={t("Мотоцикл том зураг")} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
         )}
@@ -37,7 +38,7 @@ export function MotoGallery({ images, status, video }: { images?: string[]; stat
                 )}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt="" style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+                <img {...imgSrc(src, 120)} alt="" style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
               </button>
             ))
           : ["Зураг 2", "Зураг 3", "Зураг 4", "Зураг 5"].map((t) => (

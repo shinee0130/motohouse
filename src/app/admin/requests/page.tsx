@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { useToast } from "@/lib/ui/toast";
 import { Select } from "@/components/ui/Select";
 import { getOrderRequests, type OrderRequest } from "@/lib/db/queries";
@@ -131,7 +132,7 @@ export default function AdminRequests() {
               {r.image && (
                 <a href={r.image} target="_blank" rel="noreferrer">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={r.image} alt="" style={sx("width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid #262626;flex-shrink:0;")} />
+                  <img {...imgSrc(r.image, 80)} alt="" style={sx("width:80px;height:80px;object-fit:cover;border-radius:10px;border:1px solid #262626;flex-shrink:0;")} />
                 </a>
               )}
               <div style={{ minWidth: 220, flex: 1 }}>

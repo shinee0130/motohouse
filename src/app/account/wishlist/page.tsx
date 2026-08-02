@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { Slot } from "@/components/ui/Slot";
 import { statusLabel, type GearItem, type Moto } from "@/lib/db/data";
 import { Price } from "@/lib/reference/currency";
@@ -69,7 +70,7 @@ function SavedCard({ href, img, brand, name, price, tag, onRemove, cover }: {
         <div style={{ position: "relative", height: 160, background: cover ? "#0d0d0f" : "#fff" }}>
           {img ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={img} alt={name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+            <img {...imgSrc(img, 300)} alt={name} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
           ) : (
             <Slot label={t("Зураг")} light={!cover} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
           )}

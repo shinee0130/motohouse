@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { useAuth } from "@/lib/auth/auth";
 import { useI18n } from "@/lib/i18n";
 import { getMyOrderRequests, type OrderRequest } from "@/lib/db/queries";
@@ -38,7 +39,7 @@ export default function MyRequestsPage() {
             <div style={{ display: "flex", alignItems: "flex-start", gap: 14, flexWrap: "wrap" }}>
               {r.image && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={r.image} alt="" style={sx("width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid #262626;flex-shrink:0;")} />
+                <img {...imgSrc(r.image, 64)} alt="" style={sx("width:64px;height:64px;object-fit:cover;border-radius:10px;border:1px solid #262626;flex-shrink:0;")} />
               )}
               <div style={{ minWidth: 180, flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>

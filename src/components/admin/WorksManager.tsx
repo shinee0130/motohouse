@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import type { PhotographerWork } from "@/lib/db/queries";
 import { addPhotographerWork, deletePhotographerWork, uploadPhotographerImage } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
@@ -84,10 +85,10 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
             <div key={w.id} style={sx("position:relative;border-radius:10px;overflow:hidden;aspect-ratio:1;background:#0b0b0d;border:1px solid #262626;")}>
               {w.kind === "photo" ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={w.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img {...imgSrc(w.url, 220)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : w.thumb ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={w.thumb} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <img {...imgSrc(w.thumb, 220)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : isVideoUrl(w.url) ? (
                 <video src={`${w.url}#t=1`} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
@@ -118,7 +119,7 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
                 <div key={i} style={sx("position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;background:#0b0b0d;border:1px solid #333;")}>
                   {p.kind === "photo" ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img {...imgSrc(p.url, 220)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   ) : (
                     <video src={`${p.url}#t=1`} muted playsInline preload="metadata" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   )}

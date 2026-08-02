@@ -4,6 +4,7 @@ import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
 import { useI18n } from "@/lib/i18n";
 import type { Photographer } from "@/lib/db/queries";
+import { imgSrc } from "@/lib/ui/img";
 
 export function PhotoGrid({ photographers }: { photographers: Photographer[] }) {
   const { t, loc } = useI18n();
@@ -21,7 +22,7 @@ export function PhotoGrid({ photographers }: { photographers: Photographer[] }) 
             style={sx("position:relative;display:block;border-radius:16px;overflow:hidden;background:#0b0b0d;border:1px solid #262626;text-decoration:none;aspect-ratio:3/4;")}>
             {p.avatar ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={p.avatar} alt={loc(p.name, p.nameEn)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+              <img {...imgSrc(p.avatar, 300)} alt={loc(p.name, p.nameEn)} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
             ) : (
               <div style={sx("position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:800 48px Montserrat;color:#2c2c30;background:radial-gradient(circle at 50% 38%,rgba(225,6,19,.14),transparent);")}>
                 {initial}

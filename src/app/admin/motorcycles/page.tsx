@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { Select } from "@/components/ui/Select";
 import { fmt, statusLabel, MOTO_STATUS_LABEL, type Moto, type MotoStatus } from "@/lib/db/data";
 import { getMotos } from "@/lib/db/queries";
@@ -212,7 +213,7 @@ export default function AdminMotorcycles() {
               {f.images.map((src, i) => (
                 <div key={src + i} style={{ position: "relative", width: 84, height: 84 }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="" style={sx("width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #333;")} />
+                  <img {...imgSrc(src, 84)} alt="" style={sx("width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #333;")} />
                   <button type="button" onClick={() => setF((c) => ({ ...c, images: c.images.filter((_, x) => x !== i) }))}
                     style={sx("position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;background:#E10613;color:#fff;border:none;cursor:pointer;font:700 12px Montserrat;line-height:1;")}>×</button>
                 </div>
@@ -258,7 +259,7 @@ export default function AdminMotorcycles() {
             <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 160 }}>
               {m.images && m.images[0] && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={m.images[0]} alt="" style={sx("width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid #333;flex-shrink:0;")} />
+                <img {...imgSrc(m.images[0], 46)} alt="" style={sx("width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid #333;flex-shrink:0;")} />
               )}
               <div>
                 <div style={sx("font:700 15px Montserrat;color:#fff;")}>{m.brand} {m.model} {m.featured && <span style={sx("font:700 9px Montserrat;color:#E10613;")}>★</span>}</div>

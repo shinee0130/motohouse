@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { getEventMedia, type EventMedia } from "@/lib/db/queries";
 import { addEventMedia, updateEventMedia, deleteEventMedia, uploadEventMedia } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
@@ -120,7 +121,7 @@ export function EventMediaManager({ eventId, title }: { eventId: number; title: 
                     style={sx("width:96px;height:96px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#000;display:block;pointer-events:none;")} />
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={m.url} alt="" draggable={false}
+                  <img {...imgSrc(m.url, 96)} alt="" draggable={false}
                     style={sx("width:96px;height:96px;object-fit:cover;border-radius:8px;border:1px solid #333;background:#fff;display:block;pointer-events:none;")} />
                 )}
                 <span style={sx(`position:absolute;top:4px;left:4px;min-width:20px;height:20px;padding:0 5px;border-radius:6px;color:#fff;font:700 11px Montserrat;display:flex;align-items:center;justify-content:center;pointer-events:none;background:${i === 0 ? "#E10613" : "rgba(5,5,5,.78)"};`)}>

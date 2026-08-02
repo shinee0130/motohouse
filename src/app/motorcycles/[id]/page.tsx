@@ -8,6 +8,7 @@ import { statusLabel } from "@/lib/db/data";
 import { Price } from "@/lib/reference/currency";
 import { getMotos, similarOf } from "@/lib/db/queries";
 import { T, Loc } from "@/lib/i18n";
+import { imgSrc } from "@/lib/ui/img";
 import { MotoExtras } from "@/components/motorcycles/MotoExtras";
 
 // Admin засвар шууд харагдахаар — DB-ээс амьд уншина
@@ -169,7 +170,7 @@ export default async function DetailPage({ params }: PageProps<"/motorcycles/[id
                 <div style={{ position: "relative", height: 150, background: "#0d0d0f" }}>
                   {s.images && s.images.length > 0 ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={s.images[0]} alt={`${s.brand} ${s.model}`} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
+                    <img {...imgSrc(s.images[0], 300)} alt={`${s.brand} ${s.model}`} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
                   ) : (
                     <Slot label="Image" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                   )}

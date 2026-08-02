@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { sx } from "@/lib/ui/sx";
 import { Slot } from "@/components/ui/Slot";
+import { imgSrc } from "@/lib/ui/img";
 import { badge } from "@/lib/db/data";
 import { getEvent, getParticipants } from "@/lib/db/queries";
 import { EventParticipate } from "@/components/events/EventParticipate";
@@ -31,7 +32,7 @@ export default async function GiveawayDetailPage({ params }: PageProps<"/giveawa
       <div style={sx("position:relative;border-radius:18px;overflow:hidden;border:1px solid #262626;margin-top:16px;background:#0d0d0f;display:flex;justify-content:center;align-items:center;min-height:220px;")}>
         {e.image ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={e.image} alt={e.title} style={{ display: "block", maxWidth: "100%", maxHeight: "78vh", width: "auto", height: "auto" }} />
+          <img {...imgSrc(e.image, 920)} alt={e.title} style={{ display: "block", maxWidth: "100%", maxHeight: "78vh", width: "auto", height: "auto" }} />
         ) : (
           <Slot label="Event poster" style={{ width: "100%", aspectRatio: "16/10" }} />
         )}

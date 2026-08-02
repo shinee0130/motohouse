@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { getEventPartners, type EventPartner } from "@/lib/db/queries";
 import { addEventPartner, updateEventPartner, deleteEventPartner, uploadEventMedia } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
@@ -82,7 +83,7 @@ export function EventPartnersManager({ eventId }: { eventId: number }) {
               <div style={sx("width:64px;height:40px;flex:none;border-radius:6px;background:#111113;border:1px solid #262626;display:flex;align-items:center;justify-content:center;overflow:hidden;")}>
                 {p.logo ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.logo} alt="" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }} />
+                  <img {...imgSrc(p.logo, 128)} alt="" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain", display: "block" }} />
                 ) : (
                   <span style={sx("font:600 9px Roboto;color:#4b4b50;")}>лого алга</span>
                 )}

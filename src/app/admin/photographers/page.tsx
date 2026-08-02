@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { getAllPhotographers, getPhotographer, type Photographer, type PhotographerWork, type PhotographerService } from "@/lib/db/queries";
 import { createPhotographer, updatePhotographer, deletePhotographer, uploadPhotographerImage, linkPhotographer } from "@/lib/db/admin";
 import { WorksManager } from "@/components/admin/WorksManager";
@@ -138,7 +139,7 @@ export default function AdminPhotographers() {
               <div style={sx("width:46px;height:46px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#0b0b0d;border:1px solid #262626;display:flex;align-items:center;justify-content:center;font:800 16px Montserrat;color:#E10613;")}>
                 {p.avatar ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.avatar} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img {...imgSrc(p.avatar, 96)} alt={p.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 ) : (p.name.replace(/\D+/g, "") || "📸")}
               </div>
               <div style={{ flex: 1, minWidth: 140 }}>
@@ -196,7 +197,7 @@ export default function AdminPhotographers() {
                 <div style={sx("width:64px;height:64px;border-radius:12px;overflow:hidden;background:#0b0b0d;border:1px solid #262626;flex-shrink:0;")}>
                   {f.avatar && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={f.avatar} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                    <img {...imgSrc(f.avatar, 96)} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   )}
                 </div>
                 <label style={sx(GHOST + "display:inline-block;")}>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { sx } from "@/lib/ui/sx";
+import { imgSrc } from "@/lib/ui/img";
 import { useAuth } from "@/lib/auth/auth";
 import { getMyPhotographer, getPhotographer, type Photographer, type PhotographerService } from "@/lib/db/queries";
 import { updatePhotographer, uploadPhotographerImage, getMyPhotoBookings, updatePhotoBookingStatus, type PhotoBooking } from "@/lib/db/admin";
@@ -149,7 +150,7 @@ export default function StudioPage() {
           <div style={sx("width:54px;height:54px;border-radius:12px;overflow:hidden;background:#0b0b0d;border:1px solid #262626;flex-shrink:0;")}>
             {me.avatar && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={me.avatar} alt={me.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img {...imgSrc(me.avatar, 160)} alt={me.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             )}
           </div>
           <div>
@@ -205,7 +206,7 @@ export default function StudioPage() {
                   <div style={sx("width:64px;height:64px;border-radius:12px;overflow:hidden;background:#0b0b0d;border:1px solid #262626;flex-shrink:0;")}>
                     {f.avatar && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={f.avatar} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <img {...imgSrc(f.avatar, 96)} alt="avatar" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     )}
                   </div>
                   <label style={sx(GHOST + "display:inline-block;")}>
