@@ -72,13 +72,13 @@ export function MeetingsGrid({
                   <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: 10 }}>
                     {partners[m.id].slice(0, 5).map((p) => (
                       <span key={p.id} title={`${p.name}${p.role ? ` · ${t(p.role)}` : ""}`}
-                        style={sx("background:#0B0B0D;border:1px solid #262626;border-radius:7px;padding:5px 9px;height:30px;display:flex;align-items:center;justify-content:center;")}>
+                        style={sx("background:#0B0B0D;border:1px solid #262626;border-radius:8px;padding:6px 8px;width:88px;height:42px;display:flex;align-items:center;justify-content:center;overflow:hidden;")}>
                         {p.logo ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img {...imgSrc(p.logo, 96)} alt={p.name}
-                            style={{ maxHeight: 18, maxWidth: 70, objectFit: "contain", display: "block" }} />
+                          <img {...imgSrc(p.logo, 176)} alt={p.name}
+                            style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
                         ) : (
-                          <span style={sx("font:700 10px Montserrat;letter-spacing:.04em;color:#A3A3A3;white-space:nowrap;")}>{p.name}</span>
+                          <span style={sx("font:700 10px Montserrat;letter-spacing:.04em;color:#A3A3A3;text-align:center;line-height:1.2;")}>{p.name}</span>
                         )}
                       </span>
                     ))}
