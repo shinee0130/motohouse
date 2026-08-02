@@ -8,6 +8,7 @@ import { getEvents, getParticipants, type Participant } from "@/lib/db/queries";
 import { createEvent, updateEvent, deleteEvent, uploadEvent } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
 import { EventMediaManager } from "@/components/admin/EventMediaManager";
+import { EventPartnersManager } from "@/components/admin/EventPartnersManager";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:11px 13px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
 const LABEL = "font:600 11px Montserrat;letter-spacing:.04em;color:#A3A3A3;margin-bottom:6px;display:block;";
@@ -165,6 +166,7 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
           </div>
           {gallery === e.id && (
             <div style={{ padding: "0 18px 18px" }}>
+              <EventPartnersManager eventId={e.id} />
               <EventMediaManager eventId={e.id} title={e.title} />
             </div>
           )}

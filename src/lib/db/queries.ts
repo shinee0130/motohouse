@@ -111,6 +111,21 @@ export async function getEventMediaCounts(): Promise<Record<number, number>> {
   return o;
 }
 
+// ---- Event / Meeting хамтрагч байгууллагууд ----
+export interface EventPartner {
+  id: number; eventId: number; name: string;
+  role?: string; logo?: string; url?: string; sort: number;
+}
+export async function getEventPartners(eventId: number): Promise<EventPartner[]> {
+  const { data } = await supabase.from("event_partners").select("*")
+    .eq("event_id", eventId).order("sort").order("id");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (data ?? []).map((r: any) => ({
+    id: r.id, eventId: r.event_id, name: r.name,
+    role: r.role ?? undefined, logo: r.logo ?? undefined, url: r.url ?? undefined, sort: r.sort ?? 0,
+  }));
+}
+
 // ---- Event participants (оролцогчид) ----
 export interface Participant { name: string; user_phone: string; created_at?: string }
 export async function getParticipants(eventId: number): Promise<Participant[]> {

@@ -22,8 +22,8 @@ export function MeetingsGrid({
       <h1 style={sx("font:800 clamp(28px,4.4vw,44px) Montserrat;color:#fff;text-transform:uppercase;margin-top:8px;")}>
         Biker Meeting
       </h1>
-      <p style={sx("font:400 15px/1.7 Roboto;color:#8A8F98;margin-top:10px;max-width:640px;")}>
-        {t("Монголын мото соёлыг хамтдаа бүтээж буй уулзалтууд. Өнгөрсөн уулзалтын зураг, бичлэгүүдийг эндээс үзнэ үү.")}
+      <p style={sx("font:400 15px/1.7 Roboto;color:#8A8F98;margin-top:10px;max-width:780px;")}>
+        {t("Спорт мотоцикл, мото клубүүд, бие даасан райдерууд, мото сонирхогчид нэг дор уулзаж, танилцаж, шинэ хүмүүстэй холбогдон, мото соёлоо хамтдаа бүтээх хамгийн том community gathering-д таныг урьж байна.")}
       </p>
 
       {meetings.length === 0 ? (

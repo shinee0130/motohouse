@@ -335,8 +335,16 @@ export const EN: Record<string, string> = {
   "Хэмжээ": "Size",
   "Хэмжээний заавар": "Size guide",
   // Biker Meeting
-  "Монголын мото соёлыг хамтдаа бүтээж буй уулзалтууд. Өнгөрсөн уулзалтын зураг, бичлэгүүдийг эндээс үзнэ үү.":
-    "Rider meet-ups building Mongolia's moto culture together. Browse photos and videos from past meetings here.",
+  "Спорт мотоцикл, мото клубүүд, бие даасан райдерууд, мото сонирхогчид нэг дор уулзаж, танилцаж, шинэ хүмүүстэй холбогдон, мото соёлоо хамтдаа бүтээх хамгийн том community gathering-д таныг урьж байна.":
+    "Sport bikes, moto clubs, independent riders and enthusiasts all in one place — meet, connect with new people, and build our moto culture together at the biggest community gathering. You're invited.",
+  "Хамтрагчид": "Partners",
+  "Хамтрагч": "Partner",
+  // Хамтрагчийн түгээмэл үүргүүд (админ дээрх сонголтууд). Гараар өөр үүрэг
+  // бичвэл толинд байхгүй тул монголоороо харагдана.
+  "Зохион байгуулагч": "Organizer",
+  "Албан ёсны хамтрагч": "Official partner",
+  "Дэмжигч хамтрагч": "Featured partner",
+  "Медиа хамтрагч": "Media partner",
   "Одоогоор уулзалт бүртгэгдээгүй байна. Тун удахгүй зарлана!": "No meetings yet. New dates will be announced soon.",
   "Зураг, бичлэг": "Photos & videos",
   "Бичлэг": "Video",

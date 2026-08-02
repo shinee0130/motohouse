@@ -114,6 +114,28 @@ export function uploadEventMedia(file: File): Promise<string> {
   return uploadTo("events", file, file.name.split(".").pop() || undefined);
 }
 
+// ===== Event / Meeting хамтрагчид =====
+export async function addEventPartner(p: {
+  eventId: number; name: string; role?: string; logo?: string; url?: string; sort?: number;
+}) {
+  const { error } = await supabase.from("event_partners").insert({
+    event_id: p.eventId, name: p.name, role: p.role || null,
+    logo: p.logo || null, url: p.url || null, sort: p.sort ?? 0,
+  });
+  if (error) throw error;
+}
+export async function updateEventPartner(id: number, patch: {
+  name?: string; role?: string | null; logo?: string | null; url?: string | null; sort?: number;
+}) {
+  const { error } = await supabase.from("event_partners").update(patch).eq("id", id);
+  if (error) throw error;
+}
+export async function deleteEventPartner(id: number, logo?: string) {
+  const { error } = await supabase.from("event_partners").delete().eq("id", id);
+  if (error) throw error;
+  if (logo) { try { await deleteSiteFile(logo); } catch { /* мөр аль хэдийн устсан */ } }
+}
+
 // ===== Orders =====
 export async function updateOrderTracking(id: string, trackingNumber: string) {
   const { error } = await supabase.from("orders").update({ tracking_number: trackingNumber.trim() || null }).eq("id", id);
