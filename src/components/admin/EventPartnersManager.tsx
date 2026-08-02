@@ -5,6 +5,7 @@ import { sx } from "@/lib/ui/sx";
 import { getEventPartners, type EventPartner } from "@/lib/db/queries";
 import { addEventPartner, updateEventPartner, deleteEventPartner, uploadEventMedia } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
+import { useToast } from "@/lib/ui/toast";
 
 // Түгээмэл үүргүүд — сонгоно, эсвэл өөрөө бичнэ.
 const ROLES = ["Зохион байгуулагч", "Албан ёсны хамтрагч", "Дэмжигч хамтрагч", "Медиа хамтрагч"];
@@ -22,6 +23,8 @@ export function EventPartnersManager({ eventId }: { eventId: number }) {
   const refresh = useCallback(async () => setList(await getEventPartners(eventId)), [eventId]);
   useEffect(() => { void refresh(); }, [refresh]);
 
+  const toast = useToast();
+
   async function add() {
     const v = name.trim();
     if (!v) return;
@@ -30,6 +33,7 @@ export function EventPartnersManager({ eventId }: { eventId: number }) {
       await addEventPartner({ eventId, name: v, role: role.trim(), sort: list.length });
       setName("");
       await refresh();
+      toast(`“${v}” нэмэгдлээ`);
     } catch (e) {
       await alert({ title: "Нэмэхэд алдаа гарлаа", message: e instanceof Error ? e.message : String(e), danger: true });
     } finally { setBusy(false); }
@@ -45,6 +49,7 @@ export function EventPartnersManager({ eventId }: { eventId: number }) {
       await updateEventPartner(p.id, { logo: url });
       if (prev) { try { const { deleteSiteFile } = await import("@/lib/db/admin"); await deleteSiteFile(prev); } catch { /* хуучин файл үлдсэн ч гол ажил бүтсэн */ } }
       await refresh();
+      toast(prev ? "Лого амжилттай солигдлоо" : "Лого амжилттай орлоо");
     } catch (e) {
       await alert({ title: "Лого оруулахад алдаа гарлаа", message: e instanceof Error ? e.message : String(e), danger: true });
     } finally { setBusy(false); }
@@ -53,8 +58,13 @@ export function EventPartnersManager({ eventId }: { eventId: number }) {
   async function remove(p: EventPartner) {
     const ok = await confirm({ title: `“${p.name}”-г устгах уу?`, confirmLabel: "Устгах", danger: true });
     if (!ok) return;
-    await deleteEventPartner(p.id, p.logo);
-    await refresh();
+    try {
+      await deleteEventPartner(p.id, p.logo);
+      await refresh();
+      toast("Устгагдлаа");
+    } catch (e) {
+      await alert({ title: "Устгахад алдаа гарлаа", message: e instanceof Error ? e.message : String(e), danger: true });
+    }
   }
 
   return (
@@ -78,13 +88,13 @@ export function EventPartnersManager({ eventId }: { eventId: number }) {
                 )}
               </div>
               <input defaultValue={p.name} placeholder="Нэр"
-                onBlur={(e) => { if (e.target.value.trim() && e.target.value !== p.name) void updateEventPartner(p.id, { name: e.target.value.trim() }).then(refresh); }}
+                onBlur={(e) => { if (e.target.value.trim() && e.target.value !== p.name) void updateEventPartner(p.id, { name: e.target.value.trim() }).then(refresh).then(() => toast("Хадгалагдлаа")); }}
                 style={sx(INPUT + "flex:1;min-width:140px;")} />
               <input defaultValue={p.role ?? ""} placeholder="Үүрэг" list="mh-partner-roles"
-                onBlur={(e) => { if (e.target.value !== (p.role ?? "")) void updateEventPartner(p.id, { role: e.target.value.trim() || null }).then(refresh); }}
+                onBlur={(e) => { if (e.target.value !== (p.role ?? "")) void updateEventPartner(p.id, { role: e.target.value.trim() || null }).then(refresh).then(() => toast("Хадгалагдлаа")); }}
                 style={sx(INPUT + "flex:1;min-width:140px;")} />
               <input defaultValue={p.url ?? ""} placeholder="Холбоос (сонгох)"
-                onBlur={(e) => { if (e.target.value !== (p.url ?? "")) void updateEventPartner(p.id, { url: e.target.value.trim() || null }).then(refresh); }}
+                onBlur={(e) => { if (e.target.value !== (p.url ?? "")) void updateEventPartner(p.id, { url: e.target.value.trim() || null }).then(refresh).then(() => toast("Хадгалагдлаа")); }}
                 style={sx(INPUT + "flex:1;min-width:140px;")} />
               <label style={sx(`cursor:pointer;background:#1a1a1d;border:1px solid #333;color:#fff;font:600 11px Montserrat;padding:8px 12px;border-radius:8px;white-space:nowrap;${busy ? "opacity:.6;" : ""}`)}>
                 {p.logo ? "Лого солих" : "Лого"}

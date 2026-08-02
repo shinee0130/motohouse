@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { useToast } from "@/lib/ui/toast";
 import { Select } from "@/components/ui/Select";
 import { fmt } from "@/lib/db/data";
 import { orderBadge, paymentBadge, paymentLabel, isInternational, type Order } from "@/lib/commerce/account";
@@ -31,15 +32,29 @@ export default function AdminOrders() {
   async function refresh() { setList(await getOrders()); setLoaded(true); }
   useEffect(() => { refresh(); }, []);
 
+  const toast = useToast();
+
   async function changeStatus(id: string, status: Order["status"]) {
     setList((l) => l.map((o) => (o.id === id ? { ...o, status } : o))); // шуурхай UI
-    await updateOrderStatus(id, status);
+    try {
+      await updateOrderStatus(id, status);
+      toast(`Төлөв "${status}" болж хадгалагдлаа`);
+    } catch (e) {
+      toast("Хадгалж чадсангүй: " + (e instanceof Error ? e.message : String(e)), "err");
+      await refresh();
+    }
   }
   async function markDelivered(id: string) { await changeStatus(id, "Хүргэгдсэн"); }
 
   async function saveTracking(id: string, v: string) {
     setList((l) => l.map((o) => (o.id === id ? { ...o, trackingNumber: v } : o)));
-    await updateOrderTracking(id, v);
+    try {
+      await updateOrderTracking(id, v);
+      toast("Хүргэлтийн дугаар хадгалагдлаа");
+    } catch (e) {
+      toast("Хадгалж чадсангүй: " + (e instanceof Error ? e.message : String(e)), "err");
+      await refresh();
+    }
   }
 
   const shown = useMemo(() => {

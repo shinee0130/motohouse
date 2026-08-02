@@ -7,6 +7,7 @@ import { fmt } from "@/lib/db/data";
 import { getTours, getTourBookings, type Tour, type TourBooking } from "@/lib/db/queries";
 import { createTour, updateTour, deleteTour, uploadTourImage, updateTourBookingStatus } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
+import { useToast } from "@/lib/ui/toast";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:11px 13px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
 const LABEL = "font:600 11px Montserrat;letter-spacing:.04em;color:#A3A3A3;margin-bottom:6px;display:block;";
@@ -60,6 +61,8 @@ export default function AdminTours() {
   }
   useEffect(() => { refresh(); }, []);
 
+  const toast = useToast();
+
   async function save(e: React.FormEvent) {
     e.preventDefault();
     if (!f.title.trim()) return;
@@ -72,20 +75,29 @@ export default function AdminTours() {
         rentalMoto: f.rentalMoto, status: f.status, featured: f.featured,
         titleEn: f.titleEn.trim(), descriptionEn: f.descriptionEn.trim(), regionEn: f.regionEn.trim(),
       };
-      if (editing === "new") await createTour(payload);
+      const isNew = editing === "new";
+      if (isNew) await createTour(payload);
       else if (typeof editing === "number") await updateTour(editing, payload);
       await refresh();
       setEditing(null);
+      toast(isNew ? "Амжилттай нэмэгдлээ" : "Амжилттай хадгалагдлаа");
+    } catch (err) {
+      await alert({ title: "Хадгалахад алдаа гарлаа", message: err instanceof Error ? err.message : String(err), danger: true });
     } finally { setBusy(false); }
   }
   async function del(id: number) {
     if (!(await confirm({ title: "Энэ аяллыг устгах уу?", message: "Холбоотой захиалгууд ч устана.", confirmLabel: "Устгах", danger: true }))) return;
-    await deleteTour(id);
-    await refresh();
+    try {
+      await deleteTour(id);
+      await refresh();
+      toast("Устгагдлаа");
+    } catch (err) {
+      await alert({ title: "Устгахад алдаа гарлаа", message: err instanceof Error ? err.message : String(err), danger: true });
+    }
   }
   async function onUpload(file: File) {
     setUploading(true);
-    try { const url = await uploadTourImage(file); setF((p) => ({ ...p, image: url })); }
+    try { const url = await uploadTourImage(file); setF((p) => ({ ...p, image: url })); toast("Зураг амжилттай орлоо. Хадгалах товчийг дарна уу."); }
     catch (err) { alert({ title: "Зураг оруулахад алдаа гарлаа", message: err instanceof Error ? err.message : String(err), danger: true }); }
     finally { setUploading(false); }
   }
@@ -93,6 +105,7 @@ export default function AdminTours() {
     setBookings((l) => l.map((b) => (b.id === id ? { ...b, status } : b)));
     await updateTourBookingStatus(id, status);
     setList(await getTours()); // booked тоолуур шинэчлэгдэнэ
+    toast(`Төлөв "${status}" болж хадгалагдлаа`);
   }
 
   return (

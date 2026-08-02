@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { useToast } from "@/lib/ui/toast";
 import { Select } from "@/components/ui/Select";
 import { getBookings, updateBookingStatus, type Booking } from "@/lib/db/admin";
 
@@ -32,9 +33,17 @@ export default function AdminService() {
     refresh();
   }, []);
 
+  const toast = useToast();
+
   async function changeStatus(id: number, status: string) {
     setList((l) => l.map((b) => (b.id === id ? { ...b, status } : b)));
-    await updateBookingStatus(id, status);
+    try {
+      await updateBookingStatus(id, status);
+      toast(`Төлөв "${status}" болж хадгалагдлаа`);
+    } catch (e) {
+      toast("Хадгалж чадсангүй: " + (e instanceof Error ? e.message : String(e)), "err");
+      await refresh();
+    }
   }
 
   // тухайн өдрийн (эсвэл бүх) захиалга

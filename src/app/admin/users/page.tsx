@@ -6,6 +6,7 @@ import { Select } from "@/components/ui/Select";
 import { fmt } from "@/lib/db/data";
 import { getProfiles, setUserRole, type Profile } from "@/lib/db/admin";
 import { useConfirm } from "@/lib/ui/confirm";
+import { useToast } from "@/lib/ui/toast";
 
 const ROLES = [
   { value: "customer", label: "Хэрэглэгч" },
@@ -32,6 +33,8 @@ export default function AdminUsers() {
     getProfiles().then((p) => { setList(p); setLoaded(true); });
   }, []);
 
+  const toast = useToast();
+
   async function changeRole(id: string, role: string) {
     const u = list.find((x) => x.id === id);
     if (!u || u.role === role) return;
@@ -52,7 +55,13 @@ export default function AdminUsers() {
       if (!ok) return;
     }
     setList((l) => l.map((x) => (x.id === id ? { ...x, role } : x)));
-    await setUserRole(id, role);
+    try {
+      await setUserRole(id, role);
+      toast(role === "admin" ? `${name} админ боллоо` : `${name}-ийн эрх "${role}" болж хадгалагдлаа`);
+    } catch (e) {
+      toast("Хадгалж чадсангүй: " + (e instanceof Error ? e.message : String(e)), "err");
+      setList((l) => l.map((x) => (x.id === id ? { ...x, role: u.role } : x)));
+    }
   }
 
   // хайлт — нэр / имэйл / утас-аар

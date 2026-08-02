@@ -9,6 +9,7 @@ import { getRates } from "@/lib/reference/fx";
 import { AuthModalProvider } from "@/lib/auth/authModal";
 import { CartModalProvider } from "@/lib/commerce/cartModal";
 import { ConfirmProvider } from "@/lib/ui/confirm";
+import { ToastProvider } from "@/lib/ui/toast";
 
 const SITE_DESC =
   "Монголд суурилсан мотоцикл, riding gear, сэлбэг, засвар үйлчилгээ болон олон улсын захиалга нийлүүлэлтийн платформ.";
@@ -61,6 +62,7 @@ export default async function RootLayout({
                     (сагс г.м) өөрийн provider-ийн түвшинд render хийгддэг тул доор нь
                     байвал useConfirm/useAlert context олдохгүй crash болно. */}
                 <ConfirmProvider>
+                  <ToastProvider>
                   <AuthModalProvider>
                     <CartModalProvider>
                       <Nav />
@@ -68,6 +70,7 @@ export default async function RootLayout({
                       <Footer />
                     </CartModalProvider>
                   </AuthModalProvider>
+                  </ToastProvider>
                 </ConfirmProvider>
               </AuthProvider>
             </CurrencyProvider>

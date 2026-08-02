@@ -5,6 +5,7 @@ import { sx } from "@/lib/ui/sx";
 import type { PhotographerWork } from "@/lib/db/queries";
 import { addPhotographerWork, deletePhotographerWork, uploadPhotographerImage } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
+import { useToast } from "@/lib/ui/toast";
 
 const BTN = "background:#E10613;color:#fff;font:700 13px Montserrat;padding:11px 18px;border:none;border-radius:9px;cursor:pointer;";
 const MAX_VIDEO = 1024 * 1024 * 1024; // 1GB
@@ -19,6 +20,7 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
   const [saving, setSaving] = useState(false);
   const confirm = useConfirm();
   const alert = useAlert();
+  const toast = useToast();
 
   // Файл сонгоход storage-д upload хийж, жагсаалтад нэмнэ (хараахан хадгалахгүй)
   async function stageFiles(files: FileList) {
@@ -37,6 +39,7 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
         setProgress({ done: i + 1, total: ok.length });
       }
       setPending((p) => [...p, ...added]);
+      toast(`${added.length} файл орлоо. Доор нь "Хадгалах" товчийг дарж баталгаажуулна уу.`);
     } catch (e) { await alert({ title: "Upload алдаа: " + (e instanceof Error ? e.message : String(e)) }); }
     finally { setProgress(null); }
   }
@@ -52,14 +55,20 @@ export function WorksManager({ photographerId, works, onChange }: { photographer
       }
       setPending([]);
       await onChange();
-      await alert({ title: "Хадгалагдлаа" });
+      toast("Портфолио амжилттай хадгалагдлаа");
     } catch (e) { await alert({ title: "Алдаа: " + (e instanceof Error ? e.message : String(e)) }); }
     finally { setSaving(false); }
   }
 
   async function del(w: PhotographerWork) {
-    if (!(await confirm({ title: "Энэ ажлыг устгах уу?", danger: true }))) return;
-    await deletePhotographerWork(w.id); await onChange();
+    if (!(await confirm({ title: "Энэ ажлыг устгах уу?", message: "Файл бүрмөсөн устна.", confirmLabel: "Устгах", danger: true }))) return;
+    try {
+      await deletePhotographerWork(w.id);
+      await onChange();
+      toast("Устгагдлаа");
+    } catch (e) {
+      await alert({ title: "Устгахад алдаа гарлаа", message: e instanceof Error ? e.message : String(e), danger: true });
+    }
   }
 
   const busy = !!progress;

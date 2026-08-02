@@ -5,6 +5,7 @@ import { sx } from "@/lib/ui/sx";
 import { getEventMedia, type EventMedia } from "@/lib/db/queries";
 import { addEventMedia, updateEventMedia, deleteEventMedia, uploadEventMedia } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
+import { useToast } from "@/lib/ui/toast";
 
 // Уулзалт/Event-ийн зураг, бичлэгийн галерей. Олон файл нэг дор оруулна,
 // чирж дараалал солино, тайлбар нэмнэ.
@@ -18,6 +19,8 @@ export function EventMediaManager({ eventId, title }: { eventId: number; title: 
 
   const refresh = useCallback(async () => setList(await getEventMedia(eventId)), [eventId]);
   useEffect(() => { void refresh(); }, [refresh]);
+
+  const toast = useToast();
 
   async function onFiles(files: FileList | null) {
     if (!files || !files.length) return;
@@ -37,7 +40,7 @@ export function EventMediaManager({ eventId, title }: { eventId: number; title: 
         done++;
       }
       await refresh();
-      await alert({ title: "Нэмэгдлээ", message: `${done} файл галерейд нэмэгдэж, сайт дээр шууд харагдана.` });
+      toast(`${done} файл амжилттай нэмэгдэж, сайт дээр шууд харагдаж байна.`);
     } catch (e) {
       await alert({
         title: "Файл оруулахад алдаа гарлаа",
@@ -54,8 +57,13 @@ export function EventMediaManager({ eventId, title }: { eventId: number; title: 
       message: "Файл бүрмөсөн устна.", confirmLabel: "Устгах", danger: true,
     });
     if (!ok) return;
-    await deleteEventMedia(m.id, m.url);
-    await refresh();
+    try {
+      await deleteEventMedia(m.id, m.url);
+      await refresh();
+      toast(m.kind === "video" ? "Бичлэг устгагдлаа" : "Зураг устгагдлаа");
+    } catch (e) {
+      await alert({ title: "Устгахад алдаа гарлаа", message: e instanceof Error ? e.message : String(e), danger: true });
+    }
   }
 
   // Чирч дараалал солих — хулгана, хуруу хоёуланд (Pointer Events).
@@ -76,8 +84,16 @@ export function EventMediaManager({ eventId, title }: { eventId: number; title: 
   async function commitOrder() {
     setDrag(null);
     // Одоогийн дарааллаар sort-ыг дахин бичнэ
-    await Promise.all(list.map((m, i) => (m.sort === i ? null : updateEventMedia(m.id, { sort: i }))).filter(Boolean));
-    await refresh();
+    const changed = list.filter((m, i) => m.sort !== i);
+    if (changed.length === 0) return;
+    try {
+      await Promise.all(list.map((m, i) => (m.sort === i ? null : updateEventMedia(m.id, { sort: i }))).filter(Boolean));
+      await refresh();
+      toast("Дараалал хадгалагдлаа");
+    } catch (e) {
+      await alert({ title: "Дараалал хадгалахад алдаа гарлаа", message: e instanceof Error ? e.message : String(e), danger: true });
+      await refresh();
+    }
   }
 
   return (

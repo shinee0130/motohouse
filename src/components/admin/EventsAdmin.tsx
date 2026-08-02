@@ -7,6 +7,7 @@ import { type EventItem } from "@/lib/db/data";
 import { getEvents, getParticipants, type Participant } from "@/lib/db/queries";
 import { createEvent, updateEvent, deleteEvent, uploadEvent } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
+import { useToast } from "@/lib/ui/toast";
 import { EventMediaManager } from "@/components/admin/EventMediaManager";
 import { EventPartnersManager } from "@/components/admin/EventPartnersManager";
 
@@ -47,6 +48,8 @@ export function EventsAdmin({ mode }: { mode: "meeting" | "giveaway" }) {
     };
   }
 
+  const toast = useToast();
+
   const refresh = useCallback(async () => {
     const all = await getEvents();
     setList(all.filter((e) => (gv ? isGiveaway(e.type) : isMeeting(e.type))));
@@ -58,22 +61,35 @@ export function EventsAdmin({ mode }: { mode: "meeting" | "giveaway" }) {
     if (!f.title.trim()) return;
     setBusy(true);
     try {
-      if (editing === "new") await createEvent(f);
+      const isNew = editing === "new";
+      if (isNew) await createEvent(f);
       else if (typeof editing === "number") await updateEvent(editing, f);
       await refresh();
       setEditing(null);
+      toast(isNew ? "Амжилттай нэмэгдлээ" : "Амжилттай хадгалагдлаа");
+    } catch (err) {
+      await alert({ title: "Хадгалахад алдаа гарлаа", message: err instanceof Error ? err.message : String(err), danger: true });
     } finally { setBusy(false); }
   }
   const confirm = useConfirm();
   const alert = useAlert();
   async function del(id: number) {
-    if (!(await confirm({ title: `Энэ ${gv ? "Giveaway" : "уулзалт"}-ийг устгах уу?`, confirmLabel: "Устгах", danger: true }))) return;
-    await deleteEvent(id);
-    await refresh();
+    if (!(await confirm({ title: `Энэ ${gv ? "Giveaway" : "уулзалт"}-ийг устгах уу?`, message: "Устгасны дараа буцаах боломжгүй.", confirmLabel: "Устгах", danger: true }))) return;
+    try {
+      await deleteEvent(id);
+      await refresh();
+      toast("Устгагдлаа");
+    } catch (err) {
+      await alert({ title: "Устгахад алдаа гарлаа", message: err instanceof Error ? err.message : String(err), danger: true });
+    }
   }
   async function onUpload(file: File) {
     setUploading(true);
-    try { const url = await uploadEvent(file); setF((p) => ({ ...p, image: url })); }
+    try {
+      const url = await uploadEvent(file);
+      setF((p) => ({ ...p, image: url }));
+      toast("Зураг амжилттай орлоо. Доор нь Хадгалах товчийг дарна уу.");
+    }
     catch (err) { alert({ title: "Зураг оруулахад алдаа гарлаа", message: err instanceof Error ? err.message : String(err), danger: true }); }
     finally { setUploading(false); }
   }

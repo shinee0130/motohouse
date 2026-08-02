@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { sx } from "@/lib/ui/sx";
 import { getSettingsMap, updateSetting, uploadSiteImage, deleteSiteFile } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
+import { useToast } from "@/lib/ui/toast";
 import { PROMOS_KEY, parsePromos, type Promo } from "@/components/layout/Nav";
 
 const SLOTS = [
@@ -46,6 +47,8 @@ export default function AdminHome() {
   }
   useEffect(() => { refresh(); }, []);
 
+  const toast = useToast();
+
   async function savePromos() {
     setPromoBusy(true); setMsg("");
     try {
@@ -55,6 +58,7 @@ export default function AdminHome() {
       await updateSetting(PROMOS_KEY, JSON.stringify(clean));
       await refresh();
       setMsg(clean.length ? "✓ Дээд баннер хадгалагдлаа." : "✓ Дээд баннер нуугдлаа (мөр үлдээгүй).");
+      toast(clean.length ? "Дээд баннер хадгалагдлаа" : "Дээд баннер нуугдлаа");
     } catch (e) {
       setMsg("⚠️ Алдаа: " + (e instanceof Error ? e.message : String(e)));
     } finally { setPromoBusy(false); }
@@ -77,6 +81,7 @@ export default function AdminHome() {
       if (prev) { try { await deleteSiteFile(prev); } catch { /* тохиргоо аль хэдийн цэвэрлэгдсэн */ } }
       await refresh();
       setMsg(`✓ "${label}" устгагдлаа.`);
+      toast(`"${label}" устгагдлаа`);
     } catch (e) {
       setMsg("⚠️ Алдаа: " + (e instanceof Error ? e.message : String(e)));
     } finally { setBusy(null); }
@@ -92,6 +97,7 @@ export default function AdminHome() {
       await updateSetting(key, "");
       await refresh();
       setMsg(`✓ ${key} нуугдлаа.`);
+      toast("Нуугдлаа — сайт дээр харагдахаа болилоо");
     } catch (e) {
       setMsg("⚠️ Алдаа: " + (e instanceof Error ? e.message : String(e)));
     } finally { setBusy(null); }
@@ -107,6 +113,7 @@ export default function AdminHome() {
       await updateSetting(bak(key), "");
       await refresh();
       setMsg(`✓ ${key} дахин харагдана.`);
+      toast("Дахин харагдах боллоо");
     } catch (e) {
       setMsg("⚠️ Алдаа: " + (e instanceof Error ? e.message : String(e)));
     } finally { setBusy(null); }
@@ -131,10 +138,7 @@ export default function AdminHome() {
       await refresh();
       const name = label || key;
       setMsg(`✓ "${name}" зураг амжилттай солигдлоо.${removed ? " Хуучин файл устгагдав." : ""}`);
-      await alert({
-        title: "Зураг солигдлоо",
-        message: `"${name}" шинэчлэгдэж, сайт дээр шууд харагдана.${removed ? " Хуучин файлыг storage-аас устгав." : ""}`,
-      });
+      toast(`"${name}" зураг амжилттай солигдож, сайт дээр шууд харагдаж байна.`);
     } catch (e) {
       const m = e instanceof Error ? e.message : String(e);
       setMsg("⚠️ Алдаа: " + m);

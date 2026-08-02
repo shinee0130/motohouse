@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { sx } from "@/lib/ui/sx";
+import { useToast } from "@/lib/ui/toast";
 import { Select } from "@/components/ui/Select";
 import { getOrderRequests, type OrderRequest } from "@/lib/db/queries";
 import { updateOrderRequest } from "@/lib/db/admin";
@@ -32,9 +33,17 @@ export default function AdminRequests() {
   async function refresh() { setList(await getOrderRequests()); setLoaded(true); }
   useEffect(() => { refresh(); }, []);
 
+  const toast = useToast();
+
   async function changeStatus(id: string, status: string) {
     setList((l) => l.map((r) => (r.id === id ? { ...r, status } : r)));
-    await updateOrderRequest(id, { status });
+    try {
+      await updateOrderRequest(id, { status });
+      toast(`Төлөв "${status}" болж хадгалагдлаа`);
+    } catch (e) {
+      toast("Хадгалж чадсангүй: " + (e instanceof Error ? e.message : String(e)), "err");
+      await refresh();
+    }
   }
   async function saveQuote(id: string) {
     const quote = (drafts[id] ?? "").trim();
@@ -44,6 +53,9 @@ export default function AdminRequests() {
       await updateOrderRequest(id, { quote, status: "Үнэ өгсөн" });
       setList((l) => l.map((r) => (r.id === id ? { ...r, quote, status: "Үнэ өгсөн" } : r)));
       setDrafts((d) => { const n = { ...d }; delete n[id]; return n; });
+      toast("Үнийн санал хадгалагдлаа");
+    } catch (e) {
+      toast("Хадгалж чадсангүй: " + (e instanceof Error ? e.message : String(e)), "err");
     } finally { setSaving(null); }
   }
 

@@ -7,6 +7,7 @@ import { fmt, isPart, PARTS_CATS, GENDERS, type GearItem } from "@/lib/db/data";
 import { getGearAll } from "@/lib/db/queries";
 import { createGear, updateGear, deleteGear, uploadGear } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
+import { useToast } from "@/lib/ui/toast";
 import { GEAR_COLORS as COLORS, checkOn } from "@/lib/commerce/colors";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:11px 13px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
@@ -152,6 +153,8 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
   }, [mode]);
   useEffect(() => { void refresh(); }, [refresh]);
 
+  const toast = useToast();
+
   async function onImages(files: FileList | null) {
     if (!files || !files.length) return;
     setUploading(true);
@@ -160,6 +163,9 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
       for (const file of Array.from(files)) urls.push(await uploadGear(file));
       // Давхардсан URL байвал React-ийн түлхүүр (=url) мөргөлдөнө — цэвэрлэнэ.
       setF((cur) => ({ ...cur, images: [...new Set([...cur.images, ...urls])] }));
+      toast(urls.length > 1
+        ? `${urls.length} зураг амжилттай орлоо. Доор нь Хадгалах товчийг дарна уу.`
+        : "Зураг амжилттай орлоо. Доор нь Хадгалах товчийг дарна уу.");
     } catch (err) {
       alert({ title: "Зураг оруулахад алдаа гарлаа", message: err instanceof Error ? err.message : String(err), danger: true });
     } finally { setUploading(false); }
@@ -176,17 +182,26 @@ export function GearAdmin({ mode }: { mode: "gear" | "parts" }) {
       // хатуу жагсаалтаас биш үүнээс тодорхойлогдоно.
       const base = { ...fromForm(f), kind: (isParts ? "part" : "gear") as "part" | "gear" };
       const row = isParts ? { ...base, sizes: [], colors: [], imageColors: {}, gender: "unisex" } : base;
-      if (editing === "new") await createGear(row);
+      const isNew = editing === "new";
+      if (isNew) await createGear(row);
       else if (typeof editing === "number") await updateGear(editing, row);
       await refresh();
       setEditing(null);
+      toast(isNew ? "Амжилттай нэмэгдлээ" : "Амжилттай хадгалагдлаа");
+    } catch (err) {
+      await alert({ title: "Хадгалахад алдаа гарлаа", message: err instanceof Error ? err.message : String(err), danger: true });
     } finally { setBusy(false); }
   }
   const confirm = useConfirm();
   async function del(id: number) {
-    if (!(await confirm({ title: "Энэ барааг устгах уу?", confirmLabel: "Устгах", danger: true }))) return;
-    await deleteGear(id);
-    await refresh();
+    if (!(await confirm({ title: "Энэ барааг устгах уу?", message: "Устгасны дараа буцаах боломжгүй.", confirmLabel: "Устгах", danger: true }))) return;
+    try {
+      await deleteGear(id);
+      await refresh();
+      toast("Устгагдлаа");
+    } catch (err) {
+      await alert({ title: "Устгахад алдаа гарлаа", message: err instanceof Error ? err.message : String(err), danger: true });
+    }
   }
 
   return (

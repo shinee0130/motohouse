@@ -7,6 +7,7 @@ import { createPhotographer, updatePhotographer, deletePhotographer, uploadPhoto
 import { WorksManager } from "@/components/admin/WorksManager";
 import { ServicesEditor } from "@/components/admin/ServicesEditor";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
+import { useToast } from "@/lib/ui/toast";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:11px 13px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
 const LABEL = "font:600 11px Montserrat;letter-spacing:.04em;color:#A3A3A3;margin-bottom:6px;display:block;";
@@ -86,28 +87,38 @@ export default function AdminPhotographers() {
     } finally { setLinking(false); }
   }
 
+  const toast = useToast();
+
   async function save() {
     if (!f.name.trim()) { await alert({ title: "Нэр оруулна уу." }); return; }
     setBusy(true);
     try {
       const patch = { ...fromForm(f), services: services.filter((s) => s.name.trim()) };
-      if (editing === "new") await createPhotographer(patch);
+      const isNew = editing === "new";
+      if (isNew) await createPhotographer(patch);
       else if (typeof editing === "number") await updatePhotographer(editing, patch);
       await refresh();
       close();
+      toast(isNew ? "Амжилттай нэмэгдлээ" : "Амжилттай хадгалагдлаа");
     } catch (e) {
       await alert({ title: "Хадгалахад алдаа: " + (e instanceof Error ? e.message : String(e)) });
     } finally { setBusy(false); }
   }
 
   async function remove(p: Photographer) {
-    if (!(await confirm({ title: `"${p.name}"-г устгах уу? Портфолио бүхэлдээ устана.`, danger: true }))) return;
-    await deletePhotographer(p.id); await refresh();
+    if (!(await confirm({ title: `"${p.name}"-г устгах уу? Портфолио бүхэлдээ устана.`, message: "Устгасны дараа буцаах боломжгүй.", confirmLabel: "Устгах", danger: true }))) return;
+    try {
+      await deletePhotographer(p.id);
+      await refresh();
+      toast("Устгагдлаа");
+    } catch (e) {
+      await alert({ title: "Устгахад алдаа гарлаа", message: e instanceof Error ? e.message : String(e), danger: true });
+    }
   }
 
   async function uploadAvatar(file: File) {
     setUploading(true);
-    try { set("avatar", await uploadPhotographerImage(file)); }
+    try { set("avatar", await uploadPhotographerImage(file)); toast("Зураг амжилттай орлоо. Хадгалах товчийг дарна уу."); }
     catch (e) { await alert({ title: "Upload алдаа: " + (e instanceof Error ? e.message : String(e)) }); }
     finally { setUploading(false); }
   }
