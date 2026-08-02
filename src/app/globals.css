@@ -295,6 +295,18 @@ a {
   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   gap: 18px;
 }
+/* Уулзалтын картын grid — өргөн карт (хамтрагчийн лого мөрөнд 3-аар багтана).
+   Анхаар: .mh-meet-grid нь галерейн зургийн grid, өөр зүйл. */
+.mh-meetcard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 18px;
+}
+@media (max-width: 700px) {
+  .mh-meetcard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 @media (max-width: 640px) {
   .mh-prod-grid,
   .mh-moto-grid {

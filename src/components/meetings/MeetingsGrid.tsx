@@ -39,7 +39,7 @@ export function MeetingsGrid({
           </div>
         </div>
       ) : (
-        <div className="mh-prod-grid" style={{ marginTop: 26 }}>
+        <div className="mh-meetcard-grid" style={{ marginTop: 26 }}>
           {meetings.map((m) => (
             <Link key={m.id} href={`/meetings/${m.id}`} className="mh-card"
               style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:block;cursor:pointer;")}>
@@ -54,11 +54,8 @@ export function MeetingsGrid({
                 )}
                 {/* Зохион байгуулагч — постерын дээд буланд */}
                 {(partners[m.id] ?? []).filter(isOrganizer).length > 0 && (
-                  <div style={sx("position:absolute;top:10px;left:10px;display:flex;align-items:center;gap:6px;background:rgba(5,5,5,.78);border:1px solid #3a3a3f;border-radius:9px;padding:6px 9px;backdrop-filter:blur(4px);")}>
-                    <span style={sx("font:600 8px 'JetBrains Mono';letter-spacing:.12em;color:#8A8F98;text-transform:uppercase;")}>
-                      {t("Зохион байгуулагч")}
-                    </span>
-                    {(partners[m.id] ?? []).filter(isOrganizer).slice(0, 2).map((p) => (
+                  <div style={sx("position:absolute;top:10px;left:10px;right:10px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;width:fit-content;max-width:calc(100% - 20px);background:rgba(5,5,5,.78);border:1px solid #3a3a3f;border-radius:9px;padding:6px 10px;backdrop-filter:blur(4px);")}>
+                    {(partners[m.id] ?? []).filter(isOrganizer).slice(0, 3).map((p) => (
                       p.logo ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img key={p.id} {...imgSrc(p.logo, 140)} alt={p.name}
@@ -89,7 +86,7 @@ export function MeetingsGrid({
                 {/* Хамтрагчид — гарчигийн доор (зохион байгуулагч дээр гарсан). */}
                 {(partners[m.id] ?? []).filter((p) => !isOrganizer(p)).length > 0 && (
                   <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, marginTop: 12 }}>
-                    {(partners[m.id] ?? []).filter((p) => !isOrganizer(p)).slice(0, 5).map((p) => (
+                    {(partners[m.id] ?? []).filter((p) => !isOrganizer(p)).slice(0, 6).map((p) => (
                       <span key={p.id} title={`${p.name}${p.role ? ` · ${t(p.role)}` : ""}`}
                         style={sx("background:#0B0B0D;border:1px solid #262626;border-radius:8px;padding:6px 8px;width:88px;height:42px;display:flex;align-items:center;justify-content:center;overflow:hidden;")}>
                         {p.logo ? (
@@ -101,9 +98,9 @@ export function MeetingsGrid({
                         )}
                       </span>
                     ))}
-                    {(partners[m.id] ?? []).filter((p) => !isOrganizer(p)).length > 5 && (
+                    {(partners[m.id] ?? []).filter((p) => !isOrganizer(p)).length > 6 && (
                       <span style={sx("font:600 11px Roboto;color:#6b7280;")}>
-                        +{(partners[m.id] ?? []).filter((p) => !isOrganizer(p)).length - 5}
+                        +{(partners[m.id] ?? []).filter((p) => !isOrganizer(p)).length - 6}
                       </span>
                     )}
                   </div>
