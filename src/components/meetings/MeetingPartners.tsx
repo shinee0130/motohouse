@@ -32,7 +32,7 @@ export function MeetingPartners({ partners }: { partners: EventPartner[] }) {
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img {...imgSrc(p.logo, 320)} alt={p.name}
-                      style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain", display: "block" }} />
+                      style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
                   </>
                 ) : (
                   <span style={sx("font:700 14px Montserrat;color:#fff;text-align:center;line-height:1.3;")}>{p.name}</span>
