@@ -126,6 +126,21 @@ export async function getEventPartners(eventId: number): Promise<EventPartner[]>
   }));
 }
 
+// Жагсаалтын хуудсанд бүх уулзалтын хамтрагчийг нэг дор (карт дээр логог нь харуулна).
+export async function getEventPartnersMap(): Promise<Record<number, EventPartner[]>> {
+  const { data } = await supabase.from("event_partners").select("*").order("sort").order("id");
+  const o: Record<number, EventPartner[]> = {};
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (data ?? []).forEach((r: any) => {
+    const p: EventPartner = {
+      id: r.id, eventId: r.event_id, name: r.name,
+      role: r.role ?? undefined, logo: r.logo ?? undefined, url: r.url ?? undefined, sort: r.sort ?? 0,
+    };
+    (o[p.eventId] ??= []).push(p);
+  });
+  return o;
+}
+
 // ---- Event participants (оролцогчид) ----
 export interface Participant { name: string; user_phone: string; created_at?: string }
 export async function getParticipants(eventId: number): Promise<Participant[]> {

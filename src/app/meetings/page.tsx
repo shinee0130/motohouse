@@ -1,5 +1,5 @@
 import { MeetingsGrid } from "@/components/meetings/MeetingsGrid";
-import { getEvents, getEventMediaCounts } from "@/lib/db/queries";
+import { getEvents, getEventMediaCounts, getEventPartnersMap } from "@/lib/db/queries";
 
 export const dynamic = "force-dynamic";
 
@@ -8,10 +8,10 @@ export const dynamic = "force-dynamic";
 export const isMeeting = (t: string) => (t || "").toLowerCase().includes("meeting");
 
 export default async function MeetingsPage() {
-  const [all, counts] = await Promise.all([getEvents(), getEventMediaCounts()]);
+  const [all, counts, partners] = await Promise.all([getEvents(), getEventMediaCounts(), getEventPartnersMap()]);
   const meetings = all
     .filter((e) => isMeeting(e.type))
     .sort((a, b) => (b.date || "").localeCompare(a.date || "")); // сүүлийнх нь эхэнд
 
-  return <MeetingsGrid meetings={meetings} counts={counts} />;
+  return <MeetingsGrid meetings={meetings} counts={counts} partners={partners} />;
 }
