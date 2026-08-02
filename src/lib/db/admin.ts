@@ -186,20 +186,32 @@ export async function createBonumInvoice(transactionId: string, kind: "order" | 
 }
 
 // ===== Order requests (Захиалгын хүсэлт — үнийн санал) =====
+// Мэдэгдлийн и-мэйл. Амжилтгүй болсон ч гол ажлыг УНАГААХГҮЙ — хүсэлт
+// хадгалагдсан хэвээр, мэдэгдэл нь notifications хүснэгтэд trigger-ээр орсон.
+async function notifyRequest(kind: "new" | "quote", requestId: string) {
+  try {
+    await supabase.functions.invoke("request-notify", { body: { kind, requestId } });
+  } catch { /* и-мэйл яваагүй нь захиалгыг зогсоохгүй */ }
+}
+
 export async function createOrderRequest(r: {
-  userPhone: string; name: string; phone: string; category: string; detail: string; image?: string;
+  userPhone: string; name: string; phone: string; category: string; detail: string;
+  image?: string; email?: string;
 }): Promise<string> {
   const id = `REQ-${Date.now().toString().slice(-6)}`;
   const { error } = await supabase.from("order_requests").insert({
-    id, user_phone: r.userPhone, name: r.name, phone: r.phone,
+    id, user_phone: r.userPhone, name: r.name, phone: r.phone, email: r.email || null,
     category: r.category, detail: r.detail, image: r.image || null, status: "Шинэ",
   });
   if (error) throw error;
+  void notifyRequest("new", id);
   return id;
 }
 export async function updateOrderRequest(id: string, patch: { status?: string; quote?: string }) {
   const { error } = await supabase.from("order_requests").update(patch).eq("id", id);
   if (error) throw error;
+  // Үнийн санал бичигдсэн үед л захиалагч руу мэдэгдэнэ (төлөв солиход биш)
+  if (patch.quote && patch.quote.trim()) void notifyRequest("quote", id);
 }
 export async function uploadRequestImage(file: File): Promise<string> {
   return uploadTo("requests", file);

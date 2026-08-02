@@ -50,6 +50,7 @@ export default function RequestPage() {
     try {
       const id = await createOrderRequest({
         userPhone: user.phone, name: name.trim(), phone: phone.trim(),
+        email: user.email, // хариу үнийн саналыг энэ хаяг руу илгээнэ
         category, detail: detail.trim(), image: image || undefined,
       });
       setReqId(id); setDone(true);

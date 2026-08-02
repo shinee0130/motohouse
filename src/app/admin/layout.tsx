@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { sx } from "@/lib/ui/sx";
 import { useAuth } from "@/lib/auth/auth";
 import { useAuthModal } from "@/lib/auth/authModal";
+import { getOrderRequests } from "@/lib/db/queries";
 
 const MENU = [
   { label: "Хяналтын самбар", href: "/admin" },
@@ -28,6 +29,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
   const authModal = useAuthModal();
+  // Шинэ (хариу өгөөгүй) захиалгын хүсэлтийн тоо — цэсэн дээр улаанаар.
+  // Ингэснээр админд орсон даруйд хүлээгдэж буй ажил байгааг шууд харна.
+  const [openRequests, setOpenRequests] = useState(0);
+  const isAdmin = ready && !!user && user.role === "admin";
+  const loadCounts = useCallback(async () => {
+    if (!isAdmin) return;
+    try {
+      const rs = await getOrderRequests();
+      setOpenRequests(rs.filter((r) => r.status !== "Үнэ өгсөн" && r.status !== "Хаагдсан").length);
+    } catch { /* тоолуур гарахгүй нь админыг зогсоохгүй */ }
+  }, [isAdmin]);
+  useEffect(() => {
+    void loadCounts();
+    const t = setInterval(() => void loadCounts(), 60_000); // минут тутам сэргээнэ
+    return () => clearInterval(t);
+  }, [loadCounts, pathname]);
 
   useEffect(() => {
     if (!ready) return;
@@ -59,9 +76,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link
                   key={m.href}
                   href={m.href}
-                  style={sx(`padding:11px 14px;border-radius:10px;font:600 14px Montserrat;cursor:pointer;color:${on ? "#fff" : "#A3A3A3"};background:${on ? "#E10613" : "transparent"};`)}
+                  style={sx(`display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 14px;border-radius:10px;font:600 14px Montserrat;cursor:pointer;color:${on ? "#fff" : "#A3A3A3"};background:${on ? "#E10613" : "transparent"};`)}
                 >
-                  {m.label}
+                  <span>{m.label}</span>
+                  {m.href === "/admin/requests" && openRequests > 0 && (
+                    <span style={sx(`flex:none;min-width:20px;height:20px;padding:0 6px;border-radius:999px;display:flex;align-items:center;justify-content:center;font:800 11px Montserrat;${on ? "background:#fff;color:#E10613;" : "background:#E10613;color:#fff;"}`)}>
+                      {openRequests}
+                    </span>
+                  )}
                 </Link>
               );
             })}

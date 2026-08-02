@@ -8,6 +8,19 @@ import { getOrderRequests, type OrderRequest } from "@/lib/db/queries";
 import { updateOrderRequest } from "@/lib/db/admin";
 
 const STATUSES = ["Шинэ", "Хянаж буй", "Үнэ өгсөн", "Хаагдсан"];
+
+// Ангилал бүрийг богино нэр + өнгөөр ялгана — жагсаалтаас нэг харснаар
+// юуны тухай хүсэлт болох нь мэдэгдэнэ.
+const CATS: { match: string; short: string; icon: string; color: string }[] = [
+  { match: "сэлбэг", short: "СЭЛБЭГ", icon: "⚙️", color: "#60a5fa" },
+  { match: "хэрэгсэл", short: "ХЭРЭГСЭЛ", icon: "🪖", color: "#a78bfa" },
+  { match: "мотоцикл", short: "МОТОЦИКЛ", icon: "🏍️", color: "#E10613" },
+];
+function cat(category: string) {
+  const c = (category || "").toLowerCase();
+  // "Мотоцикл сэлбэг" нь мотоцикл биш — сэлбэг. Тиймээс сэлбэгийг эхэлж шалгана.
+  return CATS.find((x) => c.includes(x.match)) ?? { short: "БУСАД", icon: "📦", color: "#8A8F98" };
+}
 type Filter = "all" | "open" | "quoted";
 const FILTERS: { key: Filter; label: string }[] = [
   { key: "all", label: "Бүгд" },
@@ -27,6 +40,7 @@ export default function AdminRequests() {
   const [list, setList] = useState<OrderRequest[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
+  const [catFilter, setCatFilter] = useState<string>("all");
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState<string | null>(null);
 
@@ -60,10 +74,19 @@ export default function AdminRequests() {
   }
 
   const shown = useMemo(() => {
-    if (filter === "open") return list.filter((r) => r.status !== "Үнэ өгсөн" && r.status !== "Хаагдсан");
-    if (filter === "quoted") return list.filter((r) => r.status === "Үнэ өгсөн");
-    return list;
-  }, [list, filter]);
+    let l = list;
+    if (filter === "open") l = l.filter((r) => r.status !== "Үнэ өгсөн" && r.status !== "Хаагдсан");
+    else if (filter === "quoted") l = l.filter((r) => r.status === "Үнэ өгсөн");
+    if (catFilter !== "all") l = l.filter((r) => cat(r.category).short === catFilter);
+    return l;
+  }, [list, filter, catFilter]);
+
+  // Ангилал бүрийн тоо — байхгүй ангилал товч болж гарахгүй
+  const catCounts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of list) { const k = cat(r.category).short; m.set(k, (m.get(k) ?? 0) + 1); }
+    return m;
+  }, [list]);
 
   const openCount = list.filter((r) => r.status !== "Үнэ өгсөн" && r.status !== "Хаагдсан").length;
 
@@ -83,6 +106,24 @@ export default function AdminRequests() {
         ))}
       </div>
 
+      {/* ангиллын шүүлт */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <button onClick={() => setCatFilter("all")}
+          style={sx(`cursor:pointer;font:700 12px Montserrat;padding:8px 16px;border-radius:999px;${catFilter === "all" ? "background:#fff;border:1px solid #fff;color:#0B0B0D;" : "background:#111113;border:1px solid #333;color:#C8C8C8;"}`)}>
+          Ангилал: бүгд
+        </button>
+        {[...CATS.map((c) => c.short), "БУСАД"].filter((k) => (catCounts.get(k) ?? 0) > 0).map((k) => {
+          const c = [...CATS, { short: "БУСАД", icon: "📦", color: "#8A8F98" }].find((x) => x.short === k)!;
+          const on = catFilter === k;
+          return (
+            <button key={k} onClick={() => setCatFilter(k)}
+              style={sx(`cursor:pointer;font:700 12px Montserrat;padding:8px 16px;border-radius:999px;${on ? `background:${c.color};border:1px solid ${c.color};color:#0B0B0D;` : `background:#111113;border:1px solid #333;color:${c.color};`}`)}>
+              {c.icon} {k} ({catCounts.get(k)})
+            </button>
+          );
+        })}
+      </div>
+
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         {shown.map((r) => (
           <div key={r.id} style={sx("background:#111113;border:1px solid #262626;border-radius:14px;padding:16px 18px;")}>
@@ -95,7 +136,9 @@ export default function AdminRequests() {
               )}
               <div style={{ minWidth: 220, flex: 1 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-                  <span style={sx("font:700 10px 'JetBrains Mono';letter-spacing:.1em;color:#E10613;")}>{r.category}</span>
+                  <span style={sx(`font:700 10px 'JetBrains Mono';letter-spacing:.1em;color:${cat(r.category).color};background:${cat(r.category).color}1a;border:1px solid ${cat(r.category).color}59;padding:5px 10px;border-radius:6px;`)}>
+                    {cat(r.category).icon} {cat(r.category).short}
+                  </span>
                   <span style={sx(badge(r.status))}>{r.status}</span>
                 </div>
                 <div style={sx("font:500 14px/1.55 Roboto;color:#e8e8e8;margin-top:8px;white-space:pre-wrap;")}>{r.detail}</div>
