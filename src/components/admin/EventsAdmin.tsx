@@ -7,6 +7,7 @@ import { type EventItem } from "@/lib/db/data";
 import { getEvents, getParticipants, type Participant } from "@/lib/db/queries";
 import { createEvent, updateEvent, deleteEvent, uploadEvent } from "@/lib/db/admin";
 import { useConfirm, useAlert } from "@/lib/ui/confirm";
+import { EventMediaManager } from "@/components/admin/EventMediaManager";
 
 const INPUT = "background:#050505;border:1px solid #262626;border-radius:9px;padding:11px 13px;color:#fff;font:400 14px Roboto;outline:none;width:100%;";
 const LABEL = "font:600 11px Montserrat;letter-spacing:.04em;color:#A3A3A3;margin-bottom:6px;display:block;";
@@ -32,6 +33,7 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [viewing, setViewing] = useState<EventItem | null>(null);
+  const [gallery, setGallery] = useState<number | null>(null); // галерей нээлттэй event
   const [parts, setParts] = useState<Participant[]>([]);
 
   const EN_KEY = { title: "titleEn", description: "descriptionEn", prize: "prizeEn" } as const;
@@ -136,7 +138,8 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
 
       <div style={sx("background:#111113;border:1px solid #262626;border-radius:14px;overflow:hidden;")}>
         {list.map((e) => (
-          <div key={e.id} style={sx("display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid #1c1c1f;")}>
+          <div key={e.id} style={sx("border-bottom:1px solid #1c1c1f;")}>
+          <div style={sx("display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;")}>
             <div style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 200 }}>
               <div style={sx("width:56px;height:56px;border-radius:9px;overflow:hidden;border:1px solid #262626;background:#050505;flex:none;")}>
                 {e.image ? (
@@ -155,9 +158,16 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
             <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
               <span style={sx("font:700 11px Montserrat;padding:5px 10px;border-radius:6px;color:#A3A3A3;background:#1a1a1d;border:1px solid #333;")}>{e.status}</span>
               <button onClick={() => openParts(e)} style={sx("background:none;border:1px solid #333;color:#C8C8C8;font:600 12px Montserrat;padding:7px 12px;border-radius:8px;cursor:pointer;")}>Оролцогчид</button>
+              <button onClick={() => setGallery(gallery === e.id ? null : e.id)} style={sx(`background:none;border:1px solid ${gallery === e.id ? "#E10613" : "#333"};color:${gallery === e.id ? "#E10613" : "#C8C8C8"};font:600 12px Montserrat;padding:7px 12px;border-radius:8px;cursor:pointer;`)}>Галерей</button>
               <button onClick={() => { setF(toForm(e)); setEditing(e.id); }} style={sx("background:none;border:1px solid #333;color:#C8C8C8;font:600 12px Montserrat;padding:7px 12px;border-radius:8px;cursor:pointer;")}>Засах</button>
               <button onClick={() => del(e.id)} style={sx("background:none;border:1px solid #333;color:#ef4444;font:600 12px Montserrat;padding:7px 12px;border-radius:8px;cursor:pointer;")}>Устгах</button>
             </div>
+          </div>
+          {gallery === e.id && (
+            <div style={{ padding: "0 18px 18px" }}>
+              <EventMediaManager eventId={e.id} title={e.title} />
+            </div>
+          )}
           </div>
         ))}
         {list.length === 0 && <div style={sx("padding:30px;text-align:center;font:400 14px Roboto;color:#8A8F98;")}>Одоогоор {gv ? "Giveaway" : "Event"} алга.</div>}

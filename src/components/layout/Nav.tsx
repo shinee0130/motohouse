@@ -29,6 +29,7 @@ const NAV = [
   { label: "Сэлбэг", href: "/parts", Icon: IconPackage },
   { label: "Захиалгын хүсэлт", href: "/request", Icon: IconRequest },
   { label: "Зураг авалт", href: "/photo", Icon: IconCamera },
+  { label: "Biker Meeting", href: "/meetings", Icon: IconCalendar },
   { label: "Event", href: "/events", Icon: IconCalendar },
   { label: "Giveaway", href: "/giveaway", Icon: IconTicket },
   { label: "Миний сагс", href: "/cart", Icon: IconCart },
@@ -40,6 +41,7 @@ const CATS = [
   { label: "Дагалдах хэрэгсэл", href: "/gear" },
   { label: "Сэлбэг", href: "/parts" },
   { label: "Зураг авалт", href: "/photo" },
+  { label: "Biker Meeting", href: "/meetings" },
   { label: "Event", href: "/events" },
   { label: "Giveaway", href: "/giveaway", hot: true }, // SALE шиг улаан
 ];

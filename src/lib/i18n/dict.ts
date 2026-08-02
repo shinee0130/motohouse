@@ -334,6 +334,12 @@ export const EN: Record<string, string> = {
   "Өнгө": "Color",
   "Хэмжээ": "Size",
   "Хэмжээний заавар": "Size guide",
+  // Biker Meeting
+  "Монголын мото соёлыг хамтдаа бүтээж буй уулзалтууд. Өнгөрсөн уулзалтын зураг, бичлэгүүдийг эндээс үзнэ үү.":
+    "Rider meet-ups building Mongolia's moto culture together. Browse photos and videos from past meetings here.",
+  "Одоогоор уулзалт бүртгэгдээгүй байна. Тун удахгүй зарлана!": "No meetings yet. New dates will be announced soon.",
+  "Зураг, бичлэг": "Photos & videos",
+  "Бичлэг": "Video",
   "Хэмжээ (см)": "Size (cm)",
   "Хэмжээ (EU)": "Size (EU)",
   "Бусад хэмжээ": "Other sizes",

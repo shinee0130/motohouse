@@ -86,6 +86,31 @@ export async function getEvent(id: number): Promise<EventItem | null> {
   return data ? mapEvent(data) : null;
 }
 
+// ---- Event / Meeting галерей (зураг, видео) ----
+export interface EventMedia {
+  id: number; eventId: number; kind: "photo" | "video";
+  url: string; thumb?: string; caption?: string; sort: number;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapMedia(r: any): EventMedia {
+  return {
+    id: r.id, eventId: r.event_id, kind: r.kind === "video" ? "video" : "photo",
+    url: r.url, thumb: r.thumb ?? undefined, caption: r.caption ?? undefined, sort: r.sort ?? 0,
+  };
+}
+export async function getEventMedia(eventId: number): Promise<EventMedia[]> {
+  const { data } = await supabase.from("event_media").select("*")
+    .eq("event_id", eventId).order("sort").order("id");
+  return (data ?? []).map(mapMedia);
+}
+// Жагсаалтын хуудсанд бүх уулзалтын медиаг нэг дор (тоо харуулахад).
+export async function getEventMediaCounts(): Promise<Record<number, number>> {
+  const { data } = await supabase.from("event_media").select("event_id");
+  const o: Record<number, number> = {};
+  (data ?? []).forEach((r: { event_id: number }) => { o[r.event_id] = (o[r.event_id] ?? 0) + 1; });
+  return o;
+}
+
 // ---- Event participants (оролцогчид) ----
 export interface Participant { name: string; user_phone: string; created_at?: string }
 export async function getParticipants(eventId: number): Promise<Participant[]> {

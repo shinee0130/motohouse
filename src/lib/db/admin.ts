@@ -90,6 +90,30 @@ export async function deleteEvent(id: number) {
   if (error) throw error;
 }
 
+// ===== Event / Meeting галерей =====
+export async function addEventMedia(m: {
+  eventId: number; kind: "photo" | "video"; url: string; thumb?: string; caption?: string; sort?: number;
+}) {
+  const { error } = await supabase.from("event_media").insert({
+    event_id: m.eventId, kind: m.kind, url: m.url,
+    thumb: m.thumb || null, caption: m.caption || null, sort: m.sort ?? 0,
+  });
+  if (error) throw error;
+}
+export async function updateEventMedia(id: number, patch: { caption?: string; sort?: number }) {
+  const { error } = await supabase.from("event_media").update(patch).eq("id", id);
+  if (error) throw error;
+}
+export async function deleteEventMedia(id: number, url?: string) {
+  const { error } = await supabase.from("event_media").delete().eq("id", id);
+  if (error) throw error;
+  // Мөрийг устгасны дараа файлыг нь ч storage-аас цэвэрлэнэ.
+  if (url) { try { await deleteSiteFile(url); } catch { /* мөр аль хэдийн устсан */ } }
+}
+export function uploadEventMedia(file: File): Promise<string> {
+  return uploadTo("events", file, file.name.split(".").pop() || undefined);
+}
+
 // ===== Orders =====
 export async function updateOrderTracking(id: string, trackingNumber: string) {
   const { error } = await supabase.from("orders").update({ tracking_number: trackingNumber.trim() || null }).eq("id", id);
