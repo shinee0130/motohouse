@@ -11,7 +11,7 @@ import { getProfiles } from "@/lib/db/admin";
 const CARD = "background:#111113;border:1px solid #262626;border-radius:16px;padding:22px;";
 
 export default function AdminOverview() {
-  const [s, setS] = useState({ motos: 0, gear: 0, events: 0, orders: 0, users: 0, inventory: 0, pending: 0 });
+  const [s, setS] = useState({ motos: 0, gear: 0, meetings: 0, giveaways: 0, orders: 0, users: 0, inventory: 0, pending: 0 });
   const [recent, setRecent] = useState<Order[]>([]);
 
   useEffect(() => {
@@ -20,7 +20,12 @@ export default function AdminOverview() {
         getMotos(), getGearAll(), getEvents(), getOrders(), getProfiles(),
       ]);
       setS({
-        motos: motos.length, gear: gear.length, events: events.length, orders: orders.length,
+        motos: motos.length, gear: gear.length,
+        // Тоолуур бүр өөрийн хэсгийнхээ мөрийг л тоолно — events хүснэгтэд
+        // уулзалт, Giveaway хоёулаа хамт байдаг.
+        meetings: events.filter((e) => (e.type || "").toLowerCase().includes("meeting")).length,
+        giveaways: events.filter((e) => (e.type || "").toUpperCase().includes("GIVEAWAY")).length,
+        orders: orders.length,
         users: users.length, inventory: motos.reduce((a, m) => a + m.price, 0),
         pending: orders.filter((o) => o.status === "Хүлээгдэж буй").length,
       });
@@ -31,7 +36,8 @@ export default function AdminOverview() {
   const stats = [
     { label: "Мотоцикл", value: s.motos, href: "/admin/motorcycles" },
     { label: "Бараа / сэлбэг", value: s.gear, href: "/admin/gear" },
-    { label: "Biker Meeting", value: s.events, href: "/admin/meetings" },
+    { label: "Biker Meeting", value: s.meetings, href: "/admin/meetings" },
+    { label: "Giveaway", value: s.giveaways, href: "/admin/giveaway" },
     { label: "Худалдан авалт", value: s.orders, href: "/admin/orders" },
     { label: "Хэрэглэгч", value: s.users, href: "/admin/users" },
   ];
