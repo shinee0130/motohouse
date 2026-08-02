@@ -35,6 +35,7 @@ function mapEvent(r: any): EventItem {
   return {
     id: r.id, type: r.type, title: r.title, status: r.status, date: r.event_date, prize: r.prize,
     image: r.image ?? undefined, description: r.description ?? "", winner: r.winner ?? undefined,
+    location: r.location ?? undefined,
     titleEn: r.title_en ?? undefined, descriptionEn: r.description_en ?? undefined, prizeEn: r.prize_en ?? undefined,
   };
 }

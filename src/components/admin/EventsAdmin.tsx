@@ -16,16 +16,16 @@ const BTN = "background:#E10613;color:#fff;font:700 13px Montserrat;padding:11px
 
 const isGiveaway = (t: string) => t.toUpperCase().includes("GIVEAWAY");
 
-type Form = { type: string; title: string; status: string; date: string; prize: string; image: string; description: string; winner: string; titleEn: string; descriptionEn: string; prizeEn: string };
+type Form = { type: string; title: string; status: string; date: string; location: string; prize: string; image: string; description: string; winner: string; titleEn: string; descriptionEn: string; prizeEn: string };
 function toForm(e: EventItem): Form {
-  return { type: e.type, title: e.title, status: e.status, date: e.date, prize: e.prize, image: e.image ?? "", description: e.description ?? "", winner: e.winner ?? "", titleEn: e.titleEn ?? "", descriptionEn: e.descriptionEn ?? "", prizeEn: e.prizeEn ?? "" };
+  return { type: e.type, title: e.title, status: e.status, date: e.date, location: e.location ?? "", prize: e.prize, image: e.image ?? "", description: e.description ?? "", winner: e.winner ?? "", titleEn: e.titleEn ?? "", descriptionEn: e.descriptionEn ?? "", prizeEn: e.prizeEn ?? "" };
 }
 
 export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
   const gv = mode === "giveaway";
   const heading = gv ? "Giveaway" : "Events";
   const newLabel = gv ? "+ Шинэ Giveaway" : "+ Шинэ Event";
-  const empty: Form = { type: gv ? "GIVEAWAY" : "RACE", title: "", status: "Upcoming", date: "", prize: "", image: "", description: "", winner: "", titleEn: "", descriptionEn: "", prizeEn: "" };
+  const empty: Form = { type: gv ? "GIVEAWAY" : "RACE", title: "", status: "Upcoming", date: "", location: "", prize: "", image: "", description: "", winner: "", titleEn: "", descriptionEn: "", prizeEn: "" };
 
   const [flang, setFlang] = useState<"mn" | "en">("mn");
   const [list, setList] = useState<EventItem[]>([]);
@@ -127,6 +127,7 @@ export function EventsAdmin({ mode }: { mode: "events" | "giveaway" }) {
           <div><label style={sx(LABEL)}>Төлөв</label>
             <Select value={f.status} onChange={(v) => setF({ ...f, status: v })} full bg="#050505" options={["Ongoing", "Upcoming", "Winner"].map((s) => ({ value: s, label: s }))} /></div>
           <div><label style={sx(LABEL)}>Огноо</label><input value={f.date} onChange={(e) => setF({ ...f, date: e.target.value })} placeholder="2026.07.15" style={sx(INPUT)} /></div>
+          <div><label style={sx(LABEL)}>Байршил</label><input value={f.location} onChange={(e) => setF({ ...f, location: e.target.value })} placeholder="REVO GARDEN" style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Шагнал {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><input {...bind("prize")} style={sx(INPUT)} /></div>
           <div><label style={sx(LABEL)}>Ялагч (Winner үед)</label><input value={f.winner} onChange={(e) => setF({ ...f, winner: e.target.value })} placeholder="@username" style={sx(INPUT)} /></div>
           <div style={{ gridColumn: "1 / -1" }}><label style={sx(LABEL)}>Дэлгэрэнгүй {flang === "en" && <span style={sx("color:#E10613;")}>(EN)</span>}</label><textarea {...bind("description")} rows={4} style={sx(INPUT + "resize:vertical;font:400 14px Roboto;")} /></div>

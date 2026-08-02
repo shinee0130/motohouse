@@ -22,7 +22,9 @@ export default async function MeetingDetailPage({ params }: PageProps<"/meetings
 
       <div style={sx("font:500 12px 'JetBrains Mono';letter-spacing:.2em;color:#E10613;margin-top:20px;")}>BIKER MEETING</div>
       <h1 style={sx("font:800 clamp(28px,4.4vw,44px) Montserrat;color:#fff;margin-top:8px;")}>{e.title.trim()}</h1>
-      <div style={sx("font:600 14px Montserrat;color:#8A8F98;margin-top:8px;")}>{e.date}</div>
+      <div style={sx("font:600 14px Montserrat;color:#8A8F98;margin-top:8px;")}>
+        {e.date}{e.location ? ` · ${e.location}` : ""}
+      </div>
 
       <MeetingPartners partners={partners} />
       <MeetingGallery media={media} />

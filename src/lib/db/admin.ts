@@ -64,6 +64,7 @@ function eventRow(e: Partial<EventItem>): any {
   return {
     type: e.type, title: e.title, status: e.status, event_date: e.date, prize: e.prize,
     image: e.image ?? null, description: e.description ?? "", winner: e.winner ?? null,
+    location: e.location || null,
     title_en: e.titleEn || null, description_en: e.descriptionEn || null, prize_en: e.prizeEn || null,
   };
 }

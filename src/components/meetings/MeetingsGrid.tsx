@@ -40,11 +40,12 @@ export function MeetingsGrid({
           {meetings.map((m) => (
             <Link key={m.id} href={`/meetings/${m.id}`} className="mh-card"
               style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:block;cursor:pointer;")}>
-              <div style={{ position: "relative", height: 210, background: "#0d0d0f" }}>
+              {/* Постер ихэвчлэн босоо. Тайрахгүйгээр бүтнээр нь харуулна. */}
+              <div style={{ position: "relative", aspectRatio: "4 / 5", background: "#0d0d0f" }}>
                 {m.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img {...imgSrc(m.image, 420)} alt={m.title}
-                    style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:cover;")} />
+                  <img {...imgSrc(m.image, 520)} alt={m.title}
+                    style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;")} />
                 ) : (
                   <Slot label="Meeting" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
                 )}
@@ -55,7 +56,9 @@ export function MeetingsGrid({
                 )}
               </div>
               <div style={{ padding: "16px 18px 18px" }}>
-                <div style={sx("font:500 11px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;")}>{m.date}</div>
+                <div style={sx("font:500 11px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;")}>
+                  {m.date}{m.location ? ` · ${m.location}` : ""}
+                </div>
                 <div style={sx("font:800 18px Montserrat;color:#fff;margin-top:6px;")}>{loc(m.title, m.titleEn).trim()}</div>
                 {/* Хамтрагчид — гарчигийн доор. Логотой нь логогоор, эс бол нэрээр. */}
                 {(partners[m.id]?.length ?? 0) > 0 && (
@@ -75,11 +78,6 @@ export function MeetingsGrid({
                     {partners[m.id].length > 5 && (
                       <span style={sx("font:600 11px Roboto;color:#6b7280;")}>+{partners[m.id].length - 5}</span>
                     )}
-                  </div>
-                )}
-                {(m.description || m.descriptionEn) && (
-                  <div style={sx("font:400 13px/1.6 Roboto;color:#8A8F98;margin-top:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;")}>
-                    {loc(m.description ?? "", m.descriptionEn)}
                   </div>
                 )}
               </div>

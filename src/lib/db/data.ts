@@ -103,6 +103,7 @@ export interface EventItem {
   prize: string;
   image?: string;
   description?: string;
+  location?: string; // болох газар (жнь "REVO GARDEN")
   winner?: string;
   titleEn?: string; // англи хувилбарууд
   descriptionEn?: string;
