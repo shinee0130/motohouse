@@ -8,7 +8,7 @@ import { EventParticipate } from "@/components/events/EventParticipate";
 
 export const dynamic = "force-dynamic";
 
-export default async function EventDetailPage({ params }: PageProps<"/events/[id]">) {
+export default async function GiveawayDetailPage({ params }: PageProps<"/giveaway/[id]">) {
   const { id } = await params;
   const e = await getEvent(Number(id));
   if (!e) notFound();
@@ -16,7 +16,7 @@ export default async function EventDetailPage({ params }: PageProps<"/events/[id
 
   return (
     <div style={sx("max-width:920px;margin:0 auto;padding:clamp(24px,4vw,44px) clamp(20px,4vw,40px);animation:mhfade .5s both;")}>
-      <Link href="/events" style={sx("font:600 13px Montserrat;color:#8A8F98;cursor:pointer;")}>← Events руу</Link>
+      <Link href="/giveaway" style={sx("font:600 13px Montserrat;color:#8A8F98;cursor:pointer;")}>← Giveaway руу</Link>
 
       {/* poster — зургийн жинхэнэ харьцаагаар (босоо ч, хэвтээ ч бүтнээр) */}
       <div style={sx("position:relative;border-radius:18px;overflow:hidden;border:1px solid #262626;margin-top:16px;background:#0d0d0f;display:flex;justify-content:center;align-items:center;min-height:220px;")}>

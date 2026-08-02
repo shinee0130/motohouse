@@ -35,7 +35,6 @@ export function Footer() {
               { href: "/gear", label: "Дагалдах хэрэгсэл" },
               { href: "/parts", label: "Сэлбэг" },
               { href: "/photo", label: "Зураг авалт" },
-              { href: "/events", label: "Event" },
               { href: "/giveaway", label: "Giveaway" },
             ].map((p) => (
               <Link key={p.href} href={p.href} style={sx("display:flex;align-items:center;gap:8px;font:500 14px Roboto;color:#C8C8C8;cursor:pointer;text-decoration:none;")}>

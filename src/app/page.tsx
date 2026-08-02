@@ -49,7 +49,8 @@ export default async function HomePage() {
   const featured = (featuredAll.length ? featuredAll : motos).slice(0, 4);
   const bestGear = gear.filter((g) => !isPart(g)).slice(0, 4);
   const bestParts = gear.filter(isPart).slice(0, 4);
-  const events = allEvents.slice(0, 3);
+  // Event хэсгийг сайтаас хассан — нүүрэнд зөвхөн Giveaway харагдана.
+  const events = allEvents.filter((e) => e.type.toUpperCase().includes("GIVEAWAY")).slice(0, 3);
 
   // Каталогт зарагддаг брэндүүд → зөвхөн бодит логотой нь marquee-д.
   const BRANDS = Array.from(new Set([...motos.map((m) => m.brand), ...gear.map((g) => g.brand)]));
@@ -288,17 +289,17 @@ export default async function HomePage() {
       {/* ===== POSTER 3 (parts ба event хооронд) — Merch ангилал руу ===== */}
       <Poster mn={homePoster3} en={settings.home_poster3_en} href="/gear?cat=Merch" />
 
-      {/* ===== EVENTS TEASER ===== */}
+      {/* ===== GIVEAWAY TEASER ===== */}
       <div style={sx(`${WRAP}padding-top:clamp(44px,6vw,72px);`)}>
         <div style={sx("display:flex;align-items:flex-end;justify-content:space-between;gap:16px;")}>
           <div>
-            <h2 style={sx(SECTION_TITLE)}><T>Event & Giveaway</T></h2>
+            <h2 style={sx(SECTION_TITLE)}><T>Giveaway</T></h2>
           </div>
-          <Link href="/events" style={sx(SEE_ALL)}><T>Бүгдийг →</T></Link>
+          <Link href="/giveaway" style={sx(SEE_ALL)}><T>Бүгдийг →</T></Link>
         </div>
         <div style={sx("display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:20px;margin-top:24px;")}>
           {events.map((e) => (
-            <Link key={e.id} href={`/events/${e.id}`} className="mh-card" style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;")}>
+            <Link key={e.id} href={`/giveaway/${e.id}`} className="mh-card" style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;")}>
               <div style={{ position: "relative", height: 240, background: "radial-gradient(120% 120% at 50% 0%, #17171a, #0b0b0d)" }}>
                 {e.image ? (
                   // eslint-disable-next-line @next/next/no-img-element

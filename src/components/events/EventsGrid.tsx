@@ -41,7 +41,7 @@ export function EventsGrid({
           {events.map((e) => (
             <Link
               key={e.id}
-              href={`/events/${e.id}`}
+              href={`/giveaway/${e.id}`}
               className="mh-card"
               style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;")}
             >
