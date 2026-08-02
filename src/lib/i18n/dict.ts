@@ -750,6 +750,9 @@ export const EN: Record<string, string> = {
   "Захиалга үргэлжлүүлэх": "Continue order",
   "Нэвтэрч үргэлжлүүлэх": "Sign in to continue",
   "Захиалгыг баталгаажуулсны дараа хүргэлтийн үнийг тооцож холбогдоно.": "After you confirm, we'll calculate shipping and contact you.",
+  "Мэдэгдэл": "Notifications",
+  "Мэдэгдэл алга.": "No notifications.",
+  "Бүгдийг уншсан болгох": "Mark all as read",
 };
 
 export const tFor = (lang: Lang) => (s: string): string => (lang === "en" ? EN[s] ?? s : s);

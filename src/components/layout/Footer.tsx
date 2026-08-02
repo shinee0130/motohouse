@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
 import { Brand } from "@/components/layout/Brand";
-import { useI18n } from "@/lib/i18n";
+import { LanguageToggle, useI18n } from "@/lib/i18n";
+import { CurrencySwitch } from "@/lib/reference/currency";
 
 // Хөгжүүлэгчийн portfolio холбоос — дараа portfolio хийхэд энд URL-ээ оруулбал
 // footer доорх "Scott" автоматаар тухайн хаяг руу үсэрдэг линк болно.
@@ -24,6 +25,11 @@ export function Footer() {
           <p style={sx("font:400 13px/1.6 Roboto;color:#8A8F98;margin-top:14px;max-width:260px;")}>
             {t("Монголд суурилсан мотоцикл, riding gear, сэлбэг болон олон улсын захиалгын платформ.")}
           </p>
+          {/* Хэл / мөнгөн тэмдэгт — header-ээс энд шилжсэн */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 16 }}>
+            <LanguageToggle compact />
+            <CurrencySwitch compact />
+          </div>
         </div>
         <div>
           <div style={sx("font:600 11px 'JetBrains Mono';letter-spacing:.2em;color:#8A8F98;margin-bottom:12px;")}>

@@ -311,3 +311,34 @@ export async function getBonumEvents(limit = 200): Promise<BonumEvent[]> {
     notifyStatus: r.notify_status ?? null,
   }));
 }
+
+// ---- Мэдэгдэл (notifications) ----
+// Мөрүүдийг DB-ийн trigger үүсгэдэг. RLS: хэрэглэгч зөвхөн өөрийнхөө
+// мэдэгдлийг, админ бүгдийг харна — тиймээс энд шүүлт нэмэх шаардлагагүй.
+export interface AppNotification {
+  id: number; audience: "admin" | "user"; kind: string;
+  title: string; body?: string; refTable?: string; refId?: string;
+  readAt?: string; createdAt: string;
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapNotification(r: any): AppNotification {
+  return {
+    id: r.id, audience: r.audience, kind: r.kind, title: r.title,
+    body: r.body ?? undefined, refTable: r.ref_table ?? undefined, refId: r.ref_id ?? undefined,
+    readAt: r.read_at ?? undefined, createdAt: r.created_at,
+  };
+}
+export async function getNotifications(limit = 30): Promise<AppNotification[]> {
+  const { data, error } = await supabase
+    .from("notifications").select("*")
+    .order("created_at", { ascending: false }).limit(limit);
+  if (error) return []; // нэвтрээгүй үед RLS хоосон буцаана — хонх зүгээр л хоосон
+  return (data ?? []).map(mapNotification);
+}
+export async function markNotificationRead(id: number) {
+  await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
+}
+export async function markAllNotificationsRead(ids: number[]) {
+  if (ids.length === 0) return;
+  await supabase.from("notifications").update({ read_at: new Date().toISOString() }).in("id", ids);
+}

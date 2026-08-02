@@ -10,6 +10,7 @@ import { AuthModalProvider } from "@/lib/auth/authModal";
 import { CartModalProvider } from "@/lib/commerce/cartModal";
 import { ConfirmProvider } from "@/lib/ui/confirm";
 import { ToastProvider } from "@/lib/ui/toast";
+import { WelcomePrefs } from "@/components/layout/WelcomePrefs";
 
 const SITE_DESC =
   "Монголд суурилсан мотоцикл, riding gear, сэлбэг, засвар үйлчилгээ болон олон улсын захиалга нийлүүлэлтийн платформ.";
@@ -65,6 +66,7 @@ export default async function RootLayout({
                   <ToastProvider>
                   <AuthModalProvider>
                     <CartModalProvider>
+                      <WelcomePrefs />
                       <Nav />
                       <div style={{ flex: 1 }}>{children}</div>
                       <Footer />

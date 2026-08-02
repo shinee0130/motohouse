@@ -15,6 +15,7 @@ import { getSettings } from "@/lib/db/queries";
 import { cartCount, CART_EVENT } from "@/lib/commerce/cart";
 import { LanguageToggle, useI18n } from "@/lib/i18n";
 import { CurrencySwitch } from "@/lib/reference/currency";
+import { NotificationBell } from "@/components/layout/NotificationBell";
 import { useAuthModal } from "@/lib/auth/authModal";
 import { useCartModal } from "@/lib/commerce/cartModal";
 import {
@@ -229,10 +230,7 @@ export function Nav() {
           <div style={{ marginLeft: "auto" }} />
 
           {/* хэл + валют */}
-          <div className="mh-nav-switches" style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <LanguageToggle compact />
-            <CurrencySwitch compact />
-          </div>
+          <NotificationBell />
 
           <button onClick={() => cartModal.open()} aria-label={t("Миний сагс")} style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", width: 42, height: 42, borderRadius: 10, border: "1px solid #262626", background: "none", color: "#fff", flexShrink: 0, cursor: "pointer" }}>
             <IconCart style={{ width: 20, height: 20 }} />
@@ -317,10 +315,6 @@ export function Nav() {
 
         {/* Mobile utility controls — хайлтны доор үргэлж харагдана */}
         <div className="mh-hd-mobile-tools">
-          <div className="mh-hd-mobile-switches">
-            <LanguageToggle compact />
-            <CurrencySwitch compact />
-          </div>
           {!loggedIn && (
             <button
               onClick={() => authModal.open("login")}
