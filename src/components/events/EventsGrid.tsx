@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { sx } from "@/lib/ui/sx";
-import { Slot } from "@/components/ui/Slot";
 import { badge, type EventItem } from "@/lib/db/data";
 import { useI18n } from "@/lib/i18n";
+import { EventCard } from "@/components/events/EventCard";
 
-// Events / Giveaway / Аялал хуудсуудын хуваалцах жагсаалт (server-safe).
+// Giveaway хуудсын жагсаалт. Карт нь Biker Meeting-тэй нэг компонент
+// (EventCard) дээр суурилсан тул хоёр хэсэг ижил харагдана.
 export function EventsGrid({
   label,
   title,
@@ -33,44 +33,18 @@ export function EventsGrid({
           </div>
         )}
 
-        <div
-          style={sx(
-            "display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:22px;margin-top:26px;",
-          )}
-        >
+        <div className="mh-meetcard-grid" style={{ marginTop: 26 }}>
           {events.map((e) => (
-            <Link
+            <EventCard
               key={e.id}
               href={`/giveaway/${e.id}`}
-              className="mh-card"
-              style={sx("background:#111113;border:1px solid #262626;border-radius:16px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;")}
-            >
-              <div style={{ position: "relative", height: 260, background: "radial-gradient(120% 120% at 50% 0%, #17171a, #0b0b0d)" }}>
-                {e.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={e.image} alt={e.title} style={sx("position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:10px;")} />
-                ) : (
-                  <Slot label={t("Event зураг")} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
-                )}
-                <span style={{ position: "absolute", top: 12, left: 12, zIndex: 2, ...sx(badge(e.status)) }}>
-                  {t(e.status)}
-                </span>
-              </div>
-              <div style={{ padding: "16px 18px 18px", display: "flex", flexDirection: "column", flex: 1 }}>
-                <span style={sx("display:inline-block;align-self:flex-start;font:600 10px 'JetBrains Mono';letter-spacing:.14em;color:#E10613;background:rgba(225,6,19,.1);border:1px solid rgba(225,6,19,.3);padding:4px 9px;border-radius:6px;")}>{e.type}</span>
-                <div style={sx("font:700 18px/1.3 Montserrat;color:#fff;margin-top:10px;")}>{loc(e.title, e.titleEn)}</div>
-                <div style={sx("margin-top:auto;padding-top:14px;border-top:1px solid #1c1c1f;display:flex;flex-direction:column;gap:8px;")}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                    <span style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.1em;color:#8A8F98;")}>{t("ОГНОО")}</span>
-                    <span style={sx("font:600 13px Roboto;color:#C8C8C8;")}>{e.date}</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-                    <span style={sx("font:600 10px 'JetBrains Mono';letter-spacing:.1em;color:#8A8F98;flex-shrink:0;")}>{t("🏆 ШАГНАЛ")}</span>
-                    <span style={sx("font:700 13px Montserrat;color:#E10613;text-align:right;")}>{loc(e.prize, e.prizeEn)}</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
+              image={e.image}
+              title={loc(e.title, e.titleEn)}
+              date={e.date}
+              slotLabel="Giveaway"
+              badge={<span style={sx(badge(e.status))}>{t(e.status)}</span>}
+              rows={e.prize ? [{ label: "🏆 ШАГНАЛ", value: loc(e.prize, e.prizeEn), accent: true }] : []}
+            />
           ))}
         </div>
       </div>
